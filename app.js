@@ -6,16 +6,29 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const { PORT, API_VERSION } = process.env;
+const port = PORT;
 
 app.use(express.static("public"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // CORS allow all
 app.use(cors());
+
+// API routes
+app.use("/api/" + API_VERSION, [
+  require("./server/routes/admin_route"),
+  // require("./server/routes/product_route"),
+  // require("./server/routes/marketing_route"),
+  require("./server/routes/concert_route"),
+  require("./server/routes/user_route"),
+  // require("./server/routes/order_route"),
+]);
 
 app.get("/", (req, res) => {
   res.send("This is TICKETING-SYSTEM!");
 });
 
-app.listen(PORT, () => {
-  console.log(`Listening on port: ${PORT}`);
+app.listen(port, () => {
+  console.log(`Listening on port: ${port}`);
 });
