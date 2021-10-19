@@ -1,0 +1,25 @@
+{
+  "name": "ticketing-system",
+  "version": "1.0.0",
+  "description": "\"# ticketing_system\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/singhuacai/ticketing_system.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/singhuacai/ticketing_system/issues"
+  },
+  "homepage": "https://github.com/singhuacai/ticketing_system#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1"
+  }
+}
