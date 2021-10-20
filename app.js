@@ -9,6 +9,7 @@ const { PORT, API_VERSION } = process.env;
 const port = PORT;
 
 app.use(express.static("public"));
+app.use(express.static("public/html"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -18,8 +19,6 @@ app.use(cors());
 // API routes
 app.use("/api/" + API_VERSION, [
   require("./server/routes/admin_route"),
-  // require("./server/routes/product_route"),
-  // require("./server/routes/marketing_route"),
   require("./server/routes/concert_route"),
   require("./server/routes/user_route"),
   // require("./server/routes/order_route"),
