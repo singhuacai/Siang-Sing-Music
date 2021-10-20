@@ -4,37 +4,24 @@
   flex-grow: 1; /*可佔滿垂直剩餘的空間*/
 }
 
-#campaigns {
+#keyvisuals {
   height: 500px;
   position: relative;
-  margin-top: 115px;
+  margin-top: 65px;
 }
 
-#campaigns > .campaign {
+#keyvisuals > .keyvisual {
   height: 100%;
   width: 100%;
   position: absolute;
   background-position: center;
-  /* opacity: 0; */
+  opacity: 0.8;
+  background-repeat: repeat-x;
   transition: opacity 1.2s;
-  /* z-index: 1; */
 }
 
-#campaigns > .campaign > .campaign_story {
-  width: 100%;
-  max-width: 1480px;
-  margin: 110px auto 0;
-  padding-top: 65px;
-  padding-left: 180px;
-  font-size: 30px;
-  font-weight: 100;
-  color: #070707;
-  line-height: 57px;
-  white-space: pre;
-}
-
-/* ---------- products ---------- */
-#products {
+/* ---------- campaigns ---------- */
+#campaigns {
   display: flex;
   flex-flow: row wrap;
   width: 1200px;
@@ -43,42 +30,37 @@
   padding-top: 50px;
 }
 
-.product {
+.campaign {
   display: flex;
   flex-direction: column;
   width: 360px;
   margin: 20px;
 }
 
-#products > .product > .product-image > img {
+#campaigns > .campaign > .campaign-image > img {
   width: 360px;
-  height: 480px;
+  height: 200px;
 }
 
-#products > .product > .product_colors {
-  display: flex;
-  margin-top: 20px;
+#campaigns > .campaign > .campaign_title {
+  margin-top: 12px;
+  line-height: 18px;
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: #3f3a3a;
 }
-
-#products > .product > .product_colors > .product_color {
-  width: 24px;
-  height: 24px;
-  margin-right: 10px;
-  box-shadow: 0px 0px 1px #bbbbbb;
-}
-
-#products > .product > .product_title {
-  margin-top: 20px;
-  line-height: 24px;
-  font-size: 20px;
-  letter-spacing: 4px;
+#campaigns > .campaign > .campaign_interval {
+  margin-top: 12px;
+  line-height: 18px;
+  font-size: 14px;
+  letter-spacing: 2px;
   color: #3f3a3a;
 }
 
-#products > .product > .product_price {
-  margin-top: 10px;
-  line-height: 24px;
-  font-size: 20px;
-  letter-spacing: 4px;
-  color: #3f3a3a;
+#campaigns > .campaign > hr.line-style {
+  width: 100%;
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }

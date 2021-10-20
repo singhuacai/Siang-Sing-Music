@@ -58,8 +58,67 @@ const insertSeatInfo = async (seat_info) => {
   }
 };
 
+const getCampaigns = async () => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+
+    const [result] = await conn.query(
+      `
+      Select 
+        id, concert_title, sold_start, sold_end, concert_main_image, JSON_ARRAYAGG(concert_datetime) AS concert_datetime
+      From 
+      (select 
+        ci.id, ci.concert_title, ci.sold_start, ci.sold_end, ci.concert_main_image, cda.concert_datetime
+      From 
+        concert_info AS ci
+      JOIN
+        concert_date_area AS cda
+      on ci.id = cda.concert_id
+      group by 1,2,3,4,5,6
+      order by cda.concert_datetime) As t
+      group by 1,2,3,4,5;
+      `
+    );
+    await conn.query("COMMIT");
+    return result;
+  } catch (error) {
+    await conn.query("ROLLBACK");
+    console.log(error);
+    return error;
+  } finally {
+    await conn.release();
+  }
+};
+
+const getKeyvisuals = async () => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+
+    const [result] = await conn.query(
+      `
+      Select 
+        id AS concert_id, concert_main_image
+      From
+        concert_info;
+      `
+    );
+    await conn.query("COMMIT");
+    return result;
+  } catch (error) {
+    await conn.query("ROLLBACK");
+    console.log(error);
+    return error;
+  } finally {
+    await conn.release();
+  }
+};
+
 module.exports = {
   insertConcertInfo,
   insertConcertDateArea,
   insertSeatInfo,
+  getCampaigns,
+  getKeyvisuals,
 };

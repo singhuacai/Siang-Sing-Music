@@ -61,6 +61,27 @@ const createConcert = async (req, res) => {
   }
 };
 
+const getCampaigns = async (req, res) => {
+  let result = await Concert.getCampaigns();
+  const data = result.map((v) => {
+    v.concert_main_image = `/${v.id}/${v.concert_main_image}`;
+    return v;
+  });
+  res.send({ data });
+};
+
+const getKeyvisuals = async (req, res) => {
+  let result = await Concert.getKeyvisuals();
+
+  const data = result.map((v) => {
+    v.concert_main_image = `/${v.concert_id}/${v.concert_main_image}`;
+    return v;
+  });
+  res.send({ data });
+};
+
 module.exports = {
   createConcert,
+  getCampaigns,
+  getKeyvisuals,
 };
