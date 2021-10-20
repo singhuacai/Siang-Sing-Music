@@ -3,17 +3,7 @@ const Concert = require("../models/concert_model");
 const createConcert = async (req, res) => {
   const data = req.body.data[0];
 
-  const now = new Date();
-  const concert_id = parseInt(
-    "" +
-      now.getMonth() +
-      now.getDate() +
-      (now.getTime() % (24 * 60 * 60 * 1000)) +
-      Math.floor(Math.random() * 10)
-  ); // 取得演唱會活動的編號(string => int)
-
-  const concert = {
-    id: concert_id,
+  const concert_info = {
     concert_title: data.concert_title,
     concert_story: data.concert_story,
     sold_start: data.sold_start,
@@ -24,9 +14,22 @@ const createConcert = async (req, res) => {
     notice: data.notice,
   };
 
-  let seats = [];
+  const concertId = await Concert.insertConcertInfo(concert_info);
   for (let i = 0; i < data.concert_info.length; i++) {
     for (let area = 0; area < data.concert_info[i].sku_info.length; area++) {
+      const concert_date_area = {
+        concert_id: concertId,
+        concert_datetime: data.concert_info[i].concert_datetime,
+        concert_area: data.concert_info[i].sku_info[area].area_code,
+        ticket_price: data.concert_info[i].sku_info[area].ticket_price,
+      };
+
+      const concertDateAreaId = await Concert.insertConcertDateArea(
+        concert_date_area
+      );
+      console.log(concertDateAreaId);
+
+      let seat_info = [];
       for (
         let row = 0;
         row < data.concert_info[i].sku_info[area].seat_allocation.length;
@@ -38,28 +41,23 @@ const createConcert = async (req, res) => {
           col++
         ) {
           const seat = [
-            concert_id,
-            data.concert_info[i].concert_date, // concert_date
-            data.concert_info[i].concert_time, // concert_time
-            data.concert_info[i].sku_info[area].area_code, // concert_area
+            concertDateAreaId,
             row + 1, // concert_area_seat_row
             col + 1, // concert_area_seat_column
-            `${row + 1}-${col + 1}`, // concert_area_seat
-            data.concert_info[i].sku_info[area].ticket_price, // ticket_price
             1, // area_seat_qty
             "not-selected", // status
           ];
-          seats.push(seat);
+          seat_info.push(seat);
         }
       }
+      await Concert.insertSeatInfo(seat_info);
     }
   }
 
-  const result = await Concert.createConcert(concert, seats);
-  if (result === -1) {
-    res.status(500).send({ result });
+  if (concertId === -1) {
+    res.status(500).send("Insert Error!");
   } else {
-    res.status(200).send({ result });
+    res.status(200).send({ concertId });
   }
 };
 
