@@ -1,0 +1,84 @@
+/*main*/
+
+.wrapper {
+  flex-grow: 1; /*可佔滿垂直剩餘的空間*/
+}
+
+#campaigns {
+  height: 500px;
+  position: relative;
+  margin-top: 115px;
+}
+
+#campaigns > .campaign {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  background-position: center;
+  /* opacity: 0; */
+  transition: opacity 1.2s;
+  /* z-index: 1; */
+}
+
+#campaigns > .campaign > .campaign_story {
+  width: 100%;
+  max-width: 1480px;
+  margin: 110px auto 0;
+  padding-top: 65px;
+  padding-left: 180px;
+  font-size: 30px;
+  font-weight: 100;
+  color: #070707;
+  line-height: 57px;
+  white-space: pre;
+}
+
+/* ---------- products ---------- */
+#products {
+  display: flex;
+  flex-flow: row wrap;
+  width: 1200px;
+  justify-content: flex-start;
+  margin: 0 auto;
+  padding-top: 50px;
+}
+
+.product {
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+  margin: 20px;
+}
+
+#products > .product > .product-image > img {
+  width: 360px;
+  height: 480px;
+}
+
+#products > .product > .product_colors {
+  display: flex;
+  margin-top: 20px;
+}
+
+#products > .product > .product_colors > .product_color {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+  box-shadow: 0px 0px 1px #bbbbbb;
+}
+
+#products > .product > .product_title {
+  margin-top: 20px;
+  line-height: 24px;
+  font-size: 20px;
+  letter-spacing: 4px;
+  color: #3f3a3a;
+}
+
+#products > .product > .product_price {
+  margin-top: 10px;
+  line-height: 24px;
+  font-size: 20px;
+  letter-spacing: 4px;
+  color: #3f3a3a;
+}

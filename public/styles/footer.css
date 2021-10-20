@@ -1,0 +1,53 @@
+/* ---------- footer ---------- */
+footer {
+  display: block;
+  height: 115px;
+  background-color: rgb(5, 5, 75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+footer > nav {
+  width: 754px;
+  flex-shrink: 1;
+}
+
+footer > nav > ul {
+  display: flex;
+  align-items: center;
+  color: #f5f5f5;
+}
+
+footer > nav > ul > li {
+  width: 130px;
+  text-align: center;
+  line-height: 16px;
+  font-size: 16px;
+  border-right: 1px solid #f5f5f5;
+}
+
+footer > nav > ul > li:hover {
+  color: #8b572a;
+}
+
+footer > .links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 210px;
+  margin-right: 30px;
+}
+
+footer > .links > img {
+  height: 50px;
+  width: 50px;
+  cursor: pointer;
+}
+
+footer > .rights {
+  line-height: 17px;
+  font-size: 12px;
+  color: #828282;
+  text-align: center;
+}
