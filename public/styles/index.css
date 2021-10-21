@@ -39,7 +39,7 @@
 
 #campaigns > .campaign > .campaign-image > img {
   width: 360px;
-  height: 200px;
+  /* height: 200px; */
 }
 
 #campaigns > .campaign > .campaign_title {

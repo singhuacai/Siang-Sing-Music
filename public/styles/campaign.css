@@ -1,0 +1,79 @@
+.wrapper {
+  flex-grow: 1; /*可佔滿垂直剩餘的空間*/
+}
+
+#campaign {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
+#main-image {
+  height: 500px;
+  position: relative;
+  margin-top: 100px;
+}
+
+#main-image > .main-image {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#concert_title {
+  text-align: center;
+  font-size: 36px;
+}
+
+.item {
+  /* text-align: center; */
+  border: 1px solid rgb(148, 190, 8);
+  background-color: rgb(148, 190, 8);
+  border-radius: 3px;
+  text-align: center;
+  color: #fff;
+  width: 120px;
+  margin-left: 20%;
+  font-weight: bold;
+  font-size: 24px;
+  margin-top: 10px;
+  /* margin-bottom: 10px; */
+}
+
+.content {
+  margin: 10px auto 80px auto;
+  font-size: 24px;
+}
+
+table,
+td {
+  border: 1px solid #333;
+  text-align: center;
+  vertical-align: middle;
+  min-width: 200px;
+  min-height: 200px;
+}
+
+thead,
+tfoot {
+  background-color: #333;
+  color: #fff;
+}
+
+.booking-button {
+  font-size: 28px;
+  width: 80%;
+  height: 80%;
+  border-color: rgb(255, 80, 80);
+  border-radius: 5px;
+  background-color: rgb(255, 80, 80);
+  color: #fff;
+}
+
+.booking-button:hover {
+  background-color: #fff;
+  color: rgb(255, 80, 80);
+}

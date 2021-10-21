@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>想Sing音樂售票系統</title>
+    <link href="../styles/reset.css" rel="stylesheet" />
+    <link href="../styles/header.css" rel="stylesheet" />
+    <link href="../styles/campaign.css" rel="stylesheet" />
+    <link href="../styles/footer.css" rel="stylesheet" />
+    <script src="jquery-3.6.0.min.js"></script>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <header>
+        <div class="desktop-header">
+          <a href="/index.html" class="logo tag-all">
+            <img
+              src="./images/logo/logo_green.png"
+              alt="想SING音樂售票系統"
+              height="80"
+            />
+          </a>
+
+          <input type="text" class="search" />
+
+          <a class="cart" href="">
+            <img src="./images/logo/cart.png" height="44" />
+            <div class="count">0</div>
+          </a>
+
+          <a class="order" href="">
+            <img src="./images/logo/order.png" height="44" />
+          </a>
+
+          <a href="/" class="member">
+            <img src="./images/logo/member.png" height="44" />
+          </a>
+        </div>
+      </header>
+
+      <div id="main-image">
+        <a class="main-image"> </a>
+      </div>
+
+      <div id="concert_title"></div>
+      <hr />
+      <div id="campaign">
+        <!-- -------------------------------------- -->
+        <div class="item">節目資訊</div>
+        <br />
+        <div id="concert_story" class="content"></div>
+        <!-- -------------------------------------- -->
+        <div class="item">場次列表</div>
+        <br />
+        <div id="concert_table" class="content">
+          <table>
+            <thead>
+              <tr>
+                <th>活動日期/Date and Time</th>
+                <th>地點/Location</th>
+                <th>票價/Price</th>
+                <th>購買/Buy</th>
+              </tr>
+            </thead>
+            <tbody id="date_location_price"></tbody>
+          </table>
+        </div>
+        <!-- -------------------------------------- -->
+        <div class="item">注意事項</div>
+        <br />
+        <div id="notice" class="content"></div>
+      </div>
+    </div>
+
+    <footer>
+      <nav>
+        <ul>
+          <li>關於 想SING</li>
+          <li>服務條款</li>
+          <li>隱私政策</li>
+          <li>聯絡我們</li>
+          <li>FAQ</li>
+        </ul>
+      </nav>
+      <div class="rights">© 2021. All rights reserved.</div>
+    </footer>
+    <script src="../JS/campaign.js"></script>
+  </body>
+</html>
