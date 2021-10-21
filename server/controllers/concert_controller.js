@@ -80,8 +80,32 @@ const getKeyvisuals = async (req, res) => {
   res.send({ data });
 };
 
+const getCampaignInfo = async (req, res) => {
+  const concert_id = parseInt(req.query.id);
+  if (!concert_id || req.query.id.trim() === "") {
+    res.status(400).send({ error: "Bad request!" });
+    return;
+  }
+  const concertCount = await Concert.getCampaignCount(concert_id);
+
+  if (concertCount[0].count === 0) {
+    res.status(400).send({ error: "Concert id is not exist!" });
+    return;
+  }
+
+  let result = await Concert.getCampaignInfo(concert_id);
+
+  const [data] = result.map((v) => {
+    v.concert_main_image = `/${concert_id}/${v.concert_main_image}`;
+    v.concert_area_image = `/${concert_id}/${v.concert_area_image}`;
+    return v;
+  });
+  res.status(200).send({ data });
+};
+
 module.exports = {
   createConcert,
   getCampaigns,
   getKeyvisuals,
+  getCampaignInfo,
 };
