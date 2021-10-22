@@ -1,0 +1,61 @@
+.ajax {
+  color: yellow;
+  font-weight: bold;
+  background-color: lightcoral;
+  border: solid red 3px;
+  display: none;
+  margin: 25px auto;
+  padding: 10px;
+  width: fit-content;
+}
+
+.signup,
+.signin {
+  color: darkblue;
+  margin: -10px -10px 20px -10px;
+  padding: 10px;
+  text-align: center;
+}
+
+.signup {
+  background-color: honeydew;
+}
+
+.signin {
+  background-color: papayawhip;
+}
+
+.formSignUp {
+  border: solid black 3px;
+  margin: 20px auto 25px;
+  padding: 10px;
+  width: fit-content;
+}
+
+.formSignIn {
+  border: solid black 3px;
+  margin: 25px auto;
+  padding: 10px;
+  width: fit-content;
+}
+
+#signUpButton,
+#signInButton {
+  align-items: center;
+  margin-left: 20px;
+  justify-content: center;
+  width: 80%;
+  height: 120%;
+  border-radius: 3px;
+  border: 1px solid rgb(124, 161, 2);
+  background-color: rgb(148, 190, 8);
+  font-size: 18px;
+  color: #fff;
+}
+
+.form-content-style {
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  /* justify-content: center; */
+}

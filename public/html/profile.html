@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>想SING音樂售票系統 - 會員</title>
+    <link href="../styles/reset.css" rel="stylesheet" />
+    <link href="../styles/header.css" rel="stylesheet" />
+    <link href="../styles/profile.css" rel="stylesheet" />
+    <link href="../styles/signin_signup.css" rel="stylesheet" />
+    <link href="../styles/footer.css" rel="stylesheet" />
+    <script src="jquery-3.6.0.min.js"></script>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <header>
+        <div class="desktop-header">
+          <a href="/index.html" class="logo tag-all">
+            <img
+              src="./images/logo/logo_green.png"
+              alt="想SING音樂售票系統"
+              height="80"
+            />
+          </a>
+
+          <input type="text" class="search" />
+
+          <a class="cart" href="">
+            <img src="./images/logo/cart.png" height="44" />
+            <div class="count">0</div>
+          </a>
+
+          <a class="order" href="">
+            <img src="./images/logo/order.png" height="44" />
+          </a>
+
+          <a href="/profile.html" class="member">
+            <img src="./images/logo/member.png" height="44" />
+          </a>
+        </div>
+      </header>
+
+      <main>
+        <div id="userform" hidden></div>
+        <div class="profile">
+          <div class="profile_image_block">
+            <img id="profile_image" src="" alt="profile_image" hidden />
+          </div>
+          <div class="profile_user_info">
+            <div id="user_name" hidden></div>
+            <div id="user_email" hidden></div>
+            <div id="user_phone" hidden></div>
+          </div>
+        </div>
+
+        <div id="log-out-button">
+          <input
+            type="button"
+            id="log-out"
+            onclick="logOut()"
+            name="log-out"
+            value="Log Out"
+            hidden
+          />
+        </div>
+
+        <div id="ajax_signup" class="ajax"></div>
+        <form
+          action="/api/1.0/user/signup"
+          method="post"
+          name="formSignUp"
+          id="formSignUp"
+          class="formSignUp"
+          hidden
+        >
+          <h2 class="signup">Sign Up</h2>
+          <div class="form-content-style">
+            <label>Name: </label>
+            <input
+              type="text"
+              id="name_signup"
+              name="name"
+              required="required"
+            /><br />
+            <label>Email: </label>
+            <input
+              type="email"
+              id="email_signup"
+              name="email"
+              required="required"
+            /><br />
+            <label>Phone: </label>
+            <input
+              type="phone"
+              id="phone_signup"
+              name="phone"
+              required="required"
+            /><br />
+            <label>Password: </label>
+            <input
+              type="text"
+              id="password_signup"
+              name="password"
+              required="required"
+            /><br />
+          </div>
+          <input
+            type="button"
+            id="signUpButton"
+            onclick="signUp()"
+            name="signup"
+            value="Sign Up"
+          />
+        </form>
+
+        <div id="ajax_signin" class="ajax"></div>
+        <form
+          action="/api/1.0/user/signin"
+          method="post"
+          name="formSignIn"
+          id="formSignIn"
+          class="formSignIn"
+          hidden
+        >
+          <h2 class="signin">Sign In</h2>
+          <div class="form-content-style">
+            <label>Email: </label>
+            <input
+              type="email"
+              id="email_signin"
+              name="email"
+              required="required"
+            /><br />
+            <label>Password: </label>
+            <input
+              type="text"
+              id="password_signin"
+              name="password"
+              required="required"
+            /><br />
+          </div>
+          <input
+            type="button"
+            id="signInButton"
+            onclick="signIn()"
+            name="signin"
+            value="Sign In"
+          />
+        </form>
+      </main>
+    </div>
+    <footer>
+      <nav>
+        <ul>
+          <li>關於 想SING</li>
+          <li>服務條款</li>
+          <li>隱私政策</li>
+          <li>聯絡我們</li>
+          <li>FAQ</li>
+        </ul>
+      </nav>
+      <div class="rights">© 2021. All rights reserved.</div>
+    </footer>
+    <script src="../JS/profile.js"></script>
+    <script src="../JS/signinSignup.js"></script>
+  </body>
+</html>

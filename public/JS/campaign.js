@@ -7,7 +7,6 @@ $.ajax({
 })
   .done(function (res) {
     $(function () {
-      console.log(res.data.concert_main_image);
       $(".main-image").css(
         "background-image",
         "url(" + res.data.concert_main_image + ")"

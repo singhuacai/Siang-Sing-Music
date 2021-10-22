@@ -3,7 +3,6 @@ const validator = require("validator");
 const User = require("../models/user_model");
 
 const signUp = async (req, res) => {
-  console.log(req.body);
   let { name } = req.body;
   const { email, password, phone } = req.body;
 
