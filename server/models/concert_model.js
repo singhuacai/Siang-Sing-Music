@@ -19,13 +19,13 @@ const insertConcertInfo = async (concert_info) => {
   }
 };
 
-const insertConcertDateArea = async (concert_date_area) => {
+const insertConcertDate = async (concert_date) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
     const [result] = await conn.query(
-      "INSERT INTO concert_date_area SET ?",
-      concert_date_area
+      "INSERT INTO concert_date SET ?",
+      concert_date
     );
     await conn.query("COMMIT");
     return result.insertId;
@@ -38,14 +38,33 @@ const insertConcertDateArea = async (concert_date_area) => {
   }
 };
 
-const insertSeatInfo = async (seat_info) => {
+const insertConcertAreaPrice = async (concert_area_price) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+    const [result] = await conn.query(
+      "INSERT INTO concert_area_price SET ?",
+      concert_area_price
+    );
+    await conn.query("COMMIT");
+    return result.insertId;
+  } catch (error) {
+    await conn.query("ROLLBACK");
+    console.log(error);
+    return -1;
+  } finally {
+    await conn.release();
+  }
+};
+
+const insertConcertSeatInfo = async (concert_seat_info) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
 
     await conn.query(
-      "INSERT INTO seat_info(concert_date_area_id, concert_area_seat_row, concert_area_seat_column, area_seat_qty, status) VALUES ?",
-      [seat_info]
+      "INSERT INTO concert_seat_info(concert_area_price_id, concert_area_seat_row, concert_area_seat_column, area_seat_qty, status) VALUES ?",
+      [concert_seat_info]
     );
     await conn.query("COMMIT");
     return "finish!";
@@ -59,56 +78,41 @@ const insertSeatInfo = async (seat_info) => {
 };
 
 const getCampaigns = async () => {
-  const conn = await pool.getConnection();
   try {
-    await conn.query("START TRANSACTION");
+    const queryStr = `
+    SELECT 
+      ci.id, 
+      ci.concert_title, 
+      ci.concert_main_image, 
+      JSON_ARRAYAGG(DATE_FORMAT(cd.concert_datetime, '%Y-%m-%d %T')) AS concert_datetime
+    FROM 
+      concert_info AS ci
+    JOIN
+      concert_date AS cd
+    on ci.id = cd.concert_id
+    WHERE CURRENT_TIMESTAMP() between DATE_SUB(ci.sold_start, INTERVAL 7 DAY) and ci.sold_end
+    group by 1,2,3
+    order by cd.concert_datetime
+  `;
 
-    const [result] = await conn.query(
-      `
-      Select 
-        id, concert_title, sold_start, sold_end, concert_main_image, JSON_ARRAYAGG(concert_datetime) AS concert_datetime
-      From 
-      (select 
-        ci.id, ci.concert_title, ci.sold_start, ci.sold_end, ci.concert_main_image, cda.concert_datetime
-      From 
-        concert_info AS ci
-      JOIN
-        concert_date_area AS cda
-      on ci.id = cda.concert_id
-      group by 1,2,3,4,5,6
-      order by cda.concert_datetime) As t
-      group by 1,2,3,4,5;
-      `
-    );
-    await conn.query("COMMIT");
+    const [result] = await pool.query(queryStr);
     return result;
   } catch (error) {
-    await conn.query("ROLLBACK");
     console.log(error);
     return error;
-  } finally {
-    await conn.release();
   }
 };
 
 const getKeyvisuals = async () => {
-  const conn = await pool.getConnection();
   try {
-    await conn.query("START TRANSACTION");
-
-    const [result] = await conn.query(
-      ` 
-      Select id AS concert_id, concert_main_image From concert_info;
-      `
-    );
-    await conn.query("COMMIT");
+    const queryStr = `
+    Select id AS concert_id, concert_main_image From concert_info;
+    `;
+    const [result] = await pool.query(queryStr);
     return result;
   } catch (error) {
-    await conn.query("ROLLBACK");
     console.log(error);
     return error;
-  } finally {
-    await conn.release();
   }
 };
 
@@ -121,60 +125,66 @@ const getCampaignCount = async (concert_id) => {
   return count;
 };
 
-const getCampaignInfo = async (concert_id) => {
-  const conn = await pool.getConnection();
+const getConcertDetails = async (concert_id) => {
   try {
-    await conn.query("START TRANSACTION");
-
-    const [result] = await conn.query(
-      `
-      WITH ConcertDateArea AS (
-        SELECT
-          concert_id, 
-          json_object('concert_datetime', DATE_FORMAT(concert_datetime, '%Y-%m-%d %T'), 'ticket_prices', JSON_ARRAYAGG(ticket_price)) AS info
-        FROM(
-          SELECT DISTINCT 
-            concert_id, 
-            concert_datetime,
-            ticket_price
-          FROM concert_date_area
-        ) t
-        GROUP BY concert_id, concert_datetime
-      )
-      select 
-        ci.concert_title, 
-        ci.concert_story, 
-        DATE_FORMAT(ci.sold_start, '%Y-%m-%d %T') AS sold_start,
-          DATE_FORMAT(ci.sold_end, '%Y-%m-%d %T') AS sold_end, 
-        ci.concert_location, 
-        ci.concert_main_image,
-        ci.concert_area_image,
-        ci.notice,
-        JSON_ARRAYAGG(cda.info) AS concert_info
-      From concert_info AS ci
-      JOIN ConcertDateArea AS cda
-        on ci.id = cda.concert_id
-      WHERE ci.id = ${concert_id}
-      group by 1, 2, 3, 4, 5, 6, 7, 8;
-      `
-    );
-    await conn.query("COMMIT");
+    const queryStr = `
+    WITH 
+    DistinctDatePriceRaw AS (
+    SELECT DISTINCT
+      cd.concert_id,
+      cap.concert_date_id,
+      DATE_FORMAT(cd.concert_datetime, '%Y-%m-%d %T') AS concert_datetime,
+      cap.ticket_price
+    FROM concert_date cd
+    JOIN concert_area_price cap
+    ON cd.id = cap.concert_date_id
+    ),
+    DistinctDatePrice AS (
+    SELECT
+      concert_id,
+      concert_date_id,
+      concert_datetime,
+      JSON_ARRAYAGG(ticket_price) AS ticket_prices
+    FROM DistinctDatePriceRaw
+    GROUP BY concert_id, concert_date_id, concert_datetime
+    )
+    SELECT
+      ci.id AS concert_id,
+      ci.concert_title,
+      ci.concert_story,
+      ci.sold_start,
+      ci.sold_end,
+      ci.concert_location,
+      ci.concert_main_image,
+      ci.concert_area_image,
+      ci.notice,
+      json_arrayagg(
+        json_object(
+        'concert_datetime', ddp.concert_datetime,
+        'concert_date_id', ddp.concert_date_id,
+        'ticket_prices', ddp.ticket_prices
+        )
+      ) AS concert_info
+    from concert_info ci
+    inner join  DistinctDatePrice ddp
+    on ddp.concert_id = ci.id
+    GROUP BY 1,2,3,4,5,6,7,8,9;
+      `;
+    const [result] = await pool.query(queryStr);
     return result;
   } catch (error) {
-    await conn.query("ROLLBACK");
     console.log(error);
     return error;
-  } finally {
-    await conn.release();
   }
 };
 
 module.exports = {
   insertConcertInfo,
-  insertConcertDateArea,
-  insertSeatInfo,
+  insertConcertDate,
+  insertConcertAreaPrice,
+  insertConcertSeatInfo,
   getCampaigns,
   getKeyvisuals,
   getCampaignCount,
-  getCampaignInfo,
+  getConcertDetails,
 };

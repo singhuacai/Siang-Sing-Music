@@ -9,19 +9,19 @@ const getConcertTitle = async (concert_id) => {
   return concert_title;
 };
 
-const getAreasAndTicketPrices = async (concert_id, concert_datetime) => {
+const getAreasAndTicketPrices = async (concert_date_id) => {
   const queryStr = `
-  select 
-    cda.concert_area, cda.ticket_price, sum(si.area_seat_qty) AS total_seats
+  SELECT
+	  cap.concert_area, cap.ticket_price, sum(csi.area_seat_qty) AS total_seats
   FROM
-    concert_date_area AS cda
-  JOIN
-    seat_info AS si
-  on cda.id = si.concert_date_area_id
-  where cda.concert_id =? AND cda.concert_datetime = ?
-  group by 1,2;
+    concert_area_price cap
+  INNER JOIN
+    concert_seat_info csi
+  ON cap.id = csi.concert_area_price_id
+  WHERE cap.concert_date_id = ?
+  GROUP BY cap.concert_area, cap.ticket_price;
     `;
-  const bindings = [concert_id, concert_datetime];
+  const bindings = [concert_date_id];
   const [result] = await pool.query(queryStr, bindings);
   return result;
 };
