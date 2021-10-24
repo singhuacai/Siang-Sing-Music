@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>想SING音樂售票系統</title>
+    <link href="../styles/reset.css" rel="stylesheet" />
+    <link href="../styles/header.css" rel="stylesheet" />
+    <link href="../styles/performanceAndAreas.css" rel="stylesheet" />
+    <link href="../styles/footer.css" rel="stylesheet" />
+    <script src="jquery-3.6.0.min.js"></script>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <header>
+        <div class="desktop-header">
+          <a href="/index.html" class="logo tag-all">
+            <img
+              src="./images/logo/logo_green.png"
+              alt="想SING音樂售票系統"
+              height="80"
+            />
+          </a>
+
+          <input type="text" class="search" />
+
+          <a class="cart" href="">
+            <img src="./images/logo/cart.png" height="44" />
+            <div class="count">0</div>
+          </a>
+
+          <a class="order" href="">
+            <img src="./images/logo/order.png" height="44" />
+          </a>
+
+          <a href="/profile.html" class="member">
+            <img src="./images/logo/member.png" height="44" />
+          </a>
+        </div>
+      </header>
+
+      <main>
+        <div id="choose-area">
+          <div id="order-flow-step1"></div>
+
+          <div id="concert-title" class="content"></div>
+
+          <div id="time-location-block" class="content"></div>
+
+          <hr class="line-style content" />
+          <div id="concert-area-image-and-choose-zone" class="content">
+            <div id="concert-area-image"></div>
+
+            <div id="choose-zone">
+              <div id="choose-zone-title"></div>
+              <div id="concert-zone-price-qty-list">
+                <ul id="concert-zone-price-qty"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div id="keyvisuals">
+          <a class="keyvisual"> </a>
+        </div>
+
+        <div id="campaigns"></div> -->
+      </main>
+    </div>
+
+    <footer>
+      <nav>
+        <ul>
+          <li>關於 想SING</li>
+          <li>服務條款</li>
+          <li>隱私政策</li>
+          <li>聯絡我們</li>
+          <li>FAQ</li>
+        </ul>
+      </nav>
+      <!-- <div class="links">
+        <img src="./images/logo/line.png" />
+        <img src="./images/logo/twitter.png" />
+        <img src="./images/logo/facebook.png" />
+      </div> -->
+      <div class="rights">© 2021. All rights reserved.</div>
+    </footer>
+    <script src="../JS/performanceAndAreas.js"></script>
+  </body>
+</html>

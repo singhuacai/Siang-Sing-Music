@@ -1,0 +1,91 @@
+.wrapper {
+  flex-grow: 1; /*可佔滿垂直剩餘的空間*/
+}
+
+#choose-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+  margin: 200px auto 80px auto;
+}
+
+#concert-area-image-and-choose-zone {
+  display: flex;
+  flex-direction: row;
+}
+
+hr.line-style {
+  width: 100%;
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#concert-title {
+  text-align: center;
+  font-size: 36px;
+}
+
+#time-location-block {
+  text-align: center;
+  font-size: 28px;
+}
+
+.content {
+  margin: 50px auto 10px auto;
+}
+
+#choose-zone {
+  display: flex;
+  flex-direction: column;
+  margin-left: 50px;
+}
+
+#choose-zone-title {
+  font-weight: bold;
+  color: #000;
+  width: 200px;
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.concert-zone-price-qty {
+  font-size: 24px;
+  color: #000;
+}
+
+#concert-area-image img {
+  max-width: 800px;
+}
+
+#A1:hover,
+#A2:hover,
+#A3:hover,
+#A4:hover {
+  border-radius: 3px;
+  color: rgb(255, 255, 255);
+  border: 1px solid rgba(16, 38, 112);
+  background-color: rgba(16, 38, 112, 0.863);
+}
+
+#B1:hover,
+#B2:hover,
+#B3:hover,
+#B4:hover {
+  border-radius: 3px;
+  color: rgb(255, 255, 255);
+  border: 1px solid rgba(39, 79, 189);
+  background-color: rgba(39, 79, 189, 0.863);
+}
+
+#C1:hover,
+#C2:hover,
+#C3:hover,
+#C4:hover {
+  border-radius: 3px;
+  color: rgb(255, 255, 255);
+  border: 1px solid rgba(10, 163, 223);
+  background-color: rgba(10, 163, 223, 0.863);
+}
