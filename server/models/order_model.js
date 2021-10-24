@@ -182,6 +182,69 @@ const chooseSeat = async (concertSeatId, userId) => {
   }
 };
 
+const deleteSeat = async (concertSeatId, userId) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+    const [result] = await conn.query(
+      "SELECT status, user_id FROM concert_seat_info WHERE id = ? FOR UPDATE",
+      [concertSeatId]
+    );
+
+    //========= use setTimout function to test the race condition (below) ==================
+    /*
+    function promiseFn(num, time = 5 * 1000) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          num ? resolve(`${num}, 成功`) : reject("失敗");
+        }, time);
+      });
+    }
+    //======================================================================================
+    async function getData() {
+      const data1 = await promiseFn(1); // 因為 await，promise 函式被中止直到回傳
+      const data2 = await promiseFn(2);
+      console.log(data1, data2); // 1, 成功 2, 成功
+    }
+    await getData();
+    */
+    //========= use setTimout function to test the race condition (above) ==================
+
+    // 此座位的狀態早就是 Not-selected 的了
+    if (result[0].status === "not-selected") {
+      await conn.query("ROLLBACK");
+      return { error: "This seat has been not-selected already!" };
+    }
+
+    // 此座位的狀態若是 "Sold" 或 "cart" 的 => 無法取消
+    if (result[0].status === "sold" || result[0].status === "cart") {
+      await conn.query("ROLLBACK");
+      return { error: "You CANNOT delete the order in this page!" };
+    }
+
+    // 確認"想取消此座位者"與"預訂者"為同一人
+    if (result[0].user_id !== userId) {
+      await conn.query("ROLLBACK");
+      return { error: "You have no right to delete the order of the seat!" };
+    }
+
+    await conn.query(
+      "UPDATE concert_seat_info SET status ='not-selected', user_id =NULL , user_updated_status_datetime = NULL where id = ?",
+      [concertSeatId]
+    );
+    console.log("Seat deselected!");
+    await conn.query("COMMIT");
+    return {
+      result: `Seat deselected!`,
+    };
+  } catch (error) {
+    console.log(error);
+    await conn.query("ROLLBACK");
+    return { error };
+  } finally {
+    await conn.release();
+  }
+};
 module.exports = {
   getConcertTitleAndAreaImage,
   checkConcertByConcertDateId,
@@ -190,4 +253,5 @@ module.exports = {
   getSeatStatus,
   getChosenConcertInfo,
   chooseSeat,
+  deleteSeat,
 };

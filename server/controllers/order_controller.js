@@ -78,8 +78,8 @@ const getChosenConcertInfo = async (req, res) => {
   res.status(200).send({ data });
 };
 
-const chooseSeat = async (req, res) => {
-  const { concertSeatId } = req.query;
+const chooseOrDeleteSeat = async (req, res) => {
+  const { seatStatus, concertSeatId } = req.body;
   const userId = req.user.id;
 
   if (!concertSeatId) {
@@ -89,7 +89,17 @@ const chooseSeat = async (req, res) => {
     return;
   }
 
-  const result = await Order.chooseSeat(concertSeatId, userId);
+  if (seatStatus !== 0 && seatStatus !== 1) {
+    res.status(400).send({ error: "Request Error: seatStatus is error." });
+    return;
+  }
+
+  let result;
+  if (seatStatus === 1) {
+    result = await Order.chooseSeat(concertSeatId, userId);
+  } else if (seatStatus === 0) {
+    result = await Order.deleteSeat(concertSeatId, userId);
+  }
   if (result.error) {
     res.status(403).send({ error: result.error });
     return;
@@ -103,5 +113,5 @@ module.exports = {
   getPerformanceAndAreas,
   getSeatStatus,
   getChosenConcertInfo,
-  chooseSeat,
+  chooseOrDeleteSeat,
 };

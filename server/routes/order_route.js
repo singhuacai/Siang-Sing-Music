@@ -4,7 +4,7 @@ const {
   getPerformanceAndAreas,
   getSeatStatus,
   getChosenConcertInfo,
-  chooseSeat,
+  chooseOrDeleteSeat,
 } = require("../controllers/order_controller");
 
 router
@@ -19,6 +19,8 @@ router
   .route("/order/chosenConcertInfo")
   .get(authentication(), wrapAsync(getChosenConcertInfo));
 
-router.route("/order/chooseSeat").post(authentication(), wrapAsync(chooseSeat));
+router
+  .route("/order/chooseOrDeleteSeat")
+  .post(authentication(), wrapAsync(chooseOrDeleteSeat));
 
 module.exports = router;
