@@ -1,10 +1,34 @@
 const { pool } = require("./mysql");
 
-const getConcertTitle = async (concert_id) => {
+const checkConcert = async (concertDateId) => {
   const queryStr = `
-  select concert_title FROM concert_info WHERE id = ?;
+  SELECT
+    count(*) AS count
+  FROM
+    concert_date
+  WHERE
+    id = ?
+  `;
+  const bindings = [concertDateId];
+  const [result] = await pool.query(queryStr, bindings);
+  return result;
+};
+const getConcertTitleAndAreaImage = async (concertDateId) => {
+  const queryStr = `
+    SELECT
+      cd.concert_datetime,
+      ci.concert_title,
+      ci.concert_location,
+      ci.concert_area_image
+    FROM
+      concert_info AS ci
+    INNER JOIN
+      concert_date AS cd
+    on ci.id = cd.concert_id
+    WHERE
+      cd.id = ?
     `;
-  const bindings = [concert_id];
+  const bindings = [concertDateId];
   const [concert_title] = await pool.query(queryStr, bindings);
   return concert_title;
 };
@@ -12,7 +36,7 @@ const getConcertTitle = async (concert_id) => {
 const getAreasAndTicketPrices = async (concert_date_id) => {
   const queryStr = `
   SELECT
-	  cap.concert_area, cap.ticket_price, sum(csi.area_seat_qty) AS total_seats
+    cap.id AS concert_area_price_id, cap.concert_area, cap.ticket_price, sum(csi.area_seat_qty) AS total_seats
   FROM
     concert_area_price cap
   INNER JOIN
@@ -27,6 +51,7 @@ const getAreasAndTicketPrices = async (concert_date_id) => {
 };
 
 module.exports = {
-  getConcertTitle,
+  getConcertTitleAndAreaImage,
+  checkConcert,
   getAreasAndTicketPrices,
 };
