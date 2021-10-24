@@ -3,10 +3,60 @@ let concertId = urlParams.get("concertId");
 let concertDateId = urlParams.get("concertDateId");
 let concertAreaPriceId = urlParams.get("concertAreaPriceId");
 let Authorization = localStorage.getItem("Authorization");
-if (!concertAreaPriceId) {
+
+if (concertAreaPriceId) {
+  $.ajax({
+    url: `/api/1.0/order/chosenConcertInfo?concertAreaPriceId=${concertAreaPriceId}`,
+    method: "GET",
+    dataType: "json",
+    contentType: "application/json;charset=utf-8",
+    headers: { Authorization: `Bearer ${Authorization}` },
+  })
+    .done(function (res) {
+      $(function () {
+        console.log(res);
+        $("#order-flow-step").html(
+          `<img
+          id="order-flow-step-img"
+          src="../images/order_flow/Step2.png"
+          alt="step2-ChooseArea"
+          title="step2-ChooseArea"
+          width="800px"
+        />`
+        );
+        $("#concert-title").text(`${res.data[0].concert_title}`);
+        $("#time-location-block").html(
+          `<p>時間：${res.data[0].concert_datetime}&nbsp; &nbsp; 地點：${res.data[0].concert_location}</p>`
+        );
+        $("#area-ticketPrice").html(
+          `<p> 票區：${res.data[0].concert_area}&nbsp; &nbsp; 票價：NT$${res.data[0].ticket_price}</p>`
+        );
+      });
+    })
+    .fail(function (res) {
+      alert(`Error: ${res.responseText}.`);
+      window.location.assign("/");
+    });
+
+  $.ajax({
+    url: `/api/1.0/order/seatStatus?concertAreaPriceId=${concertAreaPriceId}`,
+    method: "GET",
+    dataType: "json",
+    contentType: "application/json;charset=utf-8",
+    headers: { Authorization: `Bearer ${Authorization}` },
+  })
+    .done(function (res) {
+      $(function () {
+        console.log(res);
+      });
+    })
+    .fail(function (res) {
+      alert(`Error: ${res.responseText}.`);
+      window.location.assign("/");
+    });
+} else if (!concertAreaPriceId) {
   $.ajax({
     url: `/api/1.0/order/performanceAndAreas?concertId=${concertId}&concertDateId=${concertDateId}`,
-    data: JSON.stringify({ concertId, concertDateId }),
     method: "GET",
     dataType: "json",
     contentType: "application/json;charset=utf-8",
@@ -16,7 +66,7 @@ if (!concertAreaPriceId) {
       $(function () {
         $("#order-flow-step1").html(
           `<img
-          id="order-flow-step1-img"
+          id="order-flow-step-img"
           src="../images/order_flow/Step1.png"
           alt="step1-ChooseArea"
           title="step1-ChooseArea"

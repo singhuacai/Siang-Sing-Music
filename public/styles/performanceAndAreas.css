@@ -33,6 +33,11 @@ hr.line-style {
   font-size: 28px;
 }
 
+#area-ticketPrice {
+  text-align: center;
+  font-size: 28px;
+}
+
 .content {
   margin: 50px auto 10px auto;
 }

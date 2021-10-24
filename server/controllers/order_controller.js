@@ -6,9 +6,9 @@ const getPerformanceAndAreas = async (req, res) => {
   const { concertId, concertDateId } = req.query;
 
   // 給定 concertDateId => 確認確實有此場演唱會
-  let result = await Order.checkConcert(concertDateId);
+  let result = await Order.checkConcertByConcertDateId(concertDateId);
   if (result[0].count === 0) {
-    res.status(400).send({ error: "Error request!" });
+    res.status(400).send({ error: "Bad request!" });
     return;
   }
 
@@ -27,7 +27,6 @@ const getPerformanceAndAreas = async (req, res) => {
     return v;
   });
 
-  console.log(result);
   // 給定 concertDateId => 查詢 Area 與 ticket prices
   areaAndTicketPrices = await Order.getAreasAndTicketPrices(concertDateId);
   res.status(200).send({
@@ -38,6 +37,71 @@ const getPerformanceAndAreas = async (req, res) => {
     area_and_ticket_prices: areaAndTicketPrices,
   });
 };
+
+const getSeatStatus = async (req, res) => {
+  const { concertAreaPriceId } = req.query;
+
+  // 給定 concertAreaPriceId => 確認確實有此場演唱會
+  let result = await Order.checkConcertByConcertAreaPriceId(concertAreaPriceId);
+  console.log(result);
+  if (result[0].count === 0) {
+    res.status(400).send({ error: "Bad request!" });
+    return;
+  }
+
+  // 給定 concertAreaPriceId => 查詢此區域的座位狀態
+  const data = await Order.getSeatStatus(concertAreaPriceId);
+  res.status(200).send({ data });
+};
+
+const getChosenConcertInfo = async (req, res) => {
+  const { concertAreaPriceId } = req.query;
+
+  // 給定 concertAreaPriceId => 確認確實有此場演唱會
+  let result = await Order.checkConcertByConcertAreaPriceId(concertAreaPriceId);
+  console.log(result);
+  if (result[0].count === 0) {
+    res.status(400).send({ error: "Bad request!" });
+    return;
+  }
+
+  // 給定 concertAreaPriceId => 查詢此區域的座位狀態
+  const data = await Order.getChosenConcertInfo(concertAreaPriceId);
+
+  data.map((v) => {
+    v.concert_datetime = moment(v.concert_datetime)
+      .add(offset_hours, "hours")
+      .format("YYYY-MM-DD HH:mm:ss");
+    return v;
+  });
+
+  res.status(200).send({ data });
+};
+
+const chooseSeat = async (req, res) => {
+  const { concertSeatId } = req.query;
+  const userId = req.user.id;
+
+  if (!concertSeatId) {
+    res
+      .status(400)
+      .send({ error: "Request Error: concertSeatId is required." });
+    return;
+  }
+
+  const result = await Order.chooseSeat(concertSeatId, userId);
+  if (result.error) {
+    res.status(403).send({ error: result.error });
+    return;
+  } else {
+    res.status(200).send(result);
+    return;
+  }
+};
+
 module.exports = {
   getPerformanceAndAreas,
+  getSeatStatus,
+  getChosenConcertInfo,
+  chooseSeat,
 };
