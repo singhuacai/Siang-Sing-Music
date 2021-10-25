@@ -72,7 +72,8 @@ const getSeatStatus = async (concertAreaPriceId) => {
     concert_area_seat_row,
     concert_area_seat_column,
     area_seat_qty,
-    status
+    status,
+    user_id
   FROM
     concert_seat_info
   where 
@@ -232,10 +233,10 @@ const deleteSeat = async (concertSeatId, userId) => {
       "UPDATE concert_seat_info SET status ='not-selected', user_id =NULL , user_updated_status_datetime = NULL where id = ?",
       [concertSeatId]
     );
-    console.log("Seat deselected!");
+    console.log("Seat cancelled!");
     await conn.query("COMMIT");
     return {
-      result: `Seat deselected!`,
+      result: `Seat ${concertSeatId} cancelled!`,
     };
   } catch (error) {
     console.log(error);

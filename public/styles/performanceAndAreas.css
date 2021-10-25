@@ -7,7 +7,15 @@
   flex-direction: column;
   align-items: center;
   align-content: center;
-  margin: 200px auto 80px auto;
+  margin-top: 200px;
+  margin-bottom: 80px;
+}
+
+#content-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
 }
 
 #concert-area-image-and-choose-zone {
@@ -93,4 +101,32 @@ hr.line-style {
   color: rgb(255, 255, 255);
   border: 1px solid rgba(10, 163, 223);
   background-color: rgba(10, 163, 223, 0.863);
+}
+
+/* ------------------------------------------- */
+.chair-style ul {
+  display: flex;
+}
+
+#notice {
+  font-size: 24px;
+  font-weight: bold;
+  background-color: rgb(148, 190, 8);
+  color: aliceblue;
+  border-radius: 3px;
+}
+
+#count {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+#add-to-cart-button {
+  font-size: 28px;
+  width: 120%;
+  height: 120%;
+  border-color: rgb(255, 80, 80);
+  border-radius: 5px;
+  background-color: rgb(255, 80, 80);
+  color: #fff;
 }

@@ -40,10 +40,10 @@ const getPerformanceAndAreas = async (req, res) => {
 
 const getSeatStatus = async (req, res) => {
   const { concertAreaPriceId } = req.query;
+  const userId = req.user.id;
 
   // 給定 concertAreaPriceId => 確認確實有此場演唱會
   let result = await Order.checkConcertByConcertAreaPriceId(concertAreaPriceId);
-  console.log(result);
   if (result[0].count === 0) {
     res.status(400).send({ error: "Bad request!" });
     return;
@@ -51,6 +51,20 @@ const getSeatStatus = async (req, res) => {
 
   // 給定 concertAreaPriceId => 查詢此區域的座位狀態
   const data = await Order.getSeatStatus(concertAreaPriceId);
+
+  // 若是你選擇的，則修改狀態為 "you-selected"
+  data.map((v) => {
+    if (v.status === "selected" && v.user_id === userId) {
+      v.status = "you-selected";
+    }
+    if (v.status === "cart" && v.user_id === userId) {
+      v.status = "you-cart";
+    }
+    if (v.status === "sold" && v.user_id === userId) {
+      v.status = "you-sold";
+    }
+    return v;
+  });
   res.status(200).send({ data });
 };
 
@@ -59,7 +73,6 @@ const getChosenConcertInfo = async (req, res) => {
 
   // 給定 concertAreaPriceId => 確認確實有此場演唱會
   let result = await Order.checkConcertByConcertAreaPriceId(concertAreaPriceId);
-  console.log(result);
   if (result[0].count === 0) {
     res.status(400).send({ error: "Bad request!" });
     return;
