@@ -5,13 +5,48 @@ let concertAreaPriceId = urlParams.get("concertAreaPriceId");
 let Authorization = localStorage.getItem("Authorization");
 
 if (concertAreaPriceId) {
-  window.onbeforeunload = function () {
-    alert("HIHIHIHI");
-    return "您輸入的內容尚未儲存，確定離開此頁面嗎？";
+  window.onunload = function () {
+    // ===================================
+    var rollBackSeat = [];
+    $(".you-selected").each(function () {
+      console.log($(this).attr("id"));
+      rollBackSeat.push(parseInt($(this).attr("id")));
+    });
+    console.log(rollBackSeat);
+    if (rollBackSeat.length !== 0) {
+      $.ajax({
+        url: "/api/1.0/order/rollBackChoose",
+        data: JSON.stringify({ rollBackSeat }),
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json;charset=utf-8",
+        headers: { Authorization: `Bearer ${Authorization}` },
+      })
+        .done(function (res) {
+          $(function () {
+            return "已成功rollback你剛剛所選的位置了!!!";
+          });
+        })
+        .fail(function (res) {
+          alert(`Error: ${res.responseText}.`);
+        });
+    }
+    // ======================================================
+    return;
   };
-  // $(window).bind("beforeunload", function () {
-  //   return "您輸入的內容尚未儲存，確定離開此頁面嗎？";
-  // });
+
+  $(document).ready(function () {
+    $(document).bind("keydown", function (e) {
+      e = window.event || e;
+
+      // 阻擋使用者按 F5 刷新頁面
+      if (e.keyCode == 116) {
+        e.keyCode = 0;
+        return false;
+      }
+    });
+  });
+
   function renderSeats(res) {
     console.log(res);
     let row = 0;
@@ -54,27 +89,26 @@ if (concertAreaPriceId) {
         );
       }
 
-      $(`#${res.data[i].concert_seat_id}`).click(handleClick);
+      $(`#${res.data[i].concert_seat_id}`).click(
+        { param: res.countOfCartAndSold },
+        handleClick
+      );
     }
   }
 
-  function handleClick() {
+  function handleClick(event) {
+    const countOfCartAndSold = event.data.param;
     console.log("handleClick!");
     const cls = this.className;
     console.log(cls);
-    var id = $(this).attr("id");
+    const id = $(this).attr("id");
     console.log(id);
 
     switch (cls) {
       case "not-selected":
-        if (
-          $(".you-selected").length +
-            $(".you-cart").length +
-            $(".you-sold").length <
-          4
-        ) {
+        if ($(".you-selected").length + countOfCartAndSold < 4) {
           console.log("run selected function");
-          chooseSeat(id);
+          chooseSeat(countOfCartAndSold, id);
         } else {
           alert("每人每場限購四張，您已達到選位上限!");
         }
@@ -93,14 +127,10 @@ if (concertAreaPriceId) {
     }
   }
 
-  function chooseSeat(seatId) {
-    console.log("not selected");
-    if (
-      $(".you-selected").length +
-        $(".you-cart").length +
-        $(".you-sold").length >=
-      4
-    ) {
+  function chooseSeat(countOfCartAndSold, seatId) {
+    console.log("This seat is nobody selected");
+    console.log(countOfCartAndSold);
+    if ($(".you-selected").length + countOfCartAndSold >= 4) {
       alert("每人每場限購四張，您已達到選位上限!");
     } else {
       $.ajax({
@@ -120,6 +150,7 @@ if (concertAreaPriceId) {
               .removeClass("not-selected")
               .addClass("you-selected");
             $(`#${seatId}`).attr("src", "../images/logo/icon_chair_select.gif");
+            alert("已成功訂位!!!");
           });
         })
         .fail(function (res) {
@@ -129,7 +160,7 @@ if (concertAreaPriceId) {
   }
 
   function cancelSeat(seatId) {
-    console.log("selected");
+    console.log("this seat is selected by you");
     $.ajax({
       url: "/api/1.0/order/chooseOrDeleteSeat",
       data: JSON.stringify({
@@ -148,6 +179,7 @@ if (concertAreaPriceId) {
             "src",
             "../images/logo/icon_chair_not_selected.gif"
           );
+          alert("已成功取消訂位");
         });
       })
       .fail(function (res) {
@@ -168,6 +200,13 @@ if (concertAreaPriceId) {
 
         // $("#content-block").html(
         //   `
+        //   <div id="concert-seats" class="content concert-seats">
+        //       <table id="seats-table" class="table">
+        //         <tbody id="seats-table-list"></tbody>
+        //       </table>
+        //     </div>
+        //     <div class="content chair-style"></div>
+        //     <div id="add-to-cart" class="content"></div>
         //   `
         // );
 
@@ -209,9 +248,9 @@ if (concertAreaPriceId) {
         // ================================================
         // 倒數計時器(60秒)
         $(document).ready(function () {
-          let count = 60;
+          let count = 15;
           $("#notice").html(
-            `<p>&nbsp;&nbsp; 請您於60秒內選好座位，並將選好的座位加入購物車，否則將會將您導回首頁 &nbsp;&nbsp;</p>`
+            `<p>&nbsp;&nbsp; 請您於60秒內選好座位，並將選好的座位加入購物車，否則系統會將您導回活動頁 &nbsp;&nbsp;</p>`
           );
           $("#count").html(`倒 數 ${count} 秒`);
           let timer = null;
@@ -220,8 +259,37 @@ if (concertAreaPriceId) {
               count = count - 1;
               $("#count").html(`倒 數 ${count} 秒`);
             } else {
-              clearInterval(timer); // 當count = 0 時，停止計時
-              // window.location.assign("/");
+              // 當count = 0 時，停止計時
+              clearInterval(timer);
+
+              // 將剛剛選擇的座位rollback掉
+              var rollBackSeat = [];
+              $(".you-selected").each(function () {
+                console.log($(this).attr("id"));
+                rollBackSeat.push(parseInt($(this).attr("id")));
+              });
+              console.log(rollBackSeat);
+
+              if (rollBackSeat.length !== 0) {
+                $.ajax({
+                  url: "/api/1.0/order/rollBackChoose",
+                  data: JSON.stringify({ rollBackSeat }),
+                  method: "POST",
+                  dataType: "json",
+                  contentType: "application/json;charset=utf-8",
+                  headers: { Authorization: `Bearer ${Authorization}` },
+                })
+                  .done(function (res) {
+                    $(function () {
+                      window.location.assign(`/campaign.html?id=${concertId}`);
+                      return true;
+                    });
+                  })
+                  .fail(function (res) {
+                    alert(`Error: ${res.responseText}.`);
+                  });
+              }
+              window.location.assign(`/campaign.html?id=${concertId}`);
             }
           }, 1000);
         });
@@ -233,7 +301,7 @@ if (concertAreaPriceId) {
             <li><img src="../images/logo/icon_chair_not_selected.gif" width="40" height="40" alt="空位"/> 空位 </li>
             <li><img src="../images/logo/icon_chair_sold.gif" width="40" height="40" alt="已售出"/> 已售出 </li>
             <li><img src="../images/logo/icon_chair_selected.gif" width="40" height="40" alt="已被他人選擇"/> 已被他人選擇 </li>
-            <li><img src="../images/logo/icon_chair_select.gif" width="40" height="40" alt="已被你選擇"/> 已被選擇 </li>
+            <li><img src="../images/logo/icon_chair_select.gif" width="40" height="40" alt="已被您選擇"/> 已被您選擇 </li>
             <li> <img src="../images/logo/icon_chair_cart.gif" width="40" height="40" alt="已加入購物車" /> 已加入購物車 </li>
           </ul>
           `
@@ -320,7 +388,12 @@ if (concertAreaPriceId) {
       });
     })
     .fail(function (res) {
-      alert(`Error: ${res.responseText}.`);
-      window.location.assign("/");
+      if (!Authorization) {
+        alert("請先登入");
+        window.location.assign("/profile.html");
+      } else {
+        alert(`Error: ${res.responseText}.`);
+        window.location.assign("/");
+      }
     });
 }

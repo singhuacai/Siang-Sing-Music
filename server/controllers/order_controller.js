@@ -43,7 +43,10 @@ const getSeatStatus = async (req, res) => {
   const userId = req.user.id;
 
   // 給定 concertAreaPriceId => 確認確實有此場演唱會
-  let result = await Order.checkConcertByConcertAreaPriceId(concertAreaPriceId);
+  let result = await Order.checkConcertByConcertAreaPriceId(
+    concertAreaPriceId,
+    userId
+  );
   if (result[0].count === 0) {
     res.status(400).send({ error: "Bad request!" });
     return;
@@ -65,7 +68,16 @@ const getSeatStatus = async (req, res) => {
     }
     return v;
   });
-  res.status(200).send({ data });
+
+  // 利用 concertAreaPriceId => 找到 concertDateId  => 找出該使用者購買及加入購物車的總數
+  result = await Order.getSoldandCartCount(concertAreaPriceId, userId);
+
+  console.log(result);
+
+  console.log(result[0].count);
+  const countOfCartAndSold = result[0].count;
+
+  res.status(200).send({ countOfCartAndSold, data });
 };
 
 const getChosenConcertInfo = async (req, res) => {
@@ -122,9 +134,34 @@ const chooseOrDeleteSeat = async (req, res) => {
   }
 };
 
+const rollBackChoose = async (req, res) => {
+  const { rollBackSeat } = req.body;
+  console.log(rollBackSeat);
+  const userId = req.user.id;
+
+  if (!rollBackSeat) {
+    res.status(400).send({ error: "Request Error: rollBackSeat is required." });
+    return;
+  }
+  // 利用 rollBackSeat function
+  // 1. 查詢該座位目前的狀態是否為 selected 以及是否為同一個使用者
+  // 2. 若是同一個使用者，再把座位狀態還原為not-selected狀態!
+  result = await Order.rollBackChoose(rollBackSeat, userId);
+
+  // res.status(200).send(result);
+  if (result.error) {
+    res.status(403).send({ error: result.error });
+    return;
+  } else {
+    res.status(200).send(result);
+    return;
+  }
+};
+
 module.exports = {
   getPerformanceAndAreas,
   getSeatStatus,
   getChosenConcertInfo,
   chooseOrDeleteSeat,
+  rollBackChoose,
 };

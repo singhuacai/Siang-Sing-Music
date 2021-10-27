@@ -5,6 +5,7 @@ const {
   getSeatStatus,
   getChosenConcertInfo,
   chooseOrDeleteSeat,
+  rollBackChoose,
 } = require("../controllers/order_controller");
 
 router
@@ -22,5 +23,9 @@ router
 router
   .route("/order/chooseOrDeleteSeat")
   .post(authentication(), wrapAsync(chooseOrDeleteSeat));
+
+router
+  .route("/order/rollBackChoose")
+  .post(authentication(), wrapAsync(rollBackChoose));
 
 module.exports = router;
