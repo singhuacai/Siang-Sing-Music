@@ -30,7 +30,7 @@ const createConcert = async (req, res) => {
     };
 
     const concertDateId = await Concert.insertConcertDate(concert_date);
-    console.log(concertDateId);
+    // console.log(concertDateId);
     for (let area = 0; area < data.concert_info[i].sku_info.length; area++) {
       const concert_area_price = {
         concert_id: concertId,
@@ -41,7 +41,7 @@ const createConcert = async (req, res) => {
       const concertAreaPriceId = await Concert.insertConcertAreaPrice(
         concert_area_price
       );
-      console.log(concertAreaPriceId);
+      // console.log(concertAreaPriceId);
 
       let concert_seat_info = [];
       for (
@@ -108,7 +108,7 @@ const getConcertDetails = async (req, res) => {
   }
 
   let result = await Concert.getConcertDetails(concert_id);
-  console.log(result);
+  // console.log(result);
 
   const [data] = result.map((v) => {
     v.sold_start = moment(v.sold_start)
