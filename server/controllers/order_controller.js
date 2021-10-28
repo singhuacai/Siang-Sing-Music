@@ -135,20 +135,18 @@ const chooseOrDeleteSeat = async (req, res) => {
 };
 
 const rollBackChoose = async (req, res) => {
-  const { rollBackSeat } = req.body;
-  console.log(rollBackSeat);
+  const { chosenSeats } = req.body;
   const userId = req.user.id;
 
-  if (!rollBackSeat) {
-    res.status(400).send({ error: "Request Error: rollBackSeat is required." });
+  if (!chosenSeats) {
+    res.status(400).send({ error: "Request Error: chosenSeats is required." });
     return;
   }
-  // 利用 rollBackSeat function
+  // 利用 rollBackChoose function
   // 1. 查詢該座位目前的狀態是否為 selected 以及是否為同一個使用者
   // 2. 若是同一個使用者，再把座位狀態還原為not-selected狀態!
-  result = await Order.rollBackChoose(rollBackSeat, userId);
+  result = await Order.rollBackChoose(chosenSeats, userId);
 
-  // res.status(200).send(result);
   if (result.error) {
     res.status(403).send({ error: result.error });
     return;

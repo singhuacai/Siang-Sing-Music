@@ -342,25 +342,30 @@ const deleteSeat = async (concertSeatId, userId) => {
   }
 };
 
-const rollBackChoose = async (rollBackSeat, userId) => {
+const rollBackChoose = async (chosenSeats, userId) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
     const queryStr =
-      "SELECT count(*) AS count FROM concert_seat_info WHERE id IN(?) AND user_id = ? AND status = 'selected' FOR UPDATE";
-    const bindings = [rollBackSeat, userId];
+      "SELECT id, status, user_id FROM concert_seat_info WHERE id IN(?) ORDER BY id FOR UPDATE";
+    const bindings = [chosenSeats];
     const [check] = await pool.query(queryStr, bindings);
 
-    console.log(check[0].count);
-    console.log(rollBackSeat.length);
-    if (check[0].count !== rollBackSeat.length) {
-      await conn.query("ROLLBACK");
-      return { error: "you have no right to rollback these seats' choose!" };
+    // TODO: 確認你撈出來的 userId 與前台傳過來的 userId 是同一個 => 再去 rollback 該使用者剛剛選起來的位置
+
+    let rollBackSeat = [];
+    for(let i = 0 ; i < check.length ; i++){
+      if(check[i].user_id === userId && check[i].status ==='selected'){
+        rollBackSeat.push(check[i].id);
+      }
     }
+
     await conn.query(
       "UPDATE concert_seat_info SET status ='not-selected', user_id = NULL , user_updated_status_datetime = NULL where id IN (?)",
       [rollBackSeat]
     );
+    
+   
     await conn.query("COMMIT");
     return {
       result: `Already rollback these seats!!`,
