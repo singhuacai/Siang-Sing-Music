@@ -9,23 +9,6 @@ var isZero = false;
 
 if (concertAreaPriceId) {
 
-  function leavePageRollback(){
-    window.onunload = function () {
-      if (chosenSeats.length !== 0) {
-        (async function () {
-          try {
-            rollBackChoose();
-            await redirect(concertId);
-          } catch (err) {
-            console.log(err);
-          }
-        })();
-      }
-      return false;
-    };
-  }
-  
-
   $(document).ready(function () {
     $(document).bind("keydown", function (e) {
       e = window.event || e;
@@ -50,7 +33,6 @@ if (concertAreaPriceId) {
     console.log(`index:${index}`)
     if (index > -1) {
       chosenSeats.splice(index, 1);
-      console.log(`after_remove:${chosenSeats}`);
     } 
     return; 
   }
@@ -104,19 +86,14 @@ if (concertAreaPriceId) {
 
   function handleClick(event) {
     if (!isZero) {
-      console.log(isZero);
       const countOfCartAndSold = event.data.param;
-      console.log("handleClick!");
       const cls = this.className;
-      console.log(cls);
       const id = $(this).attr("id");
-      console.log(id);
 
       switch (cls) {
         case "not-selected":
           if ($(".you-selected").length + countOfCartAndSold < 4) {
             console.log("run selected function");
-            // chooseSeat(countOfCartAndSold, id);
             (async function () {
               try {
                 await chooseSeat(countOfCartAndSold, id);
@@ -130,7 +107,13 @@ if (concertAreaPriceId) {
           break;
         case "you-selected":
           console.log("run un-selected function");
-          cancelSeat(id);
+          (async function () {
+            try {
+              await cancelSeat(id);
+            } catch (err) {
+              console.log(err);
+            }
+          })();
           break;
         case "selected":
         case "cart":
@@ -146,15 +129,13 @@ if (concertAreaPriceId) {
   function redirect(concertId) {
     return new Promise((resolve, reject) => {
       window.location.assign(`/campaign.html?id=${concertId}`);
-      // resolve(true);
+      resolve(true);
     });
   }
 
   function chooseSeat(countOfCartAndSold, seatId) {
     return new Promise((resolve, reject) => {
-      console.log(`seatId(before):${seatId}`);
       console.log("This seat is nobody selected");
-      console.log(countOfCartAndSold);
       if ($(".you-selected").length + countOfCartAndSold >= 4) {
         alert("每人每場限購四張，您已達到選位上限!");
       } else {
@@ -170,7 +151,6 @@ if (concertAreaPriceId) {
           contentType: "application/json;charset=utf-8",
           headers: { Authorization: `Bearer ${Authorization}` },
           success: function () {
-            console.log(`seatId(after)=${seatId}`);
             $(`#${seatId}`)
               .removeClass("not-selected")
               .addClass("you-selected");
@@ -188,72 +168,50 @@ if (concertAreaPriceId) {
     });
   }
 
-  // function chooseSeat(countOfCartAndSold, seatId) {
-  //   console.log("This seat is nobody selected");
-  //   console.log(countOfCartAndSold);
-  //   if ($(".you-selected").length + countOfCartAndSold >= 4) {
-  //     alert("每人每場限購四張，您已達到選位上限!");
-  //   } else {
-  //     $.ajax({
-  //       url: "/api/1.0/order/chooseOrDeleteSeat",
-  //       data: JSON.stringify({
-  //         seatStatus: 1,
-  //         concertSeatId: seatId,
-  //       }),
-  //       method: "POST",
-  //       dataType: "json",
-  //       contentType: "application/json;charset=utf-8",
-  //       headers: { Authorization: `Bearer ${Authorization}` },
-  //     })
-  //       .done(function (res) {
-  //         $(function () {
-  //           $(`#${seatId}`)
-  //             .removeClass("not-selected")
-  //             .addClass("you-selected");
-  //           $(`#${seatId}`).attr("src", "../images/logo/icon_chair_select.gif");
-  //           alert("已成功訂位!!!");
-  //         });
-  //       })
-  //       .fail(function (res) {
-  //         alert(`Error: ${res.responseText}.`);
-  //       });
-  //   }
-  // }
-
   function cancelSeat(seatId) {
-    console.log("this seat is selected by you");
-    removeSeatFromChosenSeatsArray(seatId);
-    $.ajax({
-      url: "/api/1.0/order/chooseOrDeleteSeat",
-      data: JSON.stringify({
-        seatStatus: 0,
-        concertSeatId: seatId,
-      }),
-      method: "POST",
-      dataType: "json",
-      contentType: "application/json;charset=utf-8",
-      headers: { Authorization: `Bearer ${Authorization}` },
-    })
-      .done(function (res) {
-        $(function () {
+    return new Promise((resolve, reject) => {
+      console.log("this seat is selected by you");
+      removeSeatFromChosenSeatsArray(seatId);
+      $.ajax({
+        url: "/api/1.0/order/chooseOrDeleteSeat",
+        data: JSON.stringify({
+          seatStatus: 0,
+          concertSeatId: seatId,
+        }),
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json;charset=utf-8",
+        headers: { Authorization: `Bearer ${Authorization}` },
+        success: function () {
           $(`#${seatId}`).removeClass("you-selected").addClass("not-selected");
           $(`#${seatId}`).attr(
             "src",
             "../images/logo/icon_chair_not_selected.gif"
           );
           alert("已成功取消訂位");
-        });
+        },
+        fail: function (res) {
+          addSeatIntoChosenSeatsArray(seatId);
+          alert(`Error: ${res.responseText}.`);
+        },
       })
-      .fail(function (res) {
-        addSeatIntoChosenSeatsArray(seatId);
-        alert(`Error: ${res.responseText}.`);
-      });
+    })
   }
+
+  window.onbeforeunload = function () {
+    (async function () {
+      try {
+        await rollBackChoose();
+      } catch (err) {
+        console.log(err);
+      }
+    })();
+    return undefined;
+  };
 
   function rollBackChoose() {
     return new Promise((resolve, reject) => {
       // 將剛剛選擇的座位rollback掉
-      if (chosenSeats.length !== 0) {
         $.ajax({
           url: "/api/1.0/order/rollBackChoose",
           data: JSON.stringify({ chosenSeats }),
@@ -262,7 +220,7 @@ if (concertAreaPriceId) {
           dataType: "json",
           contentType: "application/json;charset=utf-8",
           headers: { Authorization: `Bearer ${Authorization}` },
-          success: function (res) {
+          success: function () {
             resolve(true);
           },
           fail: function (res) {
@@ -270,8 +228,6 @@ if (concertAreaPriceId) {
             alert(`Error: ${res.responseText}.`);
           },
         });
-      }
-      return false;
     });
   }
 
@@ -336,7 +292,7 @@ if (concertAreaPriceId) {
         // ================================================
         // 倒數計時器(60秒)
         $(document).ready(function () {
-          let count = 10;
+          let count = 60;
           $("#notice").html(
             `<p>&nbsp;&nbsp; 請您於60秒內選好座位，並將選好的座位加入購物車，否則系統會將您導回活動頁 &nbsp;&nbsp;</p>`
           );
@@ -346,44 +302,16 @@ if (concertAreaPriceId) {
             if (count > 1) {
               count = count - 1;
               $("#count").html(`倒 數 ${count} 秒`);
-              leavePageRollback();
             } else if (count > 0) {
               isZero = true;
               console.log(`change=====`);
               count = count - 1;
               $("#count").html(`倒 數 ${count} 秒`);
-              leavePageRollback();
             } else {
               // 當count = 0 時，停止計時
               isZero = true;
               clearInterval(timer);
-              (async function () {
-                try {
-                  console.log("123435465");
-                  // await rollBackChoose();
-                  await redirect(concertId);
-                  // window.location.assign(`/campaign.html?id=${concertId}`);
-                } catch (err) {
-                  console.log(err);
-                }
-              })();
-              // $.ajax({
-              //   url: "/api/1.0/order/rollBackChoose",
-              //   data: JSON.stringify({ rollBackSeat }),
-              //   method: "POST",
-              //   dataType: "json",
-              //   contentType: "application/json;charset=utf-8",
-              //   headers: { Authorization: `Bearer ${Authorization}` },
-              // })
-              //   .done(function (res) {
-              //     $(function () {
-              //       window.location.assign(`/campaign.html?id=${concertId}`);
-              //       return true;
-              //     });
-              //   })
-              //   .fail(function (res) {
-              //     alert(`Error: ${res.responseText}.`);
-              //   });
+              window.location.assign(`/campaign.html?id=${concertId}`);
             }
           }, 1000);
         });

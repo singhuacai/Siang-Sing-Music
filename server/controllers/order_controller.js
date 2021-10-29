@@ -142,6 +142,12 @@ const rollBackChoose = async (req, res) => {
     res.status(400).send({ error: "Request Error: chosenSeats is required." });
     return;
   }
+
+  if(chosenSeats.length === 0){
+    res.status(200).send({result: 'chosenSeats is empty'});
+    return;
+  }
+  
   // 利用 rollBackChoose function
   // 1. 查詢該座位目前的狀態是否為 selected 以及是否為同一個使用者
   // 2. 若是同一個使用者，再把座位狀態還原為not-selected狀態!

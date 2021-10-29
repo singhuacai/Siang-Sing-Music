@@ -208,26 +208,7 @@ const chooseSeat = async (concertSeatId, userId) => {
       "SELECT status FROM concert_seat_info WHERE id = ? FOR UPDATE",
       [concertSeatId]
     );
-
-    //========= use setTimout function to test the race condition (below) ==================
-    /*
-    function promiseFn(num, time = 2 * 1000) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          num ? resolve(`${num}, 成功`) : reject("失敗");
-        }, time);
-      });
-    }
-    //======================================================================================
-    async function getData() {
-      const data1 = await promiseFn(1); // 因為 await，promise 函式被中止直到回傳
-      const data2 = await promiseFn(2);
-      console.log(data1, data2); // 1, 成功 2, 成功
-    }
-    await getData();
-    */
-    //========= use setTimout function to test the race condition (above) ==================
-
+    
     if (status[0].status !== "not-selected") {
       await conn.query("ROLLBACK");
       return { error: "This seat has been selected!" };
@@ -350,6 +331,25 @@ const rollBackChoose = async (chosenSeats, userId) => {
       "SELECT id, status, user_id FROM concert_seat_info WHERE id IN(?) ORDER BY id FOR UPDATE";
     const bindings = [chosenSeats];
     const [check] = await pool.query(queryStr, bindings);
+
+    //========= use setTimout function to test the race condition (below) ==================
+    /*
+    function promiseFn(num, time = 3 * 1000) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          num ? resolve(`${num}, 成功`) : reject("失敗");
+        }, time);
+      });
+    }
+    //======================================================================================
+    async function getData() {
+      const data1 = await promiseFn(1); // 因為 await，promise 函式被中止直到回傳
+      const data2 = await promiseFn(2);
+      console.log(data1, data2); // 1, 成功 2, 成功
+    }
+    await getData();
+    */
+    //========= use setTimout function to test the race condition (above) ==================
 
     // TODO: 確認你撈出來的 userId 與前台傳過來的 userId 是同一個 => 再去 rollback 該使用者剛剛選起來的位置
 
