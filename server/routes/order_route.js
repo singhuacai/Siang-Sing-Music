@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { wrapAsync, authentication } = require("../../util/util");
+const { wrapAsync, authentication, parseSocketId } = require("../../util/util");
 const {
   getPerformanceAndAreas,
   getSeatStatus,
@@ -22,7 +22,7 @@ router
 
 router
   .route("/order/chooseOrDeleteSeat")
-  .post(authentication(), wrapAsync(chooseOrDeleteSeat));
+  .post(authentication(), parseSocketId(), wrapAsync(chooseOrDeleteSeat));
 
 router
   .route("/order/rollBackChoose")

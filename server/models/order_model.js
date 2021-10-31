@@ -205,7 +205,7 @@ const chooseSeat = async (concertSeatId, userId) => {
   try {
     await conn.query("START TRANSACTION");
     const [status] = await conn.query(
-      "SELECT status FROM concert_seat_info WHERE id = ? FOR UPDATE",
+      "SELECT concert_area_price_id, status FROM concert_seat_info WHERE id = ? FOR UPDATE",
       [concertSeatId]
     );
     
@@ -248,7 +248,9 @@ const chooseSeat = async (concertSeatId, userId) => {
     console.log("已將status更改為selected了!");
     await conn.query("COMMIT");
     return {
-      result: `You have selected a seat with the seat code of ${concertSeatId}!`,
+      concert_area_price_id: status[0].concert_area_price_id,
+      seat_id: concertSeatId,
+      status: 'selected'
     };
   } catch (error) {
     console.log(error);
@@ -264,7 +266,7 @@ const deleteSeat = async (concertSeatId, userId) => {
   try {
     await conn.query("START TRANSACTION");
     const [result] = await conn.query(
-      "SELECT status, user_id FROM concert_seat_info WHERE id = ? FOR UPDATE",
+      "SELECT concert_area_price_id, status, user_id FROM concert_seat_info WHERE id = ? FOR UPDATE",
       [concertSeatId]
     );
 
@@ -312,7 +314,9 @@ const deleteSeat = async (concertSeatId, userId) => {
     console.log("Seat cancelled!");
     await conn.query("COMMIT");
     return {
-      result: `Seat ${concertSeatId} cancelled!`,
+      concert_area_price_id: result[0].concert_area_price_id,
+      seat_id: concertSeatId,
+      status: 'not-selected',
     };
   } catch (error) {
     console.log(error);
