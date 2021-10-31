@@ -1,7 +1,7 @@
-require("dotenv").config();
 const User = require("../server/models/user_model");
 const { TOKEN_SECRET } = process.env; // 30 days by seconds
 const jwt = require("jsonwebtoken");
+
 
 const wrapAsync = (fn) => {
   return function (req, res, next) {
@@ -38,6 +38,7 @@ const authentication = (roleId) => {
           res.status(403).send({ error: "Forbidden" });
         } else {
           req.user.id = userDetail.id;
+          req.user.user_code = userDetail.user_code;
           req.user.role_id = userDetail.role_id;
           next();
         }
@@ -50,7 +51,19 @@ const authentication = (roleId) => {
   };
 };
 
+const parseSocketId = () => {
+  return async function (req, res, next) {
+    req.socketId = req.get("SocketId");
+    if (!req.socketId) {
+      res.status(401).send({ error: "Require Socket Id" });
+      return;
+    }
+    next();
+  };
+};
+
 module.exports = {
   wrapAsync,
   authentication,
+  parseSocketId,
 };
