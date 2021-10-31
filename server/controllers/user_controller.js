@@ -62,6 +62,7 @@ const signUp = async (req, res) => {
   res.status(200).send({
     data: {
       access_token: user.access_token,
+      user_code: user.user_code,
       access_expired: user.access_expired,
       login_at: user.login_at,
       user: {
@@ -122,6 +123,7 @@ const signIn = async (req, res) => {
   res.status(200).send({
     data: {
       access_token: user.access_token,
+      user_code: user.user_code,
       access_expired: user.access_expired,
       login_at: user.login_at,
       user: {

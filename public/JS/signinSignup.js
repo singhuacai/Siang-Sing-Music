@@ -15,6 +15,7 @@ function signUp() {
       $(function () {
         console.log(res);
         localStorage.setItem("Authorization", res.data.access_token);
+        localStorage.setItem("UserCode", res.data.user_code);
         window.location.assign("/profile.html");
       });
     })
@@ -37,8 +38,9 @@ function signIn() {
   })
     .done(function (res) {
       $(function () {
-        console.log(res);
+        // console.log(res);
         localStorage.setItem("Authorization", res.data.access_token);
+        localStorage.setItem("UserCode", res.data.user_code);
         window.location.assign("/profile.html");
       });
     })
@@ -50,5 +52,6 @@ function signIn() {
 
 function logOut() {
   localStorage.removeItem("Authorization");
+  localStorage.removeItem("UserCode" );
   window.location.assign("/profile.html");
 }
