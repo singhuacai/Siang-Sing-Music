@@ -3,11 +3,67 @@ let concertId = urlParams.get("concertId");
 let concertDateId = urlParams.get("concertDateId");
 let concertAreaPriceId = urlParams.get("concertAreaPriceId");
 let Authorization = localStorage.getItem("Authorization");
+let UserCode = localStorage.getItem("UserCode");
 var chosenSeats = [];
 
 var isZero = false;
 
+// 限定使用者只能開啟一個分頁
+// (function() {
+//   'use strict';
+//   const myChannel = new BroadcastChannel('myChannel');
+//   myChannel.onmessage = () => {
+//     document.location.replace(`/index.html`);
+//   }
+//   myChannel.postMessage('page opened');
+// })();
+
 if (concertAreaPriceId) {
+
+  // socket.io
+  let socketId = null;
+  var socket = io({
+    query:{ concertAreaPriceId },
+    auth: (cb) => {
+      cb({token: localStorage.getItem("Authorization")});
+    }
+  });
+
+  socket.on("ClientSocketId",(msg) => {
+    console.log(`ClientSocketId : ${msg}`)
+    socketId = msg;
+  })
+
+  socket.on("NotifySeatSelect",(msg) => {
+    msg = JSON.parse(msg);
+    console.log(msg, msg.seat_id, msg.owner);
+    if(msg.owner === localStorage.getItem("UserCode")){
+      $(`#${msg.seat_id}`).removeClass("not-selected").addClass("you-selected");
+      $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_select.gif");
+    }else{
+      $(`#${msg.seat_id}`).removeClass("not-selected").addClass("selected");
+      $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_selected.gif");
+    }
+  });
+
+  socket.on("NotifySeatDelete",(msg) => {
+    msg = JSON.parse(msg);
+    console.log(msg, msg.seat_id, msg.owner);
+    if(msg.owner === localStorage.getItem("UserCode")){
+      $(`#${msg.seat_id}`).removeClass("you-selected").addClass("not-selected");
+      $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
+    }else{
+      $(`#${msg.seat_id}`).removeClass("selected").addClass("not-selected");
+      $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
+    }
+  });
+
+  socket.on("connect_error", (err) => {
+    console.log(err instanceof Error); // true
+    console.log(err.message); // not authorized
+    console.log(err.data); // { content: "Please retry later" }
+  });
+
 
   $(document).ready(function () {
     $(document).bind("keydown", function (e) {
@@ -144,12 +200,15 @@ if (concertAreaPriceId) {
           url: "/api/1.0/order/chooseOrDeleteSeat",
           data: JSON.stringify({
             seatStatus: 1,
-            concertSeatId: seatId,
+            concertSeatId: seatId
           }),
           method: "POST",
           dataType: "json",
           contentType: "application/json;charset=utf-8",
-          headers: { Authorization: `Bearer ${Authorization}` },
+          headers: { 
+            Authorization: `Bearer ${Authorization}`,
+            SocketId: socketId
+           },
           success: function () {
             $(`#${seatId}`)
               .removeClass("not-selected")
@@ -181,7 +240,10 @@ if (concertAreaPriceId) {
         method: "POST",
         dataType: "json",
         contentType: "application/json;charset=utf-8",
-        headers: { Authorization: `Bearer ${Authorization}` },
+        headers: { 
+          Authorization: `Bearer ${Authorization}`, 
+          SocketId: socketId 
+        },
         success: function () {
           $(`#${seatId}`).removeClass("you-selected").addClass("not-selected");
           $(`#${seatId}`).attr(
@@ -273,8 +335,13 @@ if (concertAreaPriceId) {
       });
     })
     .fail(function (res) {
-      alert(`Error: ${res.responseText}.`);
-      window.location.assign("/");
+      if (!Authorization) {
+        alert("請先登入");
+        window.location.assign("/profile.html");
+      } else {
+        alert(`Error: ${res.responseText}.`);
+        window.location.assign("/");
+      }
     });
 
   $.ajax({
@@ -292,7 +359,7 @@ if (concertAreaPriceId) {
         // ================================================
         // 倒數計時器(60秒)
         $(document).ready(function () {
-          let count = 60;
+          let count = 600;
           $("#notice").html(
             `<p>&nbsp;&nbsp; 請您於60秒內選好座位，並將選好的座位加入購物車，否則系統會將您導回活動頁 &nbsp;&nbsp;</p>`
           );
@@ -334,8 +401,13 @@ if (concertAreaPriceId) {
       });
     })
     .fail(function (res) {
-      alert(`Error: ${res.responseText}.`);
-      window.location.assign("/");
+      if (!Authorization) {
+        alert("請先登入");
+        window.location.assign("/profile.html");
+      } else {
+        alert(`Error: ${res.responseText}.`);
+        window.location.assign("/");
+      }
     });
 } else if (concertDateId) {
   $.ajax({
