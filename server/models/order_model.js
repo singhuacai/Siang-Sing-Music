@@ -346,6 +346,10 @@ const rollBackChoose = async (chosenSeats, userId) => {
       }
     }
 
+    if (rollBackSeat.length === 0) {
+      return { result: "rollBackSeat is empty" };
+    }
+
     await conn.query(
       "UPDATE concert_seat_info SET status ='not-selected', user_id = NULL , user_updated_status_datetime = NULL where id IN (?)",
       [rollBackSeat]
@@ -367,6 +371,9 @@ const rollBackChoose = async (chosenSeats, userId) => {
 };
 
 const addToCart = async (chosenSeats, userId) => {
+  if (chosenSeats.length === 0) {
+    return { error: "addToCartSeat is empty" };
+  }
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
@@ -387,6 +394,11 @@ const addToCart = async (chosenSeats, userId) => {
         insertData.push(post);
       }
     }
+
+    if (addToCartSeat.length === 0) {
+      return { error: "addToCartSeat is empty" };
+    }
+
     console.log(insertData);
     console.log(`addToCartSeat:${addToCartSeat}`);
 
@@ -403,7 +415,7 @@ const addToCart = async (chosenSeats, userId) => {
     await conn.query("COMMIT");
     return {
       concert_area_price_id,
-      seat_ids: { addToCartSeat },
+      addToCartSeat,
     };
   } catch (error) {
     console.log(error);

@@ -185,7 +185,7 @@ const rollBackChoose = async (req, res) => {
     const msg = JSON.stringify({
       owner: userCode,
       concert_area_price_id: result.concert_area_price_id,
-      seat_ids: result.seat_ids.rollBackSeat,
+      seat_ids: result.seat_ids.rollBackSeats,
     });
     notifyRollbackSeat(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
     res.status(200).send(result);
@@ -204,7 +204,7 @@ const addToCart = async (req, res) => {
   }
 
   if (chosenSeats.length === 0) {
-    res.status(200).send({ result: "chosenSeats is empty" });
+    res.status(400).send({ error: "chosenSeats is empty" });
     return;
   }
 
@@ -224,7 +224,7 @@ const addToCart = async (req, res) => {
     // });
     // notifyRollbackSeat(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
     // res.status(200).send(result);
-    res.status(200).send("OK! Alright add to cart!");
+    res.status(200).send(result);
     return;
   }
 };
