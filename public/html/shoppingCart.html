@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>想SING音樂售票系統</title>
+    <link href="../styles/reset.css" rel="stylesheet" />
+    <link href="../styles/header.css" rel="stylesheet" />
+    <link href="../styles/shoppingCart.css" rel="stylesheet" />
+    <link href="../styles/footer.css" rel="stylesheet" />
+    <script src="jquery-3.6.0.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+
+  <body>
+    <div class="wrapper">
+      <header>
+        <div class="desktop-header">
+          <a href="/index.html" class="logo tag-all">
+            <img
+              src="./images/logo/logo_green.png"
+              alt="想SING音樂售票系統"
+              height="80"
+            />
+          </a>
+
+          <input type="text" class="search" />
+
+          <a class="cart" href="">
+            <img src="./images/logo/cart.png" height="44" />
+            <div class="count">0</div>
+          </a>
+
+          <a class="order" href="">
+            <img src="./images/logo/order.png" height="44" />
+          </a>
+
+          <a href="/profile.html" class="member">
+            <img src="./images/logo/member.png" height="44" />
+          </a>
+        </div>
+      </header>
+
+      <main>
+        <div id="choose-area">
+          <div id="order-flow-step"></div>
+
+          <hr class="line-style content" />
+
+          <div id="shopping-cart-title" class="content"></div>
+
+          <div id="content-block">
+            <!-- -------------------- -->
+            <!-- <div id="concert-seats" class="content concert-seats">
+              <table id="seats-table" class="table">
+                <tbody id="seats-table-list"></tbody>
+              </table>
+            </div>
+            <div class="content chair-style"></div>
+            <div id="add-to-cart" class="content"></div> -->
+            <!-- -------------------- -->
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <footer>
+      <nav>
+        <ul>
+          <li>關於 想SING</li>
+          <li>服務條款</li>
+          <li>隱私政策</li>
+          <li>聯絡我們</li>
+          <li>FAQ</li>
+        </ul>
+      </nav>
+      <div class="rights">© 2021. All rights reserved.</div>
+    </footer>
+    <script src="../JS/shoppingCart.js"></script>
+  </body>
+</html>

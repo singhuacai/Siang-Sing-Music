@@ -511,7 +511,7 @@ if (concertAreaPriceId) {
               "../images/logo/icon_chair_cart.gif"
             );
           }
-          window.location.assign("/");
+          window.location.assign("/shoppingCart.html");
         });
       })
       .fail(function (res) {
