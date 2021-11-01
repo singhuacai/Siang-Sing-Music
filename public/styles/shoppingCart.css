@@ -1,0 +1,73 @@
+.wrapper {
+  flex-grow: 1; /*可佔滿垂直剩餘的空間*/
+}
+
+#choose-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+  margin-top: 200px;
+  margin-bottom: 80px;
+}
+
+#content-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+}
+
+hr.line-style {
+  width: 100%;
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#shopping-cart-title {
+  font-size: 24px;
+  font-weight: bold;
+  background-color: rgb(148, 190, 8);
+  color: aliceblue;
+  border-radius: 3px;
+}
+
+.content {
+  margin: 50px auto 10px auto;
+}
+
+/* #choose-zone {
+  display: flex;
+  flex-direction: column;
+  margin-left: 50px;
+}
+
+#choose-zone-title {
+  font-weight: bold;
+  color: #000;
+  width: 200px;
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+ */
+/* ------------------------------------------- */
+/* .chair-style ul {
+  display: flex;
+} */
+
+/* #count {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+#add-to-cart-button {
+  font-size: 28px;
+  width: 120%;
+  height: 120%;
+  border-color: rgb(255, 80, 80);
+  border-radius: 5px;
+  background-color: rgb(255, 80, 80);
+  color: #fff;
+} */

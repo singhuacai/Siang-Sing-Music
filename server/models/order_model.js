@@ -51,7 +51,7 @@ const getConcertTitleAndAreaImage = async (concertDateId) => {
 const getAreasAndTicketPrices = async (concertDateId) => {
   const queryStr = `
   SELECT
-    cap.id AS concert_area_price_id, cap.concert_area, cap.ticket_price, sum(csi.area_seat_qty) AS total_seats
+    cap.id AS concert_area_price_id, cap.concert_area, cap.ticket_price, count(csi.status = 'not-selected' or null) AS total_seats
   FROM
     concert_area_price cap
   INNER JOIN
@@ -157,7 +157,6 @@ const getSeatStatus = async (concertAreaPriceId) => {
         id AS concert_seat_id,
         concert_area_seat_row,
         concert_area_seat_column,
-        area_seat_qty,
         status,
         user_id
       FROM

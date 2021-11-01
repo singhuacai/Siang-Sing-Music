@@ -63,7 +63,7 @@ const insertConcertSeatInfo = async (concert_seat_info) => {
     await conn.query("START TRANSACTION");
 
     await conn.query(
-      "INSERT INTO concert_seat_info(concert_area_price_id, concert_area_seat_row, concert_area_seat_column, area_seat_qty, status) VALUES ?",
+      "INSERT INTO concert_seat_info(concert_area_price_id, concert_area_seat_row, concert_area_seat_column, status) VALUES ?",
       [concert_seat_info]
     );
     await conn.query("COMMIT");

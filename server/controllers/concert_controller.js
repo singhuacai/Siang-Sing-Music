@@ -58,7 +58,6 @@ const createConcert = async (req, res) => {
             concertAreaPriceId,
             row + 1, // concert_area_seat_row
             col + 1, // concert_area_seat_column
-            1, // area_seat_qty
             "not-selected", // status
           ];
           concert_seat_info.push(seat);
