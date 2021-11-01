@@ -1,8 +1,13 @@
 const Order = require("../models/order_model");
 const moment = require("moment");
 const offset_hours = process.env.TIMEZONE_OFFSET || 8;
-const {BOARDCAST, SOCKET_EVENTS, notifySeatSelected, notifySeatDeleted, notifyRollbackSeat} = require('../../socket');
-
+const {
+  BOARDCAST,
+  SOCKET_EVENTS,
+  notifySeatSelected,
+  notifySeatDeleted,
+  notifyRollbackSeat,
+} = require("../../socket");
 
 const getPerformanceAndAreas = async (req, res) => {
   const { concertId, concertDateId } = req.query;
@@ -122,7 +127,6 @@ const chooseOrDeleteSeat = async (req, res) => {
     return;
   }
 
-
   let result;
   if (seatStatus === 1) {
     result = await Order.chooseSeat(concertSeatId, userId);
@@ -134,13 +138,21 @@ const chooseOrDeleteSeat = async (req, res) => {
     res.status(403).send({ error: result.error });
     return;
   } else {
-      if(result.status === 'selected'){
-          const msg = JSON.stringify({owner: userCode, concert_area_price_id: result.concert_area_price_id, seat_id:result.seat_id});
-          notifySeatSelected(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
-      }else if(result.status === 'not-selected'){
-          const msg = JSON.stringify({owner: userCode, concert_area_price_id: result.concert_area_price_id, seat_id:result.seat_id});
-          notifySeatDeleted(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
-      }
+    if (result.status === "selected") {
+      const msg = JSON.stringify({
+        owner: userCode,
+        concert_area_price_id: result.concert_area_price_id,
+        seat_id: result.seat_id,
+      });
+      notifySeatSelected(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
+    } else if (result.status === "not-selected") {
+      const msg = JSON.stringify({
+        owner: userCode,
+        concert_area_price_id: result.concert_area_price_id,
+        seat_id: result.seat_id,
+      });
+      notifySeatDeleted(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
+    }
     res.status(200).send(result);
     return;
   }
@@ -156,11 +168,11 @@ const rollBackChoose = async (req, res) => {
     return;
   }
 
-  if(chosenSeats.length === 0){
-    res.status(200).send({result: 'chosenSeats is empty'});
+  if (chosenSeats.length === 0) {
+    res.status(200).send({ result: "chosenSeats is empty" });
     return;
   }
-  
+
   // 利用 rollBackChoose function
   // 1. 查詢該座位目前的狀態是否為 selected 以及是否為同一個使用者
   // 2. 若是同一個使用者，再把座位狀態還原為not-selected狀態!
@@ -170,9 +182,49 @@ const rollBackChoose = async (req, res) => {
     res.status(403).send({ error: result.error });
     return;
   } else {
-    const msg = JSON.stringify({owner: userCode, concert_area_price_id: result.concert_area_price_id, seat_ids: result.seat_ids.rollBackSeat});
+    const msg = JSON.stringify({
+      owner: userCode,
+      concert_area_price_id: result.concert_area_price_id,
+      seat_ids: result.seat_ids.rollBackSeat,
+    });
     notifyRollbackSeat(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
     res.status(200).send(result);
+    return;
+  }
+};
+
+const addToCart = async (req, res) => {
+  const { chosenSeats } = req.body;
+  const userId = req.user.id;
+  // const userCode = req.user.user_code;
+
+  if (!chosenSeats) {
+    res.status(400).send({ error: "Request Error: chosenSeats is required." });
+    return;
+  }
+
+  if (chosenSeats.length === 0) {
+    res.status(200).send({ result: "chosenSeats is empty" });
+    return;
+  }
+
+  // 利用 addToCart function
+  // 1. 查詢該座位目前的狀態是否為 selected 以及是否為同一個使用者
+  // 2. 若是同一個使用者，再把座位狀態更改為cart狀態!
+  result = await Order.addToCart(chosenSeats, userId);
+
+  if (result.error) {
+    res.status(403).send({ error: result.error });
+    return;
+  } else {
+    // const msg = JSON.stringify({
+    //   owner: userCode,
+    //   concert_area_price_id: result.concert_area_price_id,
+    //   seat_ids: result.seat_ids.rollBackSeat,
+    // });
+    // notifyRollbackSeat(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
+    // res.status(200).send(result);
+    res.status(200).send("OK! Alright add to cart!");
     return;
   }
 };
@@ -183,4 +235,5 @@ module.exports = {
   getChosenConcertInfo,
   chooseOrDeleteSeat,
   rollBackChoose,
+  addToCart,
 };

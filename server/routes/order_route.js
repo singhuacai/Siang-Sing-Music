@@ -6,6 +6,7 @@ const {
   getChosenConcertInfo,
   chooseOrDeleteSeat,
   rollBackChoose,
+  addToCart,
 } = require("../controllers/order_controller");
 
 router
@@ -27,5 +28,9 @@ router
 router
   .route("/order/rollBackChoose")
   .post(authentication(), parseSocketId(), wrapAsync(rollBackChoose));
+
+router
+  .route("/order/addToCart")
+  .post(authentication() /*, parseSocketId()*/, wrapAsync(addToCart));
 
 module.exports = router;

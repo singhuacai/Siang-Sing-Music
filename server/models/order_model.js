@@ -208,7 +208,7 @@ const chooseSeat = async (concertSeatId, userId) => {
       "SELECT concert_area_price_id, status FROM concert_seat_info WHERE id = ? FOR UPDATE",
       [concertSeatId]
     );
-    
+
     if (status[0].status !== "not-selected") {
       await conn.query("ROLLBACK");
       return { error: "This seat has been selected!" };
@@ -250,7 +250,7 @@ const chooseSeat = async (concertSeatId, userId) => {
     return {
       concert_area_price_id: status[0].concert_area_price_id,
       seat_id: concertSeatId,
-      status: 'selected'
+      status: "selected",
     };
   } catch (error) {
     console.log(error);
@@ -316,7 +316,7 @@ const deleteSeat = async (concertSeatId, userId) => {
     return {
       concert_area_price_id: result[0].concert_area_price_id,
       seat_id: concertSeatId,
-      status: 'not-selected',
+      status: "not-selected",
     };
   } catch (error) {
     console.log(error);
@@ -336,12 +336,11 @@ const rollBackChoose = async (chosenSeats, userId) => {
     const bindings = [chosenSeats];
     const [check] = await pool.query(queryStr, bindings);
 
-
     // 確認你撈出來的 userId 與前台傳過來的 userId 是同一個 => 再去 rollback 該使用者剛剛選起來的位置
     let rollBackSeat = [];
     let concert_area_price_id;
-    for(let i = 0 ; i < check.length ; i++){
-      if(check[i].user_id === userId && check[i].status ==='selected'){
+    for (let i = 0; i < check.length; i++) {
+      if (check[i].user_id === userId && check[i].status === "selected") {
         rollBackSeat.push(check[i].id);
         concert_area_price_id = check[i].concert_area_price_id;
       }
@@ -351,12 +350,60 @@ const rollBackChoose = async (chosenSeats, userId) => {
       "UPDATE concert_seat_info SET status ='not-selected', user_id = NULL , user_updated_status_datetime = NULL where id IN (?)",
       [rollBackSeat]
     );
-    
-   console.log(`[rollBackSeat]:${rollBackSeat}`);
+
+    console.log(`[rollBackSeat]:${rollBackSeat}`);
     await conn.query("COMMIT");
     return {
       concert_area_price_id,
-      seat_ids: {rollBackSeat},
+      seat_ids: { rollBackSeat },
+    };
+  } catch (error) {
+    console.log(error);
+    await conn.query("ROLLBACK");
+    return { error };
+  } finally {
+    await conn.release();
+  }
+};
+
+const addToCart = async (chosenSeats, userId) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+    const queryStr =
+      "SELECT id, status, user_id, concert_area_price_id FROM concert_seat_info WHERE id IN(?) ORDER BY id FOR UPDATE";
+    const bindings = [chosenSeats];
+    const [check] = await pool.query(queryStr, bindings);
+
+    // 確認你撈出來的 userId 與前台傳過來的 userId 是同一個 => 再去將該使用者剛剛選起來的位置加入購物車
+    let addToCartSeat = [];
+    let insertData = [];
+    let concert_area_price_id;
+    for (let i = 0; i < check.length; i++) {
+      if (check[i].user_id === userId && check[i].status === "selected") {
+        addToCartSeat.push(check[i].id);
+        concert_area_price_id = check[i].concert_area_price_id;
+        const post = [chosenSeats[i], "add-to-cart"];
+        insertData.push(post);
+      }
+    }
+    console.log(insertData);
+    console.log(`addToCartSeat:${addToCartSeat}`);
+
+    await conn.query(
+      "UPDATE concert_seat_info SET status ='cart' where id IN (?)",
+      [addToCartSeat]
+    );
+
+    await conn.query(
+      "INSERT INTO shopping_cart (concert_seat_id, status) VALUES ?",
+      [insertData]
+    );
+
+    await conn.query("COMMIT");
+    return {
+      concert_area_price_id,
+      seat_ids: { addToCartSeat },
     };
   } catch (error) {
     console.log(error);
@@ -378,4 +425,5 @@ module.exports = {
   chooseSeat,
   deleteSeat,
   rollBackChoose,
+  addToCart,
 };
