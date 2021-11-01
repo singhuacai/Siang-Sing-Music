@@ -76,27 +76,51 @@ if (concertAreaPriceId) {
 
   socket.on("NotifyRollbackSeat", (msg) => {
     msg = JSON.parse(msg);
-    console.log(msg, msg.seat_ids, msg.owner);
+    console.log(msg, msg.rollBackSeat, msg.owner);
     if (msg.owner === localStorage.getItem("UserCode")) {
-      for (let i = 0; i < msg.seat_ids.length; i++) {
+      for (let i = 0; i < msg.rollBackSeat.length; i++) {
         console.log(`yes!!`);
-        $(`#${msg.seat_ids[i]}`)
+        $(`#${msg.rollBackSeat[i]}`)
           .removeClass("you-selected")
           .addClass("not-selected");
-        $(`#${msg.seat_ids[i]}`).attr(
+        $(`#${msg.rollBackSeat[i]}`).attr(
           "src",
           "../images/logo/icon_chair_not_selected.gif"
         );
       }
     } else {
-      for (let i = 0; i < msg.seat_ids.length; i++) {
+      for (let i = 0; i < msg.rollBackSeat.length; i++) {
         console.log(`OPPS`);
-        $(`#${msg.seat_ids[i]}`)
+        $(`#${msg.rollBackSeat[i]}`)
           .removeClass("selected")
           .addClass("not-selected");
-        $(`#${msg.seat_ids[i]}`).attr(
+        $(`#${msg.rollBackSeat[i]}`).attr(
           "src",
           "../images/logo/icon_chair_not_selected.gif"
+        );
+      }
+    }
+  });
+
+  socket.on("NotifyAddToCart", (msg) => {
+    msg = JSON.parse(msg);
+    console.log(msg, msg.addToCartSeat, msg.owner);
+    if (msg.owner === localStorage.getItem("UserCode")) {
+      for (let i = 0; i < msg.addToCartSeat.length; i++) {
+        $(`#${msg.addToCartSeat[i]}`)
+          .removeClass("you-selected")
+          .addClass("cart");
+        $(`#${msg.addToCartSeat[i]}`).attr(
+          "src",
+          "../images/logo/icon_chair_cart.gif"
+        );
+      }
+    } else {
+      for (let i = 0; i < msg.addToCartSeat.length; i++) {
+        $(`#${msg.addToCartSeat[i]}`).removeClass("selected").addClass("cart");
+        $(`#${msg.addToCartSeat[i]}`).attr(
+          "src",
+          "../images/logo/icon_chair_cart.gif"
         );
       }
     }
@@ -207,7 +231,7 @@ if (concertAreaPriceId) {
               try {
                 await chooseSeat(countOfCartAndSold, id);
               } catch (err) {
-                console.log(err);
+                alert(err);
               }
             })();
           } else {
@@ -272,8 +296,8 @@ if (concertAreaPriceId) {
           },
           fail: function (res) {
             removeSeatFromChosenSeatsArray(seatId);
+            alert(`Error: ${res}.`);
             reject(false);
-            alert(`Error: ${res.responseText}.`);
           },
         });
       }
@@ -307,7 +331,7 @@ if (concertAreaPriceId) {
         },
         fail: function (res) {
           addSeatIntoChosenSeatsArray(seatId);
-          alert(`Error: ${res.responseText}.`);
+          alert(`Error: ${res}.`);
         },
       });
     });
@@ -315,9 +339,7 @@ if (concertAreaPriceId) {
 
   function rollBackChoose() {
     return new Promise((resolve, reject) => {
-      console.log(
-        `socketId:(client):${socketId}=====================================`
-      );
+      console.log(`socketId:(client):${socketId}=======================`);
       // 將剛剛選擇的座位rollback掉
       $.ajax({
         url: "/api/1.0/order/rollBackChoose",
@@ -408,7 +430,7 @@ if (concertAreaPriceId) {
         // ================================================
         // 倒數計時器(60秒)
         $(document).ready(function () {
-          let count = 30;
+          let count = 100;
           $("#notice").html(
             `<p>&nbsp;&nbsp; 請您於60秒內選好座位，並將選好的座位加入購物車，否則系統會將您導回活動頁 &nbsp;&nbsp;</p>`
           );
@@ -470,13 +492,15 @@ if (concertAreaPriceId) {
       contentType: "application/json;charset=utf-8",
       headers: {
         Authorization: `Bearer ${Authorization}`,
-        // SocketId: socketId,
+        SocketId: socketId,
       },
     })
       .done(function (res) {
         $(function () {
           console.log(res);
           console.log(res.addToCartSeat);
+
+          // 將所選位子加入購物車後，將 chosenSeats array 清空
           chosenSeats = [];
           for (let i = 0; i < res.addToCartSeat.length; i++) {
             $(`#${res.addToCartSeat[i]}`)
@@ -487,7 +511,7 @@ if (concertAreaPriceId) {
               "../images/logo/icon_chair_cart.gif"
             );
           }
-          // window.location.assign("/");
+          window.location.assign("/");
         });
       })
       .fail(function (res) {

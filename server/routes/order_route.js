@@ -31,6 +31,6 @@ router
 
 router
   .route("/order/addToCart")
-  .post(authentication() /*, parseSocketId()*/, wrapAsync(addToCart));
+  .post(authentication(), parseSocketId(), wrapAsync(addToCart));
 
 module.exports = router;

@@ -7,6 +7,7 @@ const {
   notifySeatSelected,
   notifySeatDeleted,
   notifyRollbackSeat,
+  notifyAddToCart,
 } = require("../../socket");
 
 const getPerformanceAndAreas = async (req, res) => {
@@ -185,7 +186,7 @@ const rollBackChoose = async (req, res) => {
     const msg = JSON.stringify({
       owner: userCode,
       concert_area_price_id: result.concert_area_price_id,
-      seat_ids: result.seat_ids.rollBackSeats,
+      rollBackSeat: result.rollBackSeat,
     });
     notifyRollbackSeat(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
     res.status(200).send(result);
@@ -196,7 +197,7 @@ const rollBackChoose = async (req, res) => {
 const addToCart = async (req, res) => {
   const { chosenSeats } = req.body;
   const userId = req.user.id;
-  // const userCode = req.user.user_code;
+  const userCode = req.user.user_code;
 
   if (!chosenSeats) {
     res.status(400).send({ error: "Request Error: chosenSeats is required." });
@@ -217,13 +218,12 @@ const addToCart = async (req, res) => {
     res.status(403).send({ error: result.error });
     return;
   } else {
-    // const msg = JSON.stringify({
-    //   owner: userCode,
-    //   concert_area_price_id: result.concert_area_price_id,
-    //   seat_ids: result.seat_ids.rollBackSeat,
-    // });
-    // notifyRollbackSeat(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
-    // res.status(200).send(result);
+    const msg = JSON.stringify({
+      owner: userCode,
+      concert_area_price_id: result.concert_area_price_id,
+      addToCartSeat: result.addToCartSeat,
+    });
+    notifyAddToCart(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
     res.status(200).send(result);
     return;
   }

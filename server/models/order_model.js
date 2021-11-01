@@ -359,7 +359,7 @@ const rollBackChoose = async (chosenSeats, userId) => {
     await conn.query("COMMIT");
     return {
       concert_area_price_id,
-      seat_ids: { rollBackSeat },
+      rollBackSeat,
     };
   } catch (error) {
     console.log(error);
