@@ -26,6 +26,6 @@ router
 
 router
   .route("/order/rollBackChoose")
-  .post(authentication(), wrapAsync(rollBackChoose));
+  .post(authentication(), parseSocketId(), wrapAsync(rollBackChoose));
 
 module.exports = router;

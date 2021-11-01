@@ -332,35 +332,18 @@ const rollBackChoose = async (chosenSeats, userId) => {
   try {
     await conn.query("START TRANSACTION");
     const queryStr =
-      "SELECT id, status, user_id FROM concert_seat_info WHERE id IN(?) ORDER BY id FOR UPDATE";
+      "SELECT id, status, user_id, concert_area_price_id FROM concert_seat_info WHERE id IN(?) ORDER BY id FOR UPDATE";
     const bindings = [chosenSeats];
     const [check] = await pool.query(queryStr, bindings);
 
-    //========= use setTimout function to test the race condition (below) ==================
-    /*
-    function promiseFn(num, time = 3 * 1000) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          num ? resolve(`${num}, 成功`) : reject("失敗");
-        }, time);
-      });
-    }
-    //======================================================================================
-    async function getData() {
-      const data1 = await promiseFn(1); // 因為 await，promise 函式被中止直到回傳
-      const data2 = await promiseFn(2);
-      console.log(data1, data2); // 1, 成功 2, 成功
-    }
-    await getData();
-    */
-    //========= use setTimout function to test the race condition (above) ==================
 
-    // TODO: 確認你撈出來的 userId 與前台傳過來的 userId 是同一個 => 再去 rollback 該使用者剛剛選起來的位置
-
+    // 確認你撈出來的 userId 與前台傳過來的 userId 是同一個 => 再去 rollback 該使用者剛剛選起來的位置
     let rollBackSeat = [];
+    let concert_area_price_id;
     for(let i = 0 ; i < check.length ; i++){
       if(check[i].user_id === userId && check[i].status ==='selected'){
         rollBackSeat.push(check[i].id);
+        concert_area_price_id = check[i].concert_area_price_id;
       }
     }
 
@@ -369,10 +352,11 @@ const rollBackChoose = async (chosenSeats, userId) => {
       [rollBackSeat]
     );
     
-   
+   console.log(`[rollBackSeat]:${rollBackSeat}`);
     await conn.query("COMMIT");
     return {
-      result: `Already rollback these seats!!`,
+      concert_area_price_id,
+      seat_ids: {rollBackSeat},
     };
   } catch (error) {
     console.log(error);

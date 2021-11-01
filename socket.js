@@ -8,14 +8,15 @@ const em = new events.EventEmitter();
 const SOCKET_EVENTS = {
     SEAT_SELECT: "NotifySeatSelect",
     SEAT_DELETE: "NotifySeatDelete",
-    CLIENT_SID: "ClientSocketId"
+    ROLLBACK_SEAT: "NotifyRollbackSeat",
+    CLIENT_SID: "ClientSocketId",
 };
 
 const BOARDCAST = {
     ALL_USERS: 1,
     ALL_USERS_IN_ROOM: 2,
     OTHER_USERS: 3,
-    MYSELF: 4
+    MYSELF: 4,
 }
 let io = null;
 
@@ -79,19 +80,34 @@ const socketConnect =  (server) => {
     
         socket.on('disconnect', () => {
             console.log(`user ${socket.id} disconnected`);
-            em.off(eventName, listener);
+            // em.off(eventName, listener);
         });
     })
 }
 
 const notifySeatSelected = (socketId, msg, target) => {
+    console.log(`notifySeatSelected_msg=======================`);
+    console.log(typeof msg);
+    console.log(msg);
     const eventName = getEventName(socketId);
+    console.log(`eventName(choose):==================================${eventName}`)
     em.emit(eventName, SOCKET_EVENTS.SEAT_SELECT, msg, target);
 }
 
 const notifySeatDeleted = (socketId, msg, target) => {
+    console.log(`notifySeatDeleted_msg=======================`);
+    console.log(msg);
     const eventName = getEventName(socketId);
+    console.log(`eventName(delete):==================================${eventName}`)
     em.emit(eventName, SOCKET_EVENTS.SEAT_DELETE, msg, target);
+}
+
+const notifyRollbackSeat = (socketId, msg, target) => {
+    console.log(`notifyRollbackSeat_msg=======================`);
+    console.log(msg);
+    const eventName = getEventName(socketId);
+    console.log(`eventName(rollback):==================================${eventName}`)
+    em.emit(eventName, SOCKET_EVENTS.ROLLBACK_SEAT, msg, target);
 }
 
 const socket_send = (socket, event, msg, target) => {
@@ -103,6 +119,7 @@ const socket_send = (socket, event, msg, target) => {
             break;
         case BOARDCAST.ALL_USERS_IN_ROOM:
             const room = getRoomName(socket.decoded.concertAreaPriceId);
+            console.log(`rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr========================`);
             console.log(`(ALL_USERS_IN_ROOM)socket.id:${socket.id}, Room: ${room}`);
             io.to(room).emit(event, msg);
             break;
@@ -126,4 +143,5 @@ module.exports = {
     socketConnect,
     notifySeatSelected,
     notifySeatDeleted,
+    notifyRollbackSeat,
 }

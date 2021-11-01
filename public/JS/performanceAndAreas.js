@@ -41,8 +41,13 @@ if (concertAreaPriceId) {
       $(`#${msg.seat_id}`).removeClass("not-selected").addClass("you-selected");
       $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_select.gif");
     }else{
-      $(`#${msg.seat_id}`).removeClass("not-selected").addClass("selected");
-      $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_selected.gif");
+      if($(`#${msg.seat_id}`).hasClass("not-selected")){
+        $(`#${msg.seat_id}`).removeClass("not-selected").addClass("selected");
+        $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_selected.gif");
+      }else if($(`#${msg.seat_id}`).hasClass("you-selected")){
+        $(`#${msg.seat_id}`).removeClass("you-selected").addClass("selected");
+        $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_selected.gif");
+      }
     }
   });
 
@@ -55,6 +60,24 @@ if (concertAreaPriceId) {
     }else{
       $(`#${msg.seat_id}`).removeClass("selected").addClass("not-selected");
       $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
+    }
+  });
+
+  socket.on("NotifyRollbackSeat",(msg) => {
+    msg = JSON.parse(msg);
+    console.log(msg, msg.seat_ids, msg.owner);
+    if(msg.owner === localStorage.getItem("UserCode")){
+      for(let i = 0 ; i < msg.seat_ids.length ; i++ ){
+        console.log(`yes!!`);
+        $(`#${msg.seat_ids[i]}`).removeClass("you-selected").addClass("not-selected");
+        $(`#${msg.seat_ids[i]}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
+      }
+    }else{
+      for(let i = 0 ; i < msg.seat_ids.length ; i++ ){
+        console.log(`OPPS`);
+        $(`#${msg.seat_ids[i]}`).removeClass("selected").addClass("not-selected");
+        $(`#${msg.seat_ids[i]}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
+      }
     }
   });
 
@@ -208,12 +231,12 @@ if (concertAreaPriceId) {
           headers: { 
             Authorization: `Bearer ${Authorization}`,
             SocketId: socketId
-           },
+          },
           success: function () {
-            $(`#${seatId}`)
-              .removeClass("not-selected")
-              .addClass("you-selected");
-            $(`#${seatId}`).attr("src", "../images/logo/icon_chair_select.gif");
+            // $(`#${seatId}`)
+            //   .removeClass("not-selected")
+            //   .addClass("you-selected");
+            // $(`#${seatId}`).attr("src", "../images/logo/icon_chair_select.gif");
             alert("已成功訂位!!!");
             resolve(true);
           },
@@ -245,11 +268,11 @@ if (concertAreaPriceId) {
           SocketId: socketId 
         },
         success: function () {
-          $(`#${seatId}`).removeClass("you-selected").addClass("not-selected");
-          $(`#${seatId}`).attr(
-            "src",
-            "../images/logo/icon_chair_not_selected.gif"
-          );
+          // $(`#${seatId}`).removeClass("you-selected").addClass("not-selected");
+          // $(`#${seatId}`).attr(
+          //   "src",
+          //   "../images/logo/icon_chair_not_selected.gif"
+          // );
           alert("已成功取消訂位");
         },
         fail: function (res) {
@@ -273,6 +296,7 @@ if (concertAreaPriceId) {
 
   function rollBackChoose() {
     return new Promise((resolve, reject) => {
+      console.log(`socketId:(client):${socketId}=====================================`);
       // 將剛剛選擇的座位rollback掉
         $.ajax({
           url: "/api/1.0/order/rollBackChoose",
@@ -281,8 +305,12 @@ if (concertAreaPriceId) {
           method: "POST",
           dataType: "json",
           contentType: "application/json;charset=utf-8",
-          headers: { Authorization: `Bearer ${Authorization}` },
-          success: function () {
+          headers: { 
+            Authorization: `Bearer ${Authorization}`,
+            SocketId: socketId
+          },
+          success: function (res) {
+            console.log(res);
             resolve(true);
           },
           fail: function (res) {
@@ -359,7 +387,7 @@ if (concertAreaPriceId) {
         // ================================================
         // 倒數計時器(60秒)
         $(document).ready(function () {
-          let count = 600;
+          let count = 30;
           $("#notice").html(
             `<p>&nbsp;&nbsp; 請您於60秒內選好座位，並將選好的座位加入購物車，否則系統會將您導回活動頁 &nbsp;&nbsp;</p>`
           );

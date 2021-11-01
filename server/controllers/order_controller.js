@@ -1,7 +1,7 @@
 const Order = require("../models/order_model");
 const moment = require("moment");
 const offset_hours = process.env.TIMEZONE_OFFSET || 8;
-const {BOARDCAST, SOCKET_EVENTS, notifySeatSelected, notifySeatDeleted} = require('../../socket');
+const {BOARDCAST, SOCKET_EVENTS, notifySeatSelected, notifySeatDeleted, notifyRollbackSeat} = require('../../socket');
 
 
 const getPerformanceAndAreas = async (req, res) => {
@@ -149,6 +149,7 @@ const chooseOrDeleteSeat = async (req, res) => {
 const rollBackChoose = async (req, res) => {
   const { chosenSeats } = req.body;
   const userId = req.user.id;
+  const userCode = req.user.user_code;
 
   if (!chosenSeats) {
     res.status(400).send({ error: "Request Error: chosenSeats is required." });
@@ -169,6 +170,8 @@ const rollBackChoose = async (req, res) => {
     res.status(403).send({ error: result.error });
     return;
   } else {
+    const msg = JSON.stringify({owner: userCode, concert_area_price_id: result.concert_area_price_id, seat_ids: result.seat_ids.rollBackSeat});
+    notifyRollbackSeat(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
     res.status(200).send(result);
     return;
   }
