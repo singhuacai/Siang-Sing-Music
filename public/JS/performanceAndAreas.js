@@ -19,64 +19,85 @@ var isZero = false;
 // })();
 
 if (concertAreaPriceId) {
-
   // socket.io
   let socketId = null;
   var socket = io({
-    query:{ concertAreaPriceId },
+    query: { concertAreaPriceId },
     auth: (cb) => {
-      cb({token: localStorage.getItem("Authorization")});
-    }
+      cb({ token: localStorage.getItem("Authorization") });
+    },
   });
 
-  socket.on("ClientSocketId",(msg) => {
-    console.log(`ClientSocketId : ${msg}`)
+  socket.on("ClientSocketId", (msg) => {
+    console.log(`ClientSocketId : ${msg}`);
     socketId = msg;
-  })
+  });
 
-  socket.on("NotifySeatSelect",(msg) => {
+  socket.on("NotifySeatSelect", (msg) => {
     msg = JSON.parse(msg);
     console.log(msg, msg.seat_id, msg.owner);
-    if(msg.owner === localStorage.getItem("UserCode")){
+    if (msg.owner === localStorage.getItem("UserCode")) {
       $(`#${msg.seat_id}`).removeClass("not-selected").addClass("you-selected");
       $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_select.gif");
-    }else{
-      if($(`#${msg.seat_id}`).hasClass("not-selected")){
+    } else {
+      if ($(`#${msg.seat_id}`).hasClass("not-selected")) {
         $(`#${msg.seat_id}`).removeClass("not-selected").addClass("selected");
-        $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_selected.gif");
-      }else if($(`#${msg.seat_id}`).hasClass("you-selected")){
+        $(`#${msg.seat_id}`).attr(
+          "src",
+          "../images/logo/icon_chair_selected.gif"
+        );
+      } else if ($(`#${msg.seat_id}`).hasClass("you-selected")) {
         $(`#${msg.seat_id}`).removeClass("you-selected").addClass("selected");
-        $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_selected.gif");
+        $(`#${msg.seat_id}`).attr(
+          "src",
+          "../images/logo/icon_chair_selected.gif"
+        );
       }
     }
   });
 
-  socket.on("NotifySeatDelete",(msg) => {
+  socket.on("NotifySeatDelete", (msg) => {
     msg = JSON.parse(msg);
     console.log(msg, msg.seat_id, msg.owner);
-    if(msg.owner === localStorage.getItem("UserCode")){
+    if (msg.owner === localStorage.getItem("UserCode")) {
       $(`#${msg.seat_id}`).removeClass("you-selected").addClass("not-selected");
-      $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
-    }else{
+      $(`#${msg.seat_id}`).attr(
+        "src",
+        "../images/logo/icon_chair_not_selected.gif"
+      );
+    } else {
       $(`#${msg.seat_id}`).removeClass("selected").addClass("not-selected");
-      $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
+      $(`#${msg.seat_id}`).attr(
+        "src",
+        "../images/logo/icon_chair_not_selected.gif"
+      );
     }
   });
 
-  socket.on("NotifyRollbackSeat",(msg) => {
+  socket.on("NotifyRollbackSeat", (msg) => {
     msg = JSON.parse(msg);
     console.log(msg, msg.seat_ids, msg.owner);
-    if(msg.owner === localStorage.getItem("UserCode")){
-      for(let i = 0 ; i < msg.seat_ids.length ; i++ ){
+    if (msg.owner === localStorage.getItem("UserCode")) {
+      for (let i = 0; i < msg.seat_ids.length; i++) {
         console.log(`yes!!`);
-        $(`#${msg.seat_ids[i]}`).removeClass("you-selected").addClass("not-selected");
-        $(`#${msg.seat_ids[i]}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
+        $(`#${msg.seat_ids[i]}`)
+          .removeClass("you-selected")
+          .addClass("not-selected");
+        $(`#${msg.seat_ids[i]}`).attr(
+          "src",
+          "../images/logo/icon_chair_not_selected.gif"
+        );
       }
-    }else{
-      for(let i = 0 ; i < msg.seat_ids.length ; i++ ){
+    } else {
+      for (let i = 0; i < msg.seat_ids.length; i++) {
         console.log(`OPPS`);
-        $(`#${msg.seat_ids[i]}`).removeClass("selected").addClass("not-selected");
-        $(`#${msg.seat_ids[i]}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
+        $(`#${msg.seat_ids[i]}`)
+          .removeClass("selected")
+          .addClass("not-selected");
+        $(`#${msg.seat_ids[i]}`).attr(
+          "src",
+          "../images/logo/icon_chair_not_selected.gif"
+        );
       }
     }
   });
@@ -87,11 +108,9 @@ if (concertAreaPriceId) {
     console.log(err.data); // { content: "Please retry later" }
   });
 
-
   $(document).ready(function () {
     $(document).bind("keydown", function (e) {
       e = window.event || e;
-
       // 阻擋使用者按 F5 刷新頁面
       if (e.keyCode == 116) {
         e.keyCode = 0;
@@ -100,21 +119,32 @@ if (concertAreaPriceId) {
     });
   });
 
+  window.onbeforeunload = function () {
+    (async function () {
+      try {
+        await rollBackChoose();
+      } catch (err) {
+        console.log(err);
+      }
+    })();
+    return undefined;
+  };
   // 新增座位 => 給指定座位id, 將該座位加入 chooseSeats array
-  function addSeatIntoChosenSeatsArray(id){
+  function addSeatIntoChosenSeatsArray(id) {
     chosenSeats.push(parseInt(id));
     console.log(`after_add:${chosenSeats}`);
-
   }
+
   // 刪除座位 => 給指定座位id, 將該座位移出 chooseSeats array
-  function removeSeatFromChosenSeatsArray(id){
+  function removeSeatFromChosenSeatsArray(id) {
     const index = chosenSeats.indexOf(parseInt(id));
-    console.log(`index:${index}`)
+    console.log(`index:${index}`);
     if (index > -1) {
       chosenSeats.splice(index, 1);
-    } 
-    return; 
+    }
+    return;
   }
+
   function renderSeats(res) {
     let row = 0;
     for (let i = 0; i < res.data.length; i++) {
@@ -223,14 +253,14 @@ if (concertAreaPriceId) {
           url: "/api/1.0/order/chooseOrDeleteSeat",
           data: JSON.stringify({
             seatStatus: 1,
-            concertSeatId: seatId
+            concertSeatId: seatId,
           }),
           method: "POST",
           dataType: "json",
           contentType: "application/json;charset=utf-8",
-          headers: { 
+          headers: {
             Authorization: `Bearer ${Authorization}`,
-            SocketId: socketId
+            SocketId: socketId,
           },
           success: function () {
             // $(`#${seatId}`)
@@ -263,9 +293,9 @@ if (concertAreaPriceId) {
         method: "POST",
         dataType: "json",
         contentType: "application/json;charset=utf-8",
-        headers: { 
-          Authorization: `Bearer ${Authorization}`, 
-          SocketId: socketId 
+        headers: {
+          Authorization: `Bearer ${Authorization}`,
+          SocketId: socketId,
         },
         success: function () {
           // $(`#${seatId}`).removeClass("you-selected").addClass("not-selected");
@@ -279,45 +309,36 @@ if (concertAreaPriceId) {
           addSeatIntoChosenSeatsArray(seatId);
           alert(`Error: ${res.responseText}.`);
         },
-      })
-    })
+      });
+    });
   }
-
-  window.onbeforeunload = function () {
-    (async function () {
-      try {
-        await rollBackChoose();
-      } catch (err) {
-        console.log(err);
-      }
-    })();
-    return undefined;
-  };
 
   function rollBackChoose() {
     return new Promise((resolve, reject) => {
-      console.log(`socketId:(client):${socketId}=====================================`);
+      console.log(
+        `socketId:(client):${socketId}=====================================`
+      );
       // 將剛剛選擇的座位rollback掉
-        $.ajax({
-          url: "/api/1.0/order/rollBackChoose",
-          data: JSON.stringify({ chosenSeats }),
-          async: true, 
-          method: "POST",
-          dataType: "json",
-          contentType: "application/json;charset=utf-8",
-          headers: { 
-            Authorization: `Bearer ${Authorization}`,
-            SocketId: socketId
-          },
-          success: function (res) {
-            console.log(res);
-            resolve(true);
-          },
-          fail: function (res) {
-            reject(false);
-            alert(`Error: ${res.responseText}.`);
-          },
-        });
+      $.ajax({
+        url: "/api/1.0/order/rollBackChoose",
+        data: JSON.stringify({ chosenSeats }),
+        async: true,
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json;charset=utf-8",
+        headers: {
+          Authorization: `Bearer ${Authorization}`,
+          SocketId: socketId,
+        },
+        success: function (res) {
+          console.log(res);
+          resolve(true);
+        },
+        fail: function (res) {
+          reject(false);
+          alert(`Error: ${res.responseText}.`);
+        },
+      });
     });
   }
 
@@ -424,7 +445,7 @@ if (concertAreaPriceId) {
           `
         );
         $("#add-to-cart").append(
-          `<button id = "add-to-cart-button" onclick = "">加入購物車</button>`
+          `<button id = "add-to-cart-button" onclick = "addToCart()">加入購物車</button>`
         );
       });
     })
@@ -437,6 +458,42 @@ if (concertAreaPriceId) {
         window.location.assign("/");
       }
     });
+
+  function addToCart() {
+    // 將剛剛選擇的座位addToCart
+    $.ajax({
+      url: "/api/1.0/order/addToCart",
+      data: JSON.stringify({ chosenSeats }),
+      async: true,
+      method: "POST",
+      dataType: "json",
+      contentType: "application/json;charset=utf-8",
+      headers: {
+        Authorization: `Bearer ${Authorization}`,
+        // SocketId: socketId,
+      },
+    })
+      .done(function (res) {
+        $(function () {
+          console.log(res);
+          console.log(res.addToCartSeat);
+          chosenSeats = [];
+          for (let i = 0; i < res.addToCartSeat.length; i++) {
+            $(`#${res.addToCartSeat[i]}`)
+              .removeClass("you-selected")
+              .addClass("you-cart");
+            $(`#${res.addToCartSeat[i]}`).attr(
+              "src",
+              "../images/logo/icon_chair_cart.gif"
+            );
+          }
+          // window.location.assign("/");
+        });
+      })
+      .fail(function (res) {
+        alert(`Error: ${res.responseText}.`);
+      });
+  }
 } else if (concertDateId) {
   $.ajax({
     url: `/api/1.0/order/performanceAndAreas?concertId=${concertId}&concertDateId=${concertDateId}`,
