@@ -132,7 +132,7 @@ const getSoldandCartCount = async (concertAreaPriceId, userId) => {
       ON cdi.concert_date_id = cap.concert_date_id
     INNER JOIN concert_seat_info csi
       ON cap.id = csi.concert_area_price_id
-    WHERE csi.user_id = ? AND csi.status !='not-selected' FOR UPDATE;
+    WHERE csi.user_id = ? AND csi.status in ('cart', 'sold') FOR UPDATE;
     `;
     const bindings = [concertAreaPriceId, userId];
     const [result] = await pool.query(queryStr, bindings);

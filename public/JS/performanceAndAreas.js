@@ -19,6 +19,21 @@ var isZero = false;
 // })();
 
 if (concertAreaPriceId) {
+  // 偵測頁面是否重新刷新
+  const pageAccessedByReload =
+    (window.performance.navigation &&
+      window.performance.navigation.type === 1) ||
+    window.performance
+      .getEntriesByType("navigation")
+      .map((nav) => nav.type)
+      .includes("reload");
+  // alert(pageAccessedByReload);
+
+  // 若在此頁重新刷新頁面 => 轉導到活動頁面
+  // if (pageAccessedByReload) {
+  //   window.location.assign(`/campaign.html?id=${concertId}`);
+  // }
+
   // socket.io
   let socketId = null;
   var socket = io({
@@ -170,6 +185,7 @@ if (concertAreaPriceId) {
   }
 
   function renderSeats(res) {
+    let countOfCartAndSold = res.countOfCartAndSold;
     let row = 0;
     for (let i = 0; i < res.data.length; i++) {
       if (parseInt(res.data[i].concert_area_seat_row) !== row) {
@@ -178,40 +194,72 @@ if (concertAreaPriceId) {
         );
         row++;
       }
-      if (res.data[i].status === "not-selected") {
+      const status = res.data[i].status;
+      if (status === "not-selected") {
         $(`#row-${res.data[i].concert_area_seat_row}`).append(
           `<td>
         <img src="../images/logo/icon_chair_not_selected.gif" class="not-selected" id="${res.data[i].concert_seat_id}" title ="" width="100%" >
         </td>`
         );
-      } else if (res.data[i].status === "selected") {
+      } else if (status === "selected") {
         $(`#row-${res.data[i].concert_area_seat_row}`).append(
           `<td><img src="../images/logo/icon_chair_selected.gif" class = "selected" id = "${res.data[i].concert_seat_id}" width="100%" ></td>`
         );
-      } else if (res.data[i].status === "you-selected") {
+      } else if (status === "you-selected" && pageAccessedByReload) {
         $(`#row-${res.data[i].concert_area_seat_row}`).append(
           `<td><img src="../images/logo/icon_chair_select.gif" class="you-selected" id = "${res.data[i].concert_seat_id}" width="100%"></td>`
         );
-      } else if (res.data[i].status === "cart") {
+        // 是否進入bug mode
+        alert(pageAccessedByReload);
+
+        // 進入時，若座位狀態已有"you-selected"，再打一次 API 讓他真的被選起來
+        addSeatIntoChosenSeatsArray(res.data[i].concert_seat_id);
+        $.ajax({
+          url: "/api/1.0/order/chooseOrDeleteSeat",
+          data: JSON.stringify({
+            seatStatus: 1,
+            concertSeatId: res.data[i].concert_seat_id,
+          }),
+          method: "POST",
+          dataType: "json",
+          contentType: "application/json;charset=utf-8",
+          headers: {
+            Authorization: `Bearer ${Authorization}`,
+            SocketId: socketId,
+          },
+          success: function () {
+            resolve(true);
+          },
+          fail: function (res) {
+            removeSeatFromChosenSeatsArray(res.data[i].concert_seat_id);
+            Swal.fire("Error", res, "error");
+            reject(false);
+          },
+        });
+      } else if (status === "you-selected" && !pageAccessedByReload) {
+        $(`#row-${res.data[i].concert_area_seat_row}`).append(
+          `<td><img src="../images/logo/icon_chair_select.gif" class="you-selected" id = "${res.data[i].concert_seat_id}" width="100%"></td>`
+        );
+      } else if (status === "cart") {
         $(`#row-${res.data[i].concert_area_seat_row}`).append(
           `<td><img src="../images/logo/icon_chair_cart.gif" class = "cart" id = "${res.data[i].concert_seat_id}" width="100%"></td>`
         );
-      } else if (res.data[i].status === "you-cart") {
+      } else if (status === "you-cart") {
         $(`#row-${res.data[i].concert_area_seat_row}`).append(
           `<td><img src="../images/logo/icon_chair_cart.gif" class = "you-cart" id = "${res.data[i].concert_seat_id}" width="100%"></td>`
         );
-      } else if (res.data[i].status === "sold") {
+      } else if (status === "sold") {
         $(`#row-${res.data[i].concert_area_seat_row}`).append(
           `<td><img src="../images/logo/icon_chair_sold.gif" class = "sold" id = "${res.data[i].concert_seat_id}" width="100%"></td>`
         );
-      } else if (res.data[i].status === "you-sold") {
+      } else if (status === "you-sold") {
         $(`#row-${res.data[i].concert_area_seat_row}`).append(
           `<td><img src="../images/logo/icon_chair_sold.gif" class = "you-sold" id = "${res.data[i].concert_seat_id}" width="100%"></td>`
         );
       }
 
       $(`#${res.data[i].concert_seat_id}`).click(
-        { param: res.countOfCartAndSold },
+        { param: countOfCartAndSold },
         handleClick
       );
     }
@@ -231,11 +279,19 @@ if (concertAreaPriceId) {
               try {
                 await chooseSeat(countOfCartAndSold, id);
               } catch (err) {
-                alert(err);
+                // alert(err);
+                Swal.fire("Error", res, "error");
               }
             })();
           } else {
-            alert("每人每場限購四張，您已達到選位上限!");
+            Swal.fire({
+              position: "center",
+              icon: "error",
+              width: 600,
+              title: "每人每場限購四張，您已達到選位上限!!!",
+              showConfirmButton: false,
+              timer: 1500,
+            });
           }
           break;
         case "you-selected":
@@ -244,7 +300,8 @@ if (concertAreaPriceId) {
             try {
               await cancelSeat(id);
             } catch (err) {
-              console.log(err);
+              // alert(err);
+              Swal.fire("Error", res, "error");
             }
           })();
           break;
@@ -269,38 +326,39 @@ if (concertAreaPriceId) {
   function chooseSeat(countOfCartAndSold, seatId) {
     return new Promise((resolve, reject) => {
       console.log("This seat is nobody selected");
-      if ($(".you-selected").length + countOfCartAndSold >= 4) {
-        alert("每人每場限購四張，您已達到選位上限!");
-      } else {
-        addSeatIntoChosenSeatsArray(seatId);
-        $.ajax({
-          url: "/api/1.0/order/chooseOrDeleteSeat",
-          data: JSON.stringify({
-            seatStatus: 1,
-            concertSeatId: seatId,
-          }),
-          method: "POST",
-          dataType: "json",
-          contentType: "application/json;charset=utf-8",
-          headers: {
-            Authorization: `Bearer ${Authorization}`,
-            SocketId: socketId,
-          },
-          success: function () {
-            // $(`#${seatId}`)
-            //   .removeClass("not-selected")
-            //   .addClass("you-selected");
-            // $(`#${seatId}`).attr("src", "../images/logo/icon_chair_select.gif");
-            alert("已成功訂位!!!");
-            resolve(true);
-          },
-          fail: function (res) {
-            removeSeatFromChosenSeatsArray(seatId);
-            alert(`Error: ${res}.`);
-            reject(false);
-          },
-        });
-      }
+      addSeatIntoChosenSeatsArray(seatId);
+      $.ajax({
+        url: "/api/1.0/order/chooseOrDeleteSeat",
+        data: JSON.stringify({
+          seatStatus: 1,
+          concertSeatId: seatId,
+        }),
+        method: "POST",
+        dataType: "json",
+        contentType: "application/json;charset=utf-8",
+        headers: {
+          Authorization: `Bearer ${Authorization}`,
+          SocketId: socketId,
+        },
+        success: function () {
+          // alert("已成功訂位!!!");
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "已成功訂位!!!",
+            showConfirmButton: false,
+            timer: 1000,
+          });
+          resolve(true);
+        },
+        fail: function (res) {
+          removeSeatFromChosenSeatsArray(seatId);
+          Swal.fire("Error", res, "error");
+          // alert(`Error: ${res}.`);
+
+          reject(false);
+        },
+      });
     });
   }
 
@@ -322,12 +380,15 @@ if (concertAreaPriceId) {
           SocketId: socketId,
         },
         success: function () {
-          // $(`#${seatId}`).removeClass("you-selected").addClass("not-selected");
-          // $(`#${seatId}`).attr(
-          //   "src",
-          //   "../images/logo/icon_chair_not_selected.gif"
-          // );
-          alert("已成功取消訂位");
+          // alert("已成功取消訂位");
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "已成功取消訂位!!!",
+            showConfirmButton: false,
+            timer: 1000,
+            timerProgressBar: true,
+          });
         },
         fail: function (res) {
           addSeatIntoChosenSeatsArray(seatId);
