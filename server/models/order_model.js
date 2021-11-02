@@ -425,6 +425,44 @@ const addToCart = async (chosenSeats, userId) => {
   }
 };
 
+const getCartStatus = async (userId) => {
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+    const queryStr = `
+    SELECT 
+    csi.id AS concertSeatId,
+    ci.concert_title,
+    ci.concert_location,
+    cd.concert_datetime,
+    cap.concert_area,
+    csi.concert_area_seat_row,
+    csi.concert_area_seat_column,
+    cap.ticket_price
+    FROM  
+    concert_info ci
+    INNER JOIN concert_date cd
+      ON ci.id = cd.concert_id
+    INNER JOIN concert_area_price cap
+      ON cd.id = cap.concert_date_id
+    INNER JOIN concert_seat_info csi
+      ON cap.id = csi.concert_area_price_id
+    WHERE csi.user_id = ? AND csi.status = 'cart' FOR UPDATE;
+    `;
+    const bindings = [userId];
+    const [result] = await conn.query(queryStr, bindings);
+    console.log("已取得購物車狀態!");
+    await conn.query("COMMIT");
+    return result;
+  } catch (error) {
+    console.log(error);
+    await conn.query("ROLLBACK");
+    return { error };
+  } finally {
+    await conn.release();
+  }
+};
+
 module.exports = {
   getConcertTitleAndAreaImage,
   checkConcertByConcertDateId,
@@ -437,4 +475,5 @@ module.exports = {
   deleteSeat,
   rollBackChoose,
   addToCart,
+  getCartStatus,
 };

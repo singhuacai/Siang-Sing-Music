@@ -36,7 +36,9 @@ const getPerformanceAndAreas = async (req, res) => {
   });
 
   // 給定 concertDateId => 查詢 Area 與 ticket prices
-  areaAndTicketPrices = await Order.getAreasAndTicketPrices(concertDateId);
+  const areaAndTicketPrices = await Order.getAreasAndTicketPrices(
+    concertDateId
+  );
   res.status(200).send({
     concert_title: result[0].concert_title,
     concert_location: result[0].concert_location,
@@ -229,6 +231,22 @@ const addToCart = async (req, res) => {
   }
 };
 
+const getCartStatus = async (req, res) => {
+  const userId = req.user.id;
+  // TODO: 利用 userId 到 DB 查詢：該使用者已加入購物車的演唱會座位資訊
+  const cartStatus = await Order.getCartStatus(userId);
+
+  cartStatus.map((v) => {
+    v.concert_datetime = moment(v.concert_datetime)
+      .add(offset_hours, "hours")
+      .format("YYYY-MM-DD HH:mm:ss");
+    return v;
+  });
+
+  res.status(200).send({ cartStatus });
+  return;
+};
+
 module.exports = {
   getPerformanceAndAreas,
   getSeatStatus,
@@ -236,4 +254,5 @@ module.exports = {
   chooseOrDeleteSeat,
   rollBackChoose,
   addToCart,
+  getCartStatus,
 };

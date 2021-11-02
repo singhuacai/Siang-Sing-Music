@@ -7,6 +7,7 @@ const {
   chooseOrDeleteSeat,
   rollBackChoose,
   addToCart,
+  getCartStatus,
 } = require("../controllers/order_controller");
 
 router
@@ -32,5 +33,9 @@ router
 router
   .route("/order/addToCart")
   .post(authentication(), parseSocketId(), wrapAsync(addToCart));
+
+router
+  .route("/order/cartStatus")
+  .get(authentication(), wrapAsync(getCartStatus));
 
 module.exports = router;
