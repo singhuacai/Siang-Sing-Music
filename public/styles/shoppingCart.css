@@ -27,6 +27,8 @@ hr.line-style {
 }
 
 #shopping-cart-title {
+  width: 150px;
+  text-align: center;
   font-size: 24px;
   font-weight: bold;
   background-color: rgb(148, 190, 8);
@@ -38,36 +40,66 @@ hr.line-style {
   margin: 50px auto 10px auto;
 }
 
-/* #choose-zone {
-  display: flex;
-  flex-direction: column;
-  margin-left: 50px;
-}
-
-#choose-zone-title {
-  font-weight: bold;
-  color: #000;
-  width: 200px;
-  font-size: 28px;
-  margin-bottom: 20px;
-}
- */
-/* ------------------------------------------- */
-/* .chair-style ul {
-  display: flex;
+/* table {
+  align-items: center;
 } */
 
-/* #count {
-  font-size: 28px;
-  font-weight: bold;
+table,
+td {
+  font-size: 20px;
+  border: 1px solid rgb(148, 190, 8);
+  text-align: center;
+  vertical-align: middle;
+  min-width: 250px;
+  height: 60px;
+  margin: auto;
 }
 
-#add-to-cart-button {
-  font-size: 28px;
-  width: 120%;
-  height: 120%;
+th {
+  vertical-align: middle;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+thead,
+tfoot {
+  height: 60px;
+  background-color: rgb(148, 190, 8);
+  color: #fff;
+}
+
+#column-name {
+  background-color: rgb(148, 190, 8);
+}
+
+.cart-remove-block {
+  min-width: 150px;
+}
+/* .remove-button {
+  font-size: 20px;
+  width: 50%;
+  height: 60%;
   border-color: rgb(255, 80, 80);
   border-radius: 5px;
+  background-color: #fff;
+  color: rgb(255, 80, 80);
+}
+
+.remove-button:hover {
   background-color: rgb(255, 80, 80);
   color: #fff;
 } */
+
+.remove-button {
+  width: 50px;
+}
+.remove-button:hover {
+  content: url("../images/logo/cart-remove-hover.png");
+}
+
+#sum {
+  font-size: 20px;
+  font-weight: bold;
+}
