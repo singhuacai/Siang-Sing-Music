@@ -340,6 +340,17 @@ if (concertAreaPriceId) {
           Authorization: `Bearer ${Authorization}`,
           SocketId: socketId,
         },
+        beforeSend: function () {
+          Swal.fire({
+            title: "座位預訂中...",
+            position: "center",
+            icon: "info",
+            showConfirmButton: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
+        },
         success: function () {
           // alert("已成功訂位!!!");
           Swal.fire({
@@ -378,6 +389,17 @@ if (concertAreaPriceId) {
         headers: {
           Authorization: `Bearer ${Authorization}`,
           SocketId: socketId,
+        },
+        beforeSend: function () {
+          Swal.fire({
+            title: "座位取消中...",
+            position: "center",
+            icon: "info",
+            showConfirmButton: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
         },
         success: function () {
           // alert("已成功取消訂位");
