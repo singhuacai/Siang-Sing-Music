@@ -247,6 +247,33 @@ const getCartStatus = async (req, res) => {
   return;
 };
 
+const removeItemFromCart = async (req, res) => {
+  const { deleteSeatId } = req.body;
+  const userId = req.user.id;
+  const userCode = req.user.user_code;
+
+  if (!deleteSeatId) {
+    res.status(400).send({ error: "Request Error: deleteSeatId is required." });
+    return;
+  }
+
+  // 利用 deleteSeatId 先到 concert_seat_info table 確認: 1. status 是否為 cart, 2.userId 是否與欲取消者相同
+  // 兩個條件均符合後，再到 shopping cart table, 針對 deleteSeatId 去找到對應的 concert_seat_id 將其 status 更改為 remove-from-cart
+  // res.status(200).send(result);
+
+  result = await Order.removeItemFromCart(deleteSeatId, userId);
+
+  if (result.error) {
+    res.status(403).send({ error: result.error });
+    return;
+  } else {
+    res
+      .status(200)
+      .send({ result: `Already remove the seat ${deleteSeatId} from cart!` });
+    return;
+  }
+};
+
 module.exports = {
   getPerformanceAndAreas,
   getSeatStatus,
@@ -255,4 +282,5 @@ module.exports = {
   rollBackChoose,
   addToCart,
   getCartStatus,
+  removeItemFromCart,
 };
