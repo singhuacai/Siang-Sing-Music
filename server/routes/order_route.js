@@ -41,6 +41,6 @@ router
 
 router
   .route("/order/removeItemFromCart")
-  .get(authentication(), wrapAsync(removeItemFromCart));
+  .post(authentication(), wrapAsync(removeItemFromCart));
 
 module.exports = router;
