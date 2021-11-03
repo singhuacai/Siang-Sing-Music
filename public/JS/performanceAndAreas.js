@@ -141,6 +141,27 @@ if (concertAreaPriceId) {
     }
   });
 
+  socket.on("NotifyRemoveFromCart", (msg) => {
+    console.log(msg, msg.removeFromCartSeat, msg.owner);
+    if (msg.owner === localStorage.getItem("UserCode")) {
+      $(`#${msg.removeFromCartSeat}`)
+        .removeClass("you-cart")
+        .addClass("not-selected");
+      $(`#${msg.removeFromCartSeat}`).attr(
+        "src",
+        "../images/logo/icon_chair_not_selected.gif"
+      );
+    } else {
+      $(`#${msg.removeFromCartSeat}`)
+        .removeClass("cart")
+        .addClass("not-selected");
+      $(`#${msg.removeFromCartSeat}`).attr(
+        "src",
+        "../images/logo/icon_chair_not_selected.gif"
+      );
+    }
+  });
+
   socket.on("connect_error", (err) => {
     console.log(err instanceof Error); // true
     console.log(err.message); // not authorized

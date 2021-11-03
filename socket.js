@@ -10,6 +10,7 @@ const SOCKET_EVENTS = {
   SEAT_DELETE: "NotifySeatDelete",
   ROLLBACK_SEAT: "NotifyRollbackSeat",
   ADD_TO_CART: "NotifyAddToCart",
+  REMOVE_FROM_CART: "NotifyRemoveFromCart",
   CLIENT_SID: "ClientSocketId",
 };
 
@@ -119,9 +120,16 @@ const notifyAddToCart = (socketId, msg, target) => {
   console.log(msg);
   const eventName = getEventName(socketId);
   console.log(
-    `eventName(rollback):==================================${eventName}`
+    `eventName(addtocart):==================================${eventName}`
   );
   em.emit(eventName, SOCKET_EVENTS.ADD_TO_CART, msg, target);
+};
+
+const notifyRemoveFromCart = (msg) => {
+  msg = JSON.parse(msg);
+  console.log(`concertAreaPriceId:${msg.concert_area_price_id}`);
+  const room = getRoomName(msg.concert_area_price_id);
+  io.to(room).emit(SOCKET_EVENTS.REMOVE_FROM_CART, msg);
 };
 
 const socket_send = (socket, event, msg, target) => {
@@ -158,4 +166,5 @@ module.exports = {
   notifySeatDeleted,
   notifyRollbackSeat,
   notifyAddToCart,
+  notifyRemoveFromCart,
 };

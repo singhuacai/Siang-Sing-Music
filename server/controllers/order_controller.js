@@ -3,11 +3,11 @@ const moment = require("moment");
 const offset_hours = process.env.TIMEZONE_OFFSET || 8;
 const {
   BOARDCAST,
-  SOCKET_EVENTS,
   notifySeatSelected,
   notifySeatDeleted,
   notifyRollbackSeat,
   notifyAddToCart,
+  notifyRemoveFromCart,
 } = require("../../socket");
 
 const getPerformanceAndAreas = async (req, res) => {
@@ -250,7 +250,6 @@ const getCartStatus = async (req, res) => {
 const removeItemFromCart = async (req, res) => {
   const { deleteSeatId } = req.body;
   const userId = req.user.id;
-  const userCode = req.user.user_code;
 
   if (!deleteSeatId) {
     res.status(400).send({ error: "Request Error: deleteSeatId is required." });
@@ -267,6 +266,11 @@ const removeItemFromCart = async (req, res) => {
     res.status(403).send({ error: result.error });
     return;
   } else {
+    const msg = JSON.stringify({
+      concert_area_price_id: result.concert_area_price_id,
+      removeFromCartSeat: result.remove_from_cart_seat_id,
+    });
+    notifyRemoveFromCart(msg);
     res
       .status(200)
       .send({ result: `Already remove the seat ${deleteSeatId} from cart!` });

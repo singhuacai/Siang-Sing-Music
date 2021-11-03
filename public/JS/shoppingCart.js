@@ -22,8 +22,13 @@ $.ajax({
 })
   .done(function (res) {
     $(function () {
-      // 購物車內有東西
-      if (res.cartStatus.length !== 0) {
+
+      if (res.cartStatus.length === 0) {
+        // 購物車是空的
+        $("#cart-empty-text").show();
+        $("#cart-empty-text").text("購物車空空的~~~快點去搶票吧!GO!GO!");
+      } else {
+        // 購物車內有東西
         $("#cart-table").show();
         let concertSeatId;
         for (let i = 0; i < res.cartStatus.length; i++) {
@@ -58,10 +63,6 @@ $.ajax({
         );
 
         flushSumPrice();
-      } else {
-        // 購物車是空的
-        $("#cart-empty-text").show();
-        $("#cart-empty-text").text("購物車空空的~~~快點去搶票吧!GO!GO!");
       }
     });
   })
@@ -78,7 +79,6 @@ $.ajax({
 // 將加入購物車中的票移除
 function deleteSeat(event) {
   const concertSeatId = event.data.param;
-  console.log(`deleteSeatId:${concertSeatId}`);
   $.ajax({
     url: "/api/1.0/order/removeItemFromCart",
     data: JSON.stringify({ deleteSeatId: concertSeatId }),
@@ -113,7 +113,7 @@ function deleteSeat(event) {
         });
 
         // 若文件中沒有 ".cart-item" => 顯示下方通知
-        if (!$(window).hasClass(".cart-item")) {
+        if (!$("tr").hasClass("cart-item")) {
           $("#cart-table").hide();
           $("#cart-empty-text").show();
           $("#cart-empty-text").text("購物車空空的~~~快點去搶票吧!GO!GO!");
@@ -135,7 +135,6 @@ function deleteSeat(event) {
 function flushSumPrice() {
   let sum = 0;
   $(".price").each(function () {
-    console.log(this);
     sum += parseInt($(this).text().substr(3));
   });
   $(".price-sum ").text("NT$ " + sum);

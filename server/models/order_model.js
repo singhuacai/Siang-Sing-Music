@@ -470,7 +470,11 @@ const removeItemFromCart = async (deleteSeatId, userId) => {
     const [result] = await conn.query(
       `
       SELECT 
-        csi.concert_area_price_id, csi.status AS seat_status, csi.user_id , sc.id AS shopping_cart_id, sc.status AS status_in_cart
+        csi.concert_area_price_id,
+        csi.status AS seat_status, 
+        csi.user_id , 
+        sc.id AS shopping_cart_id, 
+        sc.status AS status_in_cart
       FROM concert_seat_info csi
       INNER JOIN shopping_cart sc
         ON csi.id = sc.concert_seat_id 
