@@ -1,4 +1,4 @@
-let Authorization = localStorage.getItem("Authorization");
+const Authorization = localStorage.getItem("Authorization");
 
 $("#order-flow-step").html(
   `<img
@@ -22,7 +22,6 @@ $.ajax({
 })
   .done(function (res) {
     $(function () {
-
       if (res.cartStatus.length === 0) {
         // 購物車是空的
         $("#cart-empty-text").show();
@@ -134,8 +133,12 @@ function deleteSeat(event) {
 //重新整理總費用
 function flushSumPrice() {
   let sum = 0;
+  let total = 0;
+  let freight = 50;
   $(".price").each(function () {
     sum += parseInt($(this).text().substr(3));
   });
   $(".price-sum ").text("NT$ " + sum);
+  total = sum + freight;
+  $(".total-price").text(`${sum}(票價) + ${freight}(系統服務費) = ${total}`);
 }

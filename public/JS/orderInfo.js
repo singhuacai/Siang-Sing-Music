@@ -1,6 +1,6 @@
 $(function () {
   $("#twzipcode").twzipcode({
-    css: ["addr-county", "addr-area", "addr-zip"],
+    css: ["recipient-addr-county", "recipient-addr-area", "recipient-addr-zip"],
   });
 });
 

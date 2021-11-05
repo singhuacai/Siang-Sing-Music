@@ -85,7 +85,7 @@
                 <div id = "collection">
                   <div class = "radio"> 
                     <label>
-                      <input type="radio" name="options" id="OR1" value="1" placeholder checked="checked">
+                      <input type="radio" name="options" id="OR1" checked="checked">
                         國內郵寄
                         <div class="description">
                           <div id = "MAIL_DELIVER" class="well" >
@@ -99,17 +99,17 @@
                                     注意：請確認郵寄地址是否正確再行完成訂購。請務必填妥真實姓名、寄送地址、聯絡資料，並確認白天有人收掛號信件，以利票券順利寄達。
                                   </p>
                                   <label id="lbName" class="control-label">＊收件人：</label>
-                                  <input id = "name" type="text" value="蔡幸樺" class="form-control">
+                                  <input id = "recipient-name" type="text" class="form-control">
                                   <label id="lbPhone" class="control-label">＊聯絡電話：</label>
-                                  <input id = "phone" type="text" value="0988726995" class="form-control">
+                                  <input id = "recipient-phone" type="text" class="form-control">
                                 </div>
                               </div>
                               <div class="form-inline">
                                 <div class="form-group">
-                                  <div id="address">
+                                  <div id="recipient-address">
                                     <label id="lbAddress" class="control-label">＊郵寄地址：</label>
                                     <div id="twzipcode"></div>
-                                    <input id = "detail-address" type="text" placeholder="詳細地址" class="form-control" required>
+                                    <input id = "recipient-detail-address" type="text" placeholder="詳細地址" class="form-control" required>
                                   </div>
                                   
                                 </div>
@@ -143,15 +143,57 @@
               <div clss = "panel-body"> 
                 <div class = "basic-info-of-the-orderer-block">
                   <ul class = "list-02">
-                    <li id = "orderer-name">姓名：user1</li>
-                    <li id = "orderer-phone">手機：0912345678</li>
-                    <li id = "orderer-email">電子郵件：test@gmail.com</li>
+                    <li id = "orderer-name"></li>
+                    <li id = "orderer-phone"></li>
+                    <li id = "orderer-email"></li>
                   </ul> 
                 </div>
             </div>
           </div>
 
-          
+          <!-- 3. 付款 -->
+          <div id="get-ticket-method" class="content">
+            <div class="panel panel-skyblue">
+              <div class="panel-heading"> 3.付款方式 </div>
+              <div clss = "panel-body">
+                <div id = "collection">
+                  <div class = "radio">  
+                    <input type="radio" name="options" checked="checked">
+                      一般信用卡(VISA、MASTER、JCB、UnionPay)
+                    <div class="description">
+                      <div id = "payment" class="well" > 
+                        <div class="form">
+                          <div class="field">
+                            <label class="field__name">總金額 (NT$)</label>
+                            <div class="total-price"></div>
+                          </div>
+                          <div class="field">
+                            <label class="field__name" for="card">信用卡號碼</label>
+                            <div class="field__input">
+                              <div class="tpfield" id="card-number"></div>
+                            </div>
+                          </div>
+                          <div class="field">
+                            <label class="field__name" for="expire">有效期限</label>
+                            <div class="field__input">
+                              <div class="tpfield" id="card-expiration-date"></div>
+                            </div>
+                          </div>
+                          <div class="field">
+                            <label class="field__name" for="ccv">安全碼</label>
+                            <div class="field__input">
+                              <div class="tpfield" id="card-ccv"></div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div> 
+            </div>
+          </div>
+
+          <div class="confirm-payment-button content" id="submit">確認付款</div>
         </div> 
       </main>
     </div>

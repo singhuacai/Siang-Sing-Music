@@ -2,7 +2,8 @@
   flex-grow: 1; /*可佔滿垂直剩餘的空間*/
 }
 
-#choose-area {
+/* cart-info */
+#cart-info {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -97,20 +98,6 @@ tfoot {
 .cart-remove-block {
   min-width: 160px;
 }
-/* .remove-button {
-  font-size: 20px;
-  width: 50%;
-  height: 60%;
-  border-color: rgb(255, 80, 80);
-  border-radius: 5px;
-  background-color: #fff;
-  color: rgb(255, 80, 80);
-}
-
-.remove-button:hover {
-  background-color: rgb(255, 80, 80);
-  color: #fff;
-} */
 
 .remove-button {
   width: 50px;
