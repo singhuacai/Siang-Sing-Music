@@ -5,10 +5,14 @@
     <link href="../styles/reset.css" rel="stylesheet" />
     <link href="../styles/header.css" rel="stylesheet" />
     <link href="../styles/shoppingCart.css" rel="stylesheet" />
+    <link href="../styles/orderInfo.css" rel="stylesheet" />
+    <link href="../styles/checkout.css" rel="stylesheet" />
     <link href="../styles/footer.css" rel="stylesheet" />
     <script src="jquery-3.6.0.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.9/sweetalert2.all.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-twzipcode@1.7.14/jquery.twzipcode.min.js"></script>
+    <script src="https://js.tappaysdk.com/tpdirect/v5.7.0"></script> 
   </head>
 
   <body>
@@ -41,7 +45,7 @@
       </header>
 
       <main>
-        <div id="choose-area">
+        <div id="cart-info">
           <div id="order-flow-step"></div>
 
           <hr class="line-style content" />
@@ -69,6 +73,86 @@
             <!-- -------------------- -->
           </div>
         </div>
+
+        <div id="checkout-info">
+          <div id="checkout-title" class="content">結帳專區</div>
+
+          <!-- 1. 選擇取票方式 -->
+          <div id="get-ticket-method" class="content">
+            <div class="panel panel-skyblue">
+              <div class="panel-heading">1.選擇取票方式</div>
+              <div clss = "panel-body">
+                <div id = "collection">
+                  <div class = "radio"> 
+                    <label>
+                      <input type="radio" name="options" id="OR1" value="1" placeholder checked="checked">
+                        國內郵寄
+                        <div class="description">
+                          <div id = "MAIL_DELIVER" class="well" >
+                            <legend>
+                              <label>收件人資料</label>
+                            </legend>
+                            <fieldset class = "fieldset">
+                              <div class="form-inline">
+                                <div class="form-group">
+                                  <p class = "text-danger">
+                                    注意：請確認郵寄地址是否正確再行完成訂購。請務必填妥真實姓名、寄送地址、聯絡資料，並確認白天有人收掛號信件，以利票券順利寄達。
+                                  </p>
+                                  <label id="lbName" class="control-label">＊收件人：</label>
+                                  <input id = "name" type="text" value="蔡幸樺" class="form-control">
+                                  <label id="lbPhone" class="control-label">＊聯絡電話：</label>
+                                  <input id = "phone" type="text" value="0988726995" class="form-control">
+                                </div>
+                              </div>
+                              <div class="form-inline">
+                                <div class="form-group">
+                                  <div id="address">
+                                    <label id="lbAddress" class="control-label">＊郵寄地址：</label>
+                                    <div id="twzipcode"></div>
+                                    <input id = "detail-address" type="text" placeholder="詳細地址" class="form-control" required>
+                                  </div>
+                                  
+                                </div>
+                              </div>
+                            </fieldset>
+                          </div>
+                        </div> 
+                        <span name="options-desc" style="color:Red;"></span>
+                        
+                        <!--description-->
+                        <div class="bs-callout"> 
+                            <ul class="list-01">
+                              <li>每筆訂單需收取<span style="color: #cc0000;">系統服務費50元</span>，於網路結帳時繳付。</li>
+                              <li>請確認您所要購買的節目皆選購完畢後，再執行結帳，以免重複收取費用。</li>
+                              <li>訂購成功後票券將於7個工作天內以掛號郵寄至您的收件地址（僅限國內本島及離島）。</li>
+                              <!-- <li><a href="https://www.ticket.com.tw/application/UTK01/UTK0108_01.aspx?TYPE=5" target="_blank">&lt;&lt;詳細說明&gt;&gt;</a></li> -->
+                            </ul>
+                        </div><!--bs-callout-->
+                    </label>
+                </div>
+              </div> 
+            </div>
+          </div>
+
+          <!-- ====================================== -->
+
+          <!-- 2. 訂購人基本資料 -->
+          <div id = "basic-info-of-the-orderer" class = "content">
+            <div class = "panel panel-skyblue">
+              <div class = "panel-heading">2.訂購人基本資料</div>
+              <div clss = "panel-body"> 
+                <div class = "basic-info-of-the-orderer-block">
+                  <ul class = "list-02">
+                    <li id = "orderer-name">姓名：user1</li>
+                    <li id = "orderer-phone">手機：0912345678</li>
+                    <li id = "orderer-email">電子郵件：test@gmail.com</li>
+                  </ul> 
+                </div>
+            </div>
+          </div>
+
+          
+        </div> 
       </main>
     </div>
 
@@ -85,5 +169,7 @@
       <div class="rights">© 2021. All rights reserved.</div>
     </footer>
     <script src="../JS/shoppingCart.js"></script>
+    <script src="../JS/orderInfo.js"></script>
+    <script src="../JS/checkout.js"></script>
   </body>
 </html>

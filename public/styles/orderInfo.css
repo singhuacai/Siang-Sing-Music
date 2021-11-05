@@ -1,0 +1,150 @@
+/* checkout-info */
+
+#checkout-title {
+  width: 150px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  background-color: #5bc0de;
+  color: aliceblue;
+  border-radius: 3px;
+}
+
+#checkout-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+}
+
+#checkout-block {
+  display: block;
+}
+
+.panel {
+  width: 1700px;
+  margin-bottom: 20px;
+  background-color: #fff;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.panel-skyblue {
+  border-color: #5bc0de;
+}
+
+.panel-skyblue > .panel-heading {
+  color: #fff;
+  background-color: #5bc0de;
+  border-color: #5bc0de;
+  font-size: 20px;
+}
+
+.panel-heading {
+  padding: 10px 15px;
+  border-bottom: 1px solid transparent;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.panel-body {
+  padding: 15px;
+  display: table;
+}
+
+#collection {
+  padding: 20px;
+}
+
+.radio {
+  position: relative;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+.radio label {
+  min-height: 20px;
+  padding-left: 20px;
+  margin-bottom: 0;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.fieldset {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.well {
+  width: 1600px;
+  min-height: 20px;
+  padding: 19px;
+  margin: 20px auto 20px;
+  background-color: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  border-radius: 4px;
+}
+.text-danger {
+  color: #a94442;
+  margin-top: 20px;
+  margin-left: 30px;
+  margin-bottom: 50px;
+}
+
+.form-inline .form-group {
+  display: inline-block;
+  margin-bottom: 15px;
+  vertical-align: middle;
+}
+
+/* ======== 收件人資訊 ======== */
+#name,
+#phone {
+  height: 40px;
+  text-align: center;
+  font-size: 20px;
+}
+
+#name {
+  width: 150px;
+}
+
+#phone {
+  width: 300px;
+}
+/* ======== TWzipcode ======== */
+
+#address {
+  display: flex;
+}
+
+.addr-county,
+.addr-area,
+.addr-zip {
+  color: #000;
+  height: 40px;
+  margin-top: 15px;
+  margin-left: 5px;
+  margin-right: 5px;
+  text-align: center;
+  font-size: 20px;
+}
+.addr-county {
+  width: 150px;
+}
+.addr-area {
+  width: 150px;
+}
+.addr-zip {
+  width: 150px;
+}
+#detail-address {
+  width: 400px;
+  height: 40px;
+  margin-top: 15px;
+  margin-left: 5px;
+  margin-right: 5px;
+  text-align: center;
+  font-size: 20px;
+}
