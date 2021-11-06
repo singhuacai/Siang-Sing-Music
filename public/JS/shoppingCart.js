@@ -19,17 +19,29 @@ $.ajax({
     dataType: "json",
     contentType: "application/json;charset=utf-8",
     headers: { Authorization: `Bearer ${Authorization}` },
+    beforeSend: function () {
+        Swal.fire({
+            title: "購物車狀態載入中...",
+            position: "center",
+            icon: "info",
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            },
+        });
+    },
 })
     .done(function (res) {
         $(function () {
+            swal.close();
             console.log(res);
             if (res.cartStatus.length === 0) {
                 // 購物車是空的
+                $("#checkout-info div").hide();
                 $("#cart-empty-text").show();
                 $("#cart-empty-text").text("購物車空空的~~~快點去搶票吧!GO!GO!");
             } else {
                 // 購物車內有東西
-                $("#cart-table").show();
                 let concertSeatId;
                 let shoppingCartId;
                 for (let i = 0; i < res.cartStatus.length; i++) {
@@ -39,29 +51,27 @@ $.ajax({
 
                     $("#cart-concent").append(
                         `
-            <tr class = "cart-item" id = "item-of-cart-${shoppingCartId}">
-              <td class = "concert-title">${cartStatus.concert_title}</td>
-              <td class = "concert-date-time">${cartStatus.concert_datetime}</td>
-              <td class = "concert-location">${cartStatus.concert_location}</td>
-              <td class = "concert-seat">${cartStatus.concert_area} 區  ${cartStatus.concert_area_seat_row}排 ${cartStatus.concert_area_seat_column}號</td>
-              <td class = "price">NT$ ${cartStatus.ticket_price}</td>
-              <td class="cart-remove-block"><img src="../images/logo/cart-remove.png" id = "seat-${concertSeatId}-delete" class = "remove-button" width="20%" title="刪除"></td>
-            </tr>
-            `
+                        <tr class = "cart-item" id = "item-of-cart-${shoppingCartId}">
+                        <td class = "concert-title">${cartStatus.concert_title}</td>
+                        <td class = "concert-date-time">${cartStatus.concert_datetime}</td>
+                        <td class = "concert-location">${cartStatus.concert_location}</td>
+                        <td class = "concert-seat">${cartStatus.concert_area} 區  ${cartStatus.concert_area_seat_row}排 ${cartStatus.concert_area_seat_column}號</td>
+                        <td class = "price">NT$ ${cartStatus.ticket_price}</td>
+                        <td class="cart-remove-block"><img src="../images/logo/cart-remove.png" id = "seat-${concertSeatId}-delete" class = "remove-button" width="20%" title="刪除"></td>
+                        </tr>
+                    `
                     );
 
                     // 為每一個刪除鈕註冊事件
                     $(`#seat-${concertSeatId}-delete`).click({ param: concertSeatId }, deleteSeat);
                 }
                 // 合計總費用區塊
-                $("#cart-concent").append(
-                    `<tr id="sum">
-          <td colspan="4"> 合計 </td>
-          <td colspan="2" class = "price-sum"></td>
-        </tr>
-        `
-                );
-
+                $("#cart-concent").append(`
+                    <tr id="sum">
+                    <td colspan="4"> 合計 </td>
+                    <td colspan="2" class = "price-sum"></td>
+                    </tr>
+                `);
                 flushSumPrice();
             }
         });
