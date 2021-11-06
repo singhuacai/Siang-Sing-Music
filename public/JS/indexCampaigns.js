@@ -1,19 +1,16 @@
 $.ajax({
-  url: "/api/1.0/concerts/campaigns",
-  method: "GET",
-  dataType: "json",
+    url: "/api/1.0/concerts/campaigns",
+    method: "GET",
+    dataType: "json",
 })
-  .done(function (res) {
-    $(function () {
-      console.log(res);
-      for (let i = 0; i < res.data.length; i++) {
-        const start_date = res.data[i].concert_datetime[0].split(" ")[0];
-        const end_date =
-          res.data[i].concert_datetime[
-            res.data[i].concert_datetime.length - 1
-          ].split(" ")[0];
+    .done(function (res) {
+        $(function () {
+            console.log(res);
+            for (let i = 0; i < res.data.length; i++) {
+                const start_date = res.data[i].concert_datetime[0].split(" ")[0];
+                const end_date = res.data[i].concert_datetime[res.data[i].concert_datetime.length - 1].split(" ")[0];
 
-        let campaignHTML = `
+                let campaignHTML = `
           <a class="campaign" href="/campaign.html?id=${res.data[i].id}">
             <div class="campaign-image">
                 <img src="${res.data[i].concert_main_image}" alt="campaign-main-image">
@@ -24,10 +21,10 @@ $.ajax({
         </a>
           `;
 
-        $("#campaigns").append(campaignHTML);
-      }
+                $("#campaigns").append(campaignHTML);
+            }
+        });
+    })
+    .fail(function (res) {
+        alert(`Error: ${res.responseText}.`);
     });
-  })
-  .fail(function (res) {
-    alert(`Error: ${res.responseText}.`);
-  });

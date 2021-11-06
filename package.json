@@ -1,31 +1,36 @@
 {
-  "name": "ticketing-system",
-  "version": "1.0.0",
-  "description": "\"# ticketing_system\"",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/singhuacai/ticketing_system.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/singhuacai/ticketing_system/issues"
-  },
-  "homepage": "https://github.com/singhuacai/ticketing_system#readme",
-  "dependencies": {
-    "bcrypt": "^5.0.1",
-    "cors": "^2.8.5",
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
-    "moment": "^2.29.1",
-    "mysql2": "^2.3.2",
-    "socket.io": "^4.3.1",
-    "validator": "^13.6.0"
-  }
+    "name": "ticketing-system",
+    "version": "1.0.0",
+    "description": "\"# ticketing_system\"",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "format": "prettier --write \"**/*.+(js|json)\""
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/singhuacai/ticketing_system.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/singhuacai/ticketing_system/issues"
+    },
+    "homepage": "https://github.com/singhuacai/ticketing_system#readme",
+    "dependencies": {
+        "bcrypt": "^5.0.1",
+        "cors": "^2.8.5",
+        "dotenv": "^10.0.0",
+        "express": "^4.17.1",
+        "got": "^11.8.2",
+        "jsonwebtoken": "^8.5.1",
+        "moment": "^2.29.1",
+        "mysql2": "^2.3.2",
+        "socket.io": "^4.3.1",
+        "validator": "^13.6.0"
+    },
+    "devDependencies": {
+        "prettier": "^2.4.1"
+    }
 }
