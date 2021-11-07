@@ -17,14 +17,17 @@ $("#order-flow-step").html(
     width="800px"
   />`
 );
+
 if (keys.length !== 1) {
     alert("Error: URL is wrong!");
     window.location.assign("/");
 }
+
 if (!mainOrderCode) {
     alert("Error: number is required!");
     window.location.assign("/");
 }
+
 // 取得訂票結果
 $.ajax({
     url: `/api/1.0/order/orderResult?mainOrderCode=${mainOrderCode}`,
