@@ -4,4 +4,22 @@ $(function () {
     });
 });
 
-// console.log($(".addr-county").val());
+// 取得訂購之會員的基本資料
+$.ajax({
+    url: `/api/1.0/user/profile`,
+    method: "GET",
+    dataType: "json",
+    headers: { Authorization: `Bearer ${Authorization}` },
+})
+    .done(function (res) {
+        console.log(res);
+        $(function () {
+            $("#orderer-name").text(`姓名 : ${res.data.name}`);
+            $("#orderer-phone").text(`手機 : ${res.data.phone}`);
+            $("#orderer-email").text(`電子郵件 : ${res.data.email}`);
+        });
+    })
+    .fail(function (res) {
+        alert(`Error: ${res.responseText}.`);
+        window.location.assign("/profile.html");
+    });

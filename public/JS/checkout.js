@@ -51,26 +51,6 @@ function setupCard() {
 setupSdk();
 setupCard();
 
-// 取得訂購之會員的基本資料
-$.ajax({
-    url: `/api/1.0/user/profile`,
-    method: "GET",
-    dataType: "json",
-    headers: { Authorization: `Bearer ${Authorization}` },
-})
-    .done(function (res) {
-        console.log(res);
-        $(function () {
-            $("#orderer-name").text(`姓名 : ${res.data.name}`);
-            $("#orderer-phone").text(`手機 : ${res.data.phone}`);
-            $("#orderer-email").text(`電子郵件 : ${res.data.email}`);
-        });
-    })
-    .fail(function (res) {
-        alert(`Error: ${res.responseText}.`);
-        window.location.assign("/profile.html");
-    });
-
 $("#submit").click(async () => {
     // 1. 確認有 token
     if (!Authorization) {
@@ -94,12 +74,15 @@ $("#submit").click(async () => {
     // 未填寫收件人資訊 => alert!
     if (!recipientName) {
         alert("您未填寫收件人姓名");
+        return;
     }
     if (!recipientPhone) {
         alert("您未填寫收件人手機");
+        return;
     }
     if (!recipientAddress) {
         alert("您未填寫收件地址");
+        return;
     }
 
     // 3. 確認信用卡資訊均有填寫 => alert 錯誤訊息

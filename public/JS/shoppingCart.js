@@ -33,7 +33,7 @@ $.ajax({
 })
     .done(function (res) {
         $(function () {
-            swal.close();
+            Swal.close();
             console.log(res);
             if (res.cartStatus.length === 0) {
                 // 購物車是空的
@@ -49,6 +49,7 @@ $.ajax({
                     concertSeatId = cartStatus.concertSeatId;
                     shoppingCartId = cartStatus.shoppingCartId;
 
+                    $("#cart-table").show();
                     $("#cart-concent").append(
                         `
                         <tr class = "cart-item" id = "item-of-cart-${shoppingCartId}">
