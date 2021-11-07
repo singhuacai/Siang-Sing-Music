@@ -4,8 +4,8 @@ $("#order-flow-step").html(
     `<img
     id="order-flow-step-img"
     src="../images/order_flow/Step3.png"
-    alt="step1-ChooseArea"
-    title="step1-ChooseArea" 
+    alt="step3-ChooseArea"
+    title="step3-ChooseArea" 
     width="800px"
   />`
 );
@@ -50,7 +50,7 @@ $.ajax({
                     shoppingCartId = cartStatus.shoppingCartId;
 
                     $("#cart-table").show();
-                    $("#cart-concent").append(
+                    $("#cart-content").append(
                         `
                         <tr class = "cart-item" id = "item-of-cart-${shoppingCartId}">
                         <td class = "concert-title">${cartStatus.concert_title}</td>
@@ -70,7 +70,7 @@ $.ajax({
                     );
                 }
                 // 合計總費用區塊
-                $("#cart-concent").append(`
+                $("#cart-content").append(`
                     <tr id="sum">
                     <td colspan="4"> 合計 </td>
                     <td colspan="2" class = "price-sum"></td>

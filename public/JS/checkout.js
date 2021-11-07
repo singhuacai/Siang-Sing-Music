@@ -134,18 +134,34 @@ $("#submit").click(async () => {
             Authorization: `Bearer ${Authorization}`,
             "Content-type": "application/json",
         },
+        beforeSend: function () {
+            if (data) {
+                Swal.fire({
+                    title: "結帳中，請勿離開此頁...",
+                    position: "center",
+                    icon: "info",
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+            }
+        },
     })
         .done(function (res) {
             $(function () {
-                console.log(res);
+                Swal.close();
                 const mainOrderCode = res.mainOrderCode;
-                alert(mainOrderCode);
                 // alert(`成功訂購! 您的訂單編號為：${order_code}`);
-                // window.location.assign("/thankyou.html");
+                window.location.assign(`/thankyou.html?number=${mainOrderCode}`);
             });
         })
         .fail(function (res) {
-            console.log(`Error: ${res.responseText}.`);
+            Swal.fire({
+                title: JSON.parse(res.responseText).error,
+                icon: "error",
+                confirmButtonText: "Cool",
+            });
         });
 });
 
