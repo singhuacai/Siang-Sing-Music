@@ -420,9 +420,7 @@ const addToCart = async (chosenSeats, userId) => {
 };
 
 const getCartStatus = async (userId) => {
-    const conn = await pool.getConnection();
     try {
-        await conn.query("START TRANSACTION");
         const queryStr = `
         SELECT
         sc.id AS shoppingCartId,
@@ -444,19 +442,16 @@ const getCartStatus = async (userId) => {
           ON cap.id = csi.concert_area_price_id
         INNER JOIN shopping_cart sc
           ON csi.id = sc.concert_seat_id
-        WHERE csi.user_id = ? AND csi.status = 'cart' FOR UPDATE;
+        WHERE csi.user_id = ? AND csi.status = 'cart' AND sc.status = "add-to-cart" FOR UPDATE;
         `;
         const bindings = [userId];
-        const [result] = await conn.query(queryStr, bindings);
+        const [result] = await pool.query(queryStr, bindings);
         console.log("已取得購物車狀態!");
-        await conn.query("COMMIT");
+
         return result;
     } catch (error) {
         console.log(error);
-        await conn.query("ROLLBACK");
         return { error };
-    } finally {
-        await conn.release();
     }
 };
 
@@ -539,6 +534,7 @@ const checkout = async (data, user) => {
         await conn.query("START TRANSACTION");
         let queryStr = `
           SELECT 
+            csi.concert_area_price_id,
             csi.id AS concert_seat_id,
             csi.user_id,
             csi.status AS concert_seat_status,
@@ -561,6 +557,7 @@ const checkout = async (data, user) => {
         // 1. 確認你撈出來的 userId 與前台傳過來的 user.id 是同一個
         // 2. 再加上 concert_seat_status = "cart" 與 shopping_cart_status = "add_to_cart"
         let orderSeatId = [];
+        let concertAreaPriceIds = [];
         for (let i = 0; i < check.length; i++) {
             if (
                 check[i].user_id === user.id &&
@@ -568,6 +565,7 @@ const checkout = async (data, user) => {
                 check[i].shopping_cart_status === "add-to-cart"
             ) {
                 orderSeatId.push(check[i].concert_seat_id);
+                concertAreaPriceIds.push(check[i].concert_area_price_id);
             }
         }
 
@@ -692,7 +690,11 @@ const checkout = async (data, user) => {
         await conn.query("INSERT INTO payment SET ?", bindings);
 
         await conn.query("COMMIT");
-        return { mainOrderCode };
+        return {
+            mainOrderCode,
+            concertAreaPriceIds,
+            orderSeatId,
+        };
     } catch (error) {
         console.log(error);
         await conn.query("ROLLBACK");

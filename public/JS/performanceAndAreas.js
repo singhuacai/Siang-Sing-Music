@@ -121,6 +121,18 @@ if (concertAreaPriceId) {
         }
     });
 
+    socket.on("NotifyRemoveToOrder", (msg) => {
+        msg = JSON.parse(msg);
+        console.log(msg, msg.removeToOrderSeat, msg.owner);
+        if (msg.owner === localStorage.getItem("UserCode")) {
+            $(`#${msg.removeToOrderSeat}`).removeClass("you-cart").addClass("you-sold");
+            $(`#${msg.removeToOrderSeat}`).attr("src", "../images/logo/icon_chair_sold.gif");
+        } else {
+            $(`#${msg.removeToOrderSeat}`).removeClass("cart").addClass("sold");
+            $(`#${msg.removeToOrderSeat}`).attr("src", "../images/logo/icon_chair_sold.gif");
+        }
+    });
+
     socket.on("connect_error", (err) => {
         console.log(err instanceof Error); // true
         console.log(err.message); // not authorized
@@ -176,8 +188,8 @@ if (concertAreaPriceId) {
             if (status === "not-selected") {
                 $(`#row-${res.data[i].concert_area_seat_row}`).append(
                     `<td>
-        <img src="../images/logo/icon_chair_not_selected.gif" class="not-selected" id="${res.data[i].concert_seat_id}" title ="" width="100%" >
-        </td>`
+                    <img src="../images/logo/icon_chair_not_selected.gif" class="not-selected" id="${res.data[i].concert_seat_id}" title ="" width="100%" >
+                    </td>`
                 );
             } else if (status === "selected") {
                 $(`#row-${res.data[i].concert_area_seat_row}`).append(
@@ -435,24 +447,24 @@ if (concertAreaPriceId) {
 
                 $("#content-block").html(
                     `
-          <div id="concert-seats" class="content concert-seats">
-              <table id="seats-table" class="table">
-                <tbody id="seats-table-list"></tbody>
-              </table>
-            </div>
-            <div class="content chair-style"></div>
-            <div id="add-to-cart" class="content"></div>
-          `
+                    <div id="concert-seats" class="content concert-seats">
+                        <table id="seats-table" class="table">
+                            <tbody id="seats-table-list"></tbody>
+                        </table>
+                    </div>
+                    <div class="content chair-style"></div>
+                    <div id="add-to-cart" class="content"></div>
+                    `
                 );
 
                 $("#order-flow-step").html(
                     `<img
-          id="order-flow-step-img"
-          src="../images/order_flow/Step2.png"
-          alt="step2-ChooseArea"
-          title="step2-ChooseArea"
-          width="800px"
-        />`
+                        id="order-flow-step-img"
+                        src="../images/order_flow/Step2.png"
+                        alt="step2-ChooseArea"
+                        title="step2-ChooseArea"
+                        width="800px"
+                    />`
                 );
                 $("#concert-title").text(`${res.data[0].concert_title}`);
                 $("#time-location-block").html(
@@ -515,14 +527,14 @@ if (concertAreaPriceId) {
 
                 $(".chair-style").html(
                     `
-          <ul>
-            <li><img src="../images/logo/icon_chair_not_selected.gif" width="40" height="40" alt="空位"/> 空位 </li>
-            <li><img src="../images/logo/icon_chair_sold.gif" width="40" height="40" alt="已售出"/> 已售出 </li>
-            <li><img src="../images/logo/icon_chair_selected.gif" width="40" height="40" alt="已被他人選擇"/> 已被他人選擇 </li>
-            <li><img src="../images/logo/icon_chair_select.gif" width="40" height="40" alt="已被您選擇"/> 已被您選擇 </li>
-            <li><img src="../images/logo/icon_chair_cart.gif" width="40" height="40" alt="已加入購物車" /> 已加入購物車 </li>
-          </ul>
-          `
+                    <ul>
+                        <li><img src="../images/logo/icon_chair_not_selected.gif" width="40" height="40" alt="空位"/> 空位 </li>
+                        <li><img src="../images/logo/icon_chair_sold.gif" width="40" height="40" alt="已售出"/> 已售出 </li>
+                        <li><img src="../images/logo/icon_chair_selected.gif" width="40" height="40" alt="已被他人選擇"/> 已被他人選擇 </li>
+                        <li><img src="../images/logo/icon_chair_select.gif" width="40" height="40" alt="已被您選擇"/> 已被您選擇 </li>
+                        <li><img src="../images/logo/icon_chair_cart.gif" width="40" height="40" alt="已加入購物車" /> 已加入購物車 </li>
+                    </ul>
+                    `
                 );
                 $("#add-to-cart").append(
                     `<button id = "add-to-cart-button" onclick = "addToCart()">加入購物車</button>`
@@ -552,12 +564,23 @@ if (concertAreaPriceId) {
                 Authorization: `Bearer ${Authorization}`,
                 SocketId: socketId,
             },
+            beforeSend: function () {
+                if (chosenSeats.length !== 0) {
+                    Swal.fire({
+                        title: "座位加入購物車中，請稍後...",
+                        position: "center",
+                        icon: "info",
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                    });
+                }
+            },
         })
             .done(function (res) {
                 $(function () {
-                    console.log(res);
-                    console.log(res.addToCartSeat);
-
+                    Swal.close();
                     // 將所選位子加入購物車後，將 chosenSeats array 清空
                     chosenSeats = [];
                     for (let i = 0; i < res.addToCartSeat.length; i++) {
@@ -568,7 +591,11 @@ if (concertAreaPriceId) {
                 });
             })
             .fail(function (res) {
-                alert(`Error: ${res.responseText}.`);
+                Swal.fire({
+                    title: JSON.parse(res.responseText).error,
+                    icon: "error",
+                    confirmButtonText: "Cool",
+                });
             });
     }
 } else if (concertDateId) {
@@ -583,25 +610,25 @@ if (concertAreaPriceId) {
             $(function () {
                 $("#content-block").html(
                     `
-            <div id="concert-area-image-and-choose-zone" class="content">
-              <div id="concert-area-image"></div>
-              <div id="choose-zone">
-                <div id="choose-zone-title"></div>
-                <div id="concert-zone-price-qty-list">
-                  <ul id="concert-zone-price-qty"></ul>
-                </div>
-              </div>
-            </div>
-          `
+                        <div id="concert-area-image-and-choose-zone" class="content">
+                        <div id="concert-area-image"></div>
+                        <div id="choose-zone">
+                            <div id="choose-zone-title"></div>
+                            <div id="concert-zone-price-qty-list">
+                            <ul id="concert-zone-price-qty"></ul>
+                            </div>
+                        </div>
+                        </div>
+                    `
                 );
                 $("#order-flow-step").html(
                     `<img
-          id="order-flow-step-img"
-          src="../images/order_flow/Step1.png"
-          alt="step1-ChooseArea"
-          title="step1-ChooseArea"
-          width="800px"
-        />`
+                    id="order-flow-step-img"
+                    src="../images/order_flow/Step1.png"
+                    alt="step1-ChooseArea"
+                    title="step1-ChooseArea"
+                    width="800px"
+                    />`
                 );
 
                 $("#concert-title").text(`${res.concert_title}`);
@@ -622,20 +649,20 @@ if (concertAreaPriceId) {
                     if (parseInt(res.area_and_ticket_prices[i].total_seats) === 0) {
                         $("#concert-zone-price-qty").append(
                             `
-          <li id='${concertAreaPriceId}' class ="area-list">
-            <div class = "concert-zone-price-qty">${concert_area}  NT$${ticket_price}   已無空座位可選</div>
-          </li>
-          `
+                            <li id='${concertAreaPriceId}' class ="area-list">
+                                <div class = "concert-zone-price-qty">${concert_area}  NT$${ticket_price}   已無空座位可選</div>
+                            </li>
+                            `
                         );
                     } else {
                         $("#concert-zone-price-qty").append(
                             `
-          <li id='${concertAreaPriceId}' class ="area-list">
-            <a href="/order.html?concertId=${concertId}&concertDateId=${concertDateId}&concertAreaPriceId=${concertAreaPriceId}">
-              <div class="concert-zone-price-qty" id = "${concert_area}">${concert_area} NT$${ticket_price}   剩餘 ${total_seats} 個空位</div>
-            </a>
-          </li>
-          `
+                            <li id='${concertAreaPriceId}' class ="area-list">
+                                <a href="/order.html?concertId=${concertId}&concertDateId=${concertDateId}&concertAreaPriceId=${concertAreaPriceId}">
+                                <div class="concert-zone-price-qty" id = "${concert_area}">${concert_area} NT$${ticket_price}   剩餘 ${total_seats} 個空位</div>
+                                </a>
+                            </li>
+                            `
                         );
                     }
                 }

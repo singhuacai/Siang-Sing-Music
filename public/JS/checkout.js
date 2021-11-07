@@ -138,7 +138,7 @@ $("#submit").click(async () => {
         .done(function (res) {
             $(function () {
                 console.log(res);
-                const mainOrderCode = res.result.mainOrderCode;
+                const mainOrderCode = res.mainOrderCode;
                 alert(mainOrderCode);
                 // alert(`成功訂購! 您的訂單編號為：${order_code}`);
                 // window.location.assign("/thankyou.html");

@@ -8,6 +8,7 @@ const {
     notifyRollbackSeat,
     notifyAddToCart,
     notifyRemoveFromCart,
+    notifyRemoveToOrder,
 } = require("../../socket");
 
 const getPerformanceAndAreas = async (req, res) => {
@@ -237,6 +238,7 @@ const getCartStatus = async (req, res) => {
 const removeItemFromCart = async (req, res) => {
     const { deleteSeatId } = req.body;
     const userId = req.user.id;
+    const userCode = req.user.user_code;
 
     if (!deleteSeatId) {
         res.status(400).send({ error: "Request Error: deleteSeatId is required." });
@@ -254,6 +256,7 @@ const removeItemFromCart = async (req, res) => {
         return;
     } else {
         const msg = JSON.stringify({
+            owner: userCode,
             concert_area_price_id: result.concert_area_price_id,
             removeFromCartSeat: result.remove_from_cart_seat_id,
         });
@@ -266,6 +269,8 @@ const removeItemFromCart = async (req, res) => {
 const checkout = async (req, res) => {
     const { data } = req.body;
     const user = req.user;
+    const userCode = req.user.user_code;
+
     if (!data) {
         res.status(400).send({ error: "Request Error: Data of order is required." });
         return;
@@ -275,7 +280,13 @@ const checkout = async (req, res) => {
         res.status(403).send({ error: result.error });
         return;
     } else {
-        res.status(200).send({ result });
+        const msg = JSON.stringify({
+            owner: userCode,
+            concertAreaPriceIds: result.concertAreaPriceIds,
+            removeToOrderSeat: result.orderSeatId,
+        });
+        notifyRemoveToOrder(msg);
+        res.status(200).send({ mainOrderCode: result.mainOrderCode });
         return;
     }
 };

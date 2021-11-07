@@ -64,7 +64,10 @@ $.ajax({
                     );
 
                     // 為每一個刪除鈕註冊事件
-                    $(`#seat-${concertSeatId}-delete`).click({ param: concertSeatId }, deleteSeat);
+                    $(`#seat-${concertSeatId}-delete`).click(
+                        { param1: concertSeatId, param2: shoppingCartId },
+                        deleteSeat
+                    );
                 }
                 // 合計總費用區塊
                 $("#cart-concent").append(`
@@ -89,7 +92,8 @@ $.ajax({
 
 // 將加入購物車中的票移除
 function deleteSeat(event) {
-    const concertSeatId = event.data.param;
+    const concertSeatId = event.data.param1;
+    const shoppingCartId = event.data.param2;
     $.ajax({
         url: "/api/1.0/order/removeItemFromCart",
         data: JSON.stringify({ deleteSeatId: concertSeatId }),
@@ -112,7 +116,7 @@ function deleteSeat(event) {
         .done(function (res) {
             $(function () {
                 console.log(res);
-                $(`#item-of-seat-${concertSeatId}`).remove();
+                $(`#item-of-cart-${shoppingCartId}`).remove();
                 flushSumPrice();
                 // alert("已成功將票從購物車移除!!!");
                 Swal.fire({
@@ -126,6 +130,7 @@ function deleteSeat(event) {
                 // 若文件中沒有 ".cart-item" => 顯示下方通知
                 if (!$("tr").hasClass("cart-item")) {
                     $("#cart-table").hide();
+                    $("#checkout-info div").hide();
                     $("#cart-empty-text").show();
                     $("#cart-empty-text").text("購物車空空的~~~快點去搶票吧!GO!GO!");
                 }
