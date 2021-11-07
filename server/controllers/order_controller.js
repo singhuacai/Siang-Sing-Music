@@ -291,6 +291,34 @@ const checkout = async (req, res) => {
     }
 };
 
+const getOrderResult = async (req, res) => {
+    const { mainOrderCode } = req.query;
+    const userId = req.user.id;
+    if (mainOrderCode) {
+        //TODO: 利用 mainOrderCode => 訂票結果
+        result = await Order.getOrderResultByOrderNum(mainOrderCode, userId);
+
+        result.map((v) => {
+            v.concert_datetime = moment(v.concert_datetime).add(offset_hours, "hours").format("YYYY-MM-DD HH:mm:ss");
+            return v;
+        });
+    } else {
+        //TODO: 利用 userId => 所有訂票結果
+        result = await Order.getOrderResultByUserId(userId);
+        result.map((v) => {
+            v.concert_datetime = moment(v.concert_datetime).add(offset_hours, "hours").format("YYYY-MM-DD HH:mm:ss");
+            return v;
+        });
+    }
+    if (result.error) {
+        res.status(403).send({ error: result.error });
+        return;
+    } else {
+        res.status(200).send({ orderResult: result });
+        return;
+    }
+};
+
 module.exports = {
     getPerformanceAndAreas,
     getSeatStatus,
@@ -301,4 +329,5 @@ module.exports = {
     getCartStatus,
     removeItemFromCart,
     checkout,
+    getOrderResult,
 };

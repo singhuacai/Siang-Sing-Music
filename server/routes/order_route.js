@@ -11,6 +11,7 @@ const {
     getCartStatus,
     removeItemFromCart,
     checkout,
+    getOrderResult,
 } = require("../controllers/order_controller");
 
 router.route("/order/performanceAndAreas").get(authentication(), wrapAsync(getPerformanceAndAreas));
@@ -30,5 +31,7 @@ router.route("/order/cartStatus").get(authentication(), wrapAsync(getCartStatus)
 router.route("/order/removeItemFromCart").post(authentication(), wrapAsync(removeItemFromCart));
 
 router.route("/order/checkout").post(authentication(role.ALL), wrapAsync(checkout));
+
+router.route("/order/orderResult").get(authentication(role.ALL), wrapAsync(getOrderResult));
 
 module.exports = router;

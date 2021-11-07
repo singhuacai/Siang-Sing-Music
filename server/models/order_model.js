@@ -442,7 +442,7 @@ const getCartStatus = async (userId) => {
           ON cap.id = csi.concert_area_price_id
         INNER JOIN shopping_cart sc
           ON csi.id = sc.concert_seat_id
-        WHERE csi.user_id = ? AND csi.status = 'cart' AND sc.status = "add-to-cart" FOR UPDATE;
+        WHERE csi.user_id = ? AND csi.status = 'cart' AND sc.status = "add-to-cart";
         `;
         const bindings = [userId];
         const [result] = await pool.query(queryStr, bindings);
@@ -704,6 +704,90 @@ const checkout = async (data, user) => {
     }
 };
 
+const getOrderResultByOrderNum = async (mainOrderCode, userId) => {
+    try {
+        const queryStr = `
+          SELECT
+            sc.id AS shoppingCartId,
+            csi.id AS concertSeatId,
+            ci.concert_title,
+            ci.concert_location,
+            cd.concert_datetime,
+            cap.concert_area,
+            csi.concert_area_seat_row,
+            csi.concert_area_seat_column,
+            cap.ticket_price
+          FROM  
+          concert_info ci
+          INNER JOIN concert_date cd
+            ON ci.id = cd.concert_id
+          INNER JOIN concert_area_price cap
+            ON cd.id = cap.concert_date_id
+          INNER JOIN concert_seat_info csi
+            ON cap.id = csi.concert_area_price_id
+          INNER JOIN shopping_cart sc
+            ON csi.id = sc.concert_seat_id
+          INNER JOIN sub_order so
+            ON sc.id = so.shopping_cart_id
+          INNER JOIN main_order mo
+            ON so.main_order_id = mo.id
+          WHERE mo.main_order_code = ? AND csi.status = 'sold' AND sc.status = "remove-to-order" AND csi.user_id = ?;
+        `;
+        const bindings = [mainOrderCode, userId];
+        const [result] = await pool.query(queryStr, bindings);
+
+        return result;
+    } catch (error) {
+        console.log(error);
+        return { error };
+    }
+};
+
+const getOrderResultByUserId = async (userId) => {
+    try {
+        const queryStr = `
+        SELECT
+        mo.main_order_code,
+        mo.order_status,
+        JSON_ARRAYAGG(
+        JSON_OBJECT(
+          "concert_title", ci.concert_title,
+          "concert_location", ci.concert_location,
+          "concert_datetime", cd.concert_datetime,
+          "shoppingCartId", sc.id,
+          "concertSeatId", csi.id,
+          "concert_area", cap.concert_area,
+          "row", csi.concert_area_seat_row,
+          "column", csi.concert_area_seat_column,
+          "ticket_price",cap.ticket_price
+        )) AS ticket_info
+        FROM  
+        concert_info ci
+        INNER JOIN concert_date cd
+          ON ci.id = cd.concert_id
+        INNER JOIN concert_area_price cap
+          ON cd.id = cap.concert_date_id
+        INNER JOIN concert_seat_info csi
+          ON cap.id = csi.concert_area_price_id
+        INNER JOIN shopping_cart sc
+          ON csi.id = sc.concert_seat_id
+        INNER JOIN sub_order so
+          ON sc.id = so.shopping_cart_id
+        INNER JOIN main_order mo
+          ON so.main_order_id = mo.id
+        WHERE csi.status = 'sold' AND sc.status = "remove-to-order" AND csi.user_id = ?
+        GROUP BY mo.main_order_code, mo.order_status;
+        `;
+        const bindings = [userId];
+        const [result] = await pool.query(queryStr, bindings);
+
+        return result;
+    } catch (error) {
+        console.log(error);
+        return { error };
+    }
+};
+
 const payOrderByPrime = async function (tappayKey, prime, order, user) {
     let res = await got.post("https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime", {
         headers: {
@@ -743,4 +827,6 @@ module.exports = {
     getCartStatus,
     removeItemFromCart,
     checkout,
+    getOrderResultByOrderNum,
+    getOrderResultByUserId,
 };
