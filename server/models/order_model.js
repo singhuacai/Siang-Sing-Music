@@ -749,6 +749,7 @@ const getOrderResultByUserId = async (userId) => {
         SELECT
         mo.main_order_code,
         mo.order_status,
+        mo.created_at,
         JSON_ARRAYAGG(
         JSON_OBJECT(
           "concert_title", ci.concert_title,
@@ -776,7 +777,8 @@ const getOrderResultByUserId = async (userId) => {
         INNER JOIN main_order mo
           ON so.main_order_id = mo.id
         WHERE csi.status = 'sold' AND sc.status = "remove-to-order" AND csi.user_id = ?
-        GROUP BY mo.main_order_code, mo.order_status;
+        GROUP BY mo.main_order_code, mo.order_status,mo.created_at
+        ORDER BY mo.created_at DESC;
         `;
         const bindings = [userId];
         const [result] = await pool.query(queryStr, bindings);

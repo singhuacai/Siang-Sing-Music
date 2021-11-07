@@ -306,7 +306,12 @@ const getOrderResult = async (req, res) => {
         //TODO: 利用 userId => 所有訂票結果
         result = await Order.getOrderResultByUserId(userId);
         result.map((v) => {
-            v.concert_datetime = moment(v.concert_datetime).add(offset_hours, "hours").format("YYYY-MM-DD HH:mm:ss");
+            v.ticket_info.map((v) => {
+                v.concert_datetime = moment(v.concert_datetime)
+                    .add(offset_hours, "hours")
+                    .format("YYYY-MM-DD HH:mm:ss");
+            });
+            v.created_at = moment(v.created_at).add(offset_hours, "hours").format("YYYY-MM-DD HH:mm:ss");
             return v;
         });
     }
