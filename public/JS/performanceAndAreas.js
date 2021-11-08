@@ -19,6 +19,9 @@ var isZero = false;
 // })();
 
 if (concertAreaPriceId) {
+  // 限制使用者當已進入購物車頁面時，不能透過"上一頁"回到此頁
+  window.history.forward(1);
+
   // 偵測頁面是否重新刷新
   const pageAccessedByReload =
     (window.performance.navigation &&

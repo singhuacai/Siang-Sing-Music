@@ -11,6 +11,7 @@ $.ajax({
     $(function () {
       $("#add-signin-block").hide();
       $("#add-signup-block").hide();
+      $("#formSignIn").hide();
       $("#userform").show();
       $("#profile_image").show();
       $("#user_name").show();

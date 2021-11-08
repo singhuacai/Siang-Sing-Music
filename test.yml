@@ -1,0 +1,15 @@
+config:
+  target: "http://ec2-18-188-66-2.us-east-2.compute.amazonaws.com"
+  # target: "http://ec2-18-117-211-28.us-east-2.compute.amazonaws.com"
+  http:
+    pool: 20
+    timeout: 20
+  phases:
+    - duration: 20
+      arrivalRate: 130
+scenarios:
+  - flow:
+      - get:
+          headers:
+            Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm92aWRlciI6Im5hdGl2ZSIsIm5hbWUiOiJ1c2VyMSIsImVtYWlsIjoiMTIzQGdtYWlsLmNvbSIsInBob25lIjoiMDkxMjM0NTY3OCIsInBpY3R1cmUiOiIvaW1hZ2VzL3Byb2ZpbGUvZGVmYXVsdF91c2VyX3Byb2ZpbGUucG5nIiwiZXhwaXJlc0luIjoiMjU5MjAwMCIsImlhdCI6MTYzNjM4MDkyOH0.Jf34aqQCnbUFwUFPXPmokz5cXDRPJt8BGQRGlIBM5LU"
+          url: "/api/1.0/order/seatStatus?concertId=1&concertDateId=1&concertAreaPriceId=1"
