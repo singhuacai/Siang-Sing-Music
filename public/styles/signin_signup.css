@@ -40,11 +40,11 @@
 }
 
 .formSignUp {
-  margin: 20px auto 25px;
+  margin: -160px auto 25px;
 }
 
 .formSignIn {
-  margin: 25px auto;
+  margin: -130px auto 25px;
 }
 
 #signUpButton,
@@ -89,6 +89,7 @@
   font-size: 12px;
   display: flex;
   justify-content: center;
+  margin-bottom: 30px;
 }
 
 #add-signup-link,
