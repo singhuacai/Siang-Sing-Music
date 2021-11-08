@@ -55,7 +55,12 @@ setupCard();
 $("#submit").click(async () => {
   // 1. 確認有 token
   if (!Authorization) {
-    alert("No token");
+    Swal.fire({
+      title: "No token",
+      icon: "error",
+      showConfirmButton: false,
+      timer: 1000,
+    });
     return;
   }
 
@@ -74,21 +79,41 @@ $("#submit").click(async () => {
 
   // 未填寫收件人資訊 => alert!
   if (!recipientName) {
-    alert("您未填寫收件人姓名");
+    Swal.fire({
+      title: "您未填寫收件人姓名",
+      icon: "error",
+      showConfirmButton: false,
+      timer: 1000,
+    });
     return;
   }
   if (!recipientPhone) {
-    alert("您未填寫收件人手機");
+    Swal.fire({
+      title: "您未填寫收件人手機",
+      icon: "error",
+      showConfirmButton: false,
+      timer: 1000,
+    });
     return;
   }
   if (!recipientAddress) {
-    alert("您未填寫收件地址");
+    Swal.fire({
+      title: "您未填寫收件地址",
+      icon: "error",
+      showConfirmButton: false,
+      timer: 1000,
+    });
     return;
   }
 
   // 3. 確認信用卡資訊均有填寫 => alert 錯誤訊息
   if (!canGetPrime()) {
-    alert(cannotGetPrimeReason());
+    Swal.fire({
+      title: cannotGetPrimeReason(),
+      icon: "error",
+      showConfirmButton: false,
+      timer: 1000,
+    });
     return;
   }
 
@@ -153,7 +178,6 @@ $("#submit").click(async () => {
       $(function () {
         Swal.close();
         const mainOrderCode = res.mainOrderCode;
-        // alert(`成功訂購! 您的訂單編號為：${order_code}`);
         window.location.assign(`/thankyou.html?number=${mainOrderCode}`);
       });
     })
@@ -161,7 +185,8 @@ $("#submit").click(async () => {
       Swal.fire({
         title: JSON.parse(res.responseText).error,
         icon: "error",
-        confirmButtonText: "OK",
+        showConfirmButton: false,
+        timer: 1000,
       });
     });
 });
