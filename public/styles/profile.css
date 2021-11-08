@@ -10,8 +10,9 @@
   align-items: center;
   font-size: 32px;
   font-weight: bold;
-  color: #313538;
+  color: #3f3a3a;
 }
+
 .profile {
   display: flex;
   margin: 0 auto;
@@ -27,7 +28,7 @@
 
 .profile_user_info {
   font: bold;
-  font-size: 24px;
+  font-size: 18px;
   padding: 20px;
 }
 
@@ -35,7 +36,7 @@
 #user_email,
 #user_phone {
   margin: 20px;
-  color: #313538;
+  color: #3f3a3a;
 }
 
 #log-out-button {
@@ -47,12 +48,17 @@
 }
 
 #log-out {
-  width: 10%;
-  height: 120%;
+  width: 100px;
+  height: 30px;
   border-radius: 3px;
   border: 1px solid rgb(148, 190, 8);
   background-color: rgb(148, 190, 8);
   font-size: 18px;
   text-align: center;
   color: #fff;
+}
+
+#log-out:hover {
+  color: rgb(148, 190, 8);
+  background-color: #fff;
 }

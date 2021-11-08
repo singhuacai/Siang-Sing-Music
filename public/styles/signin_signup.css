@@ -11,51 +11,98 @@
 
 .signup,
 .signin {
-  color: darkblue;
-  margin: -10px -10px 20px -10px;
+  color: rgb(148, 190, 8);
+  margin: auto;
   padding: 10px;
   text-align: center;
 }
 
 .signup {
-  background-color: honeydew;
+  font-weight: bold;
+  font-size: 24px;
 }
 
 .signin {
-  background-color: papayawhip;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.line-style {
+  margin-top: 10px;
+}
+
+.formSignUp,
+.formSignIn {
+  border: solid #979797 1px;
+  padding: 20px;
+  width: 300px;
+  border-radius: 10px;
 }
 
 .formSignUp {
-  border: solid black 3px;
   margin: 20px auto 25px;
-  padding: 10px;
-  width: fit-content;
 }
 
 .formSignIn {
-  border: solid black 3px;
   margin: 25px auto;
-  padding: 10px;
-  width: fit-content;
 }
 
 #signUpButton,
 #signInButton {
-  align-items: center;
-  margin-left: 20px;
+  display: flex;
+  margin: 5px auto;
   justify-content: center;
-  width: 80%;
-  height: 120%;
-  border-radius: 3px;
-  border: 1px solid rgb(124, 161, 2);
-  background-color: rgb(148, 190, 8);
+  width: 180px;
+  height: 28px;
+  border-radius: 5px;
+  border: 1px solid rgb(125, 160, 13);
+  background-color: #fff;
   font-size: 18px;
+  color: rgb(148, 190, 8);
+}
+
+#signInButton:hover,
+#signUpButton:hover {
   color: #fff;
+  background-color: rgb(148, 190, 8);
 }
 
 .form-content-style {
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
-  /* justify-content: center; */
+}
+
+.form-content-style label {
+  display: flex;
+  font-weight: bold;
+}
+
+.form-content-style input {
+  border: 1px solid #979797;
+  height: 30px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+#add-signup-block,
+#add-signin-block {
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+#add-signup-link,
+#add-signin-link {
+  color: rgb(148, 190, 8);
+  font-weight: bold;
+}
+#add-signup-link:hover,
+#add-signin-link:hover {
+  color: rgb(148, 190, 8);
+  cursor: pointer;
+}
+
+#password-notice {
+  font-size: 10px;
+  color: #979797;
 }
