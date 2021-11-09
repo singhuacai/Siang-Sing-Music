@@ -65,7 +65,10 @@ const getSeatStatus = async (req, res) => {
 
   // 給定 concertAreaPriceId => 查詢此區域的座位狀態
   let data = await Order.getSeatStatus(concertAreaPriceId);
-
+  if (data.error) {
+    res.status(500).send({ error: data.error });
+    return;
+  }
   // 若是你選擇的，則修改狀態為 "you-selected"
   data.map((v) => {
     if (v.status === "selected" && v.user_id === userId) {
@@ -83,12 +86,15 @@ const getSeatStatus = async (req, res) => {
   // 利用 concertAreaPriceId => 找到 concertDateId  => 找出該使用者購買及加入購物車的總數
   result = await Order.getSoldandCartCount(concertAreaPriceId, userId);
 
-  console.log(result);
-
-  console.log(result[0].count);
   const countOfCartAndSold = result[0].count;
 
-  res.status(200).send({ countOfCartAndSold, data });
+  if (result.error) {
+    res.status(500).send({ error: result.error });
+    return;
+  } else {
+    res.status(200).send({ countOfCartAndSold, data });
+    return;
+  }
 };
 
 const getChosenConcertInfo = async (req, res) => {
@@ -111,7 +117,13 @@ const getChosenConcertInfo = async (req, res) => {
     return v;
   });
 
-  res.status(200).send({ data });
+  if (data.error) {
+    res.status(403).send({ error: data.error });
+    return;
+  } else {
+    res.status(200).send({ data });
+    return;
+  }
 };
 
 const chooseOrDeleteSeat = async (req, res) => {
