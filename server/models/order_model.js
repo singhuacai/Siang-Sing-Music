@@ -113,8 +113,8 @@ const getSeatStatus = async (concertAreaPriceId) => {
     const queryStr = `
       select 
         id AS concert_seat_id,
-        concert_area_seat_row,
-        concert_area_seat_column,
+        seat_row,
+        seat_column,
         status,
         user_id
       FROM
@@ -390,8 +390,8 @@ const getCartStatus = async (userId) => {
         ci.concert_location,
         cd.concert_datetime,
         cap.concert_area,
-        csi.concert_area_seat_row,
-        csi.concert_area_seat_column,
+        csi.seat_row,
+        csi.seat_column,
         cap.ticket_price
         FROM  
         concert_info ci
@@ -694,8 +694,8 @@ const getOrderResultByOrderNum = async (mainOrderCode, userId) => {
             ci.concert_location,
             cd.concert_datetime,
             cap.concert_area,
-            csi.concert_area_seat_row,
-            csi.concert_area_seat_column,
+            csi.seat_row,
+            csi.seat_column,
             cap.ticket_price
           FROM  
           concert_info ci
@@ -738,8 +738,8 @@ const getOrderResultByUserId = async (userId) => {
           "shoppingCartId", sc.id,
           "concertSeatId", csi.id,
           "concert_area", cap.concert_area,
-          "row", csi.concert_area_seat_row,
-          "column", csi.concert_area_seat_column,
+          "row", csi.seat_row,
+          "column", csi.seat_column,
           "ticket_price",cap.ticket_price
         )) AS ticket_info
         FROM  

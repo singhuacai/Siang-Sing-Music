@@ -1,76 +1,85 @@
 const { pool } = require("./mysql");
 
 const insertConcertInfo = async (concert_info) => {
-    const conn = await pool.getConnection();
-    try {
-        await conn.query("START TRANSACTION");
-        const [result] = await conn.query("INSERT INTO concert_info SET ?", concert_info);
-        await conn.query("COMMIT");
-        return result.insertId;
-    } catch (error) {
-        await conn.query("ROLLBACK");
-        console.log(error);
-        return -1;
-    } finally {
-        await conn.release();
-    }
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+    const [result] = await conn.query(
+      "INSERT INTO concert_info SET ?",
+      concert_info
+    );
+    await conn.query("COMMIT");
+    return result.insertId;
+  } catch (error) {
+    await conn.query("ROLLBACK");
+    console.log(error);
+    return -1;
+  } finally {
+    await conn.release();
+  }
 };
 
 const insertConcertDate = async (concert_date) => {
-    const conn = await pool.getConnection();
-    try {
-        await conn.query("START TRANSACTION");
-        const [result] = await conn.query("INSERT INTO concert_date SET ?", concert_date);
-        await conn.query("COMMIT");
-        return result.insertId;
-    } catch (error) {
-        await conn.query("ROLLBACK");
-        console.log(error);
-        return -1;
-    } finally {
-        await conn.release();
-    }
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+    const [result] = await conn.query(
+      "INSERT INTO concert_date SET ?",
+      concert_date
+    );
+    await conn.query("COMMIT");
+    return result.insertId;
+  } catch (error) {
+    await conn.query("ROLLBACK");
+    console.log(error);
+    return -1;
+  } finally {
+    await conn.release();
+  }
 };
 
 const insertConcertAreaPrice = async (concert_area_price) => {
-    const conn = await pool.getConnection();
-    try {
-        await conn.query("START TRANSACTION");
-        const [result] = await conn.query("INSERT INTO concert_area_price SET ?", concert_area_price);
-        await conn.query("COMMIT");
-        return result.insertId;
-    } catch (error) {
-        await conn.query("ROLLBACK");
-        console.log(error);
-        return -1;
-    } finally {
-        await conn.release();
-    }
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+    const [result] = await conn.query(
+      "INSERT INTO concert_area_price SET ?",
+      concert_area_price
+    );
+    await conn.query("COMMIT");
+    return result.insertId;
+  } catch (error) {
+    await conn.query("ROLLBACK");
+    console.log(error);
+    return -1;
+  } finally {
+    await conn.release();
+  }
 };
 
 const insertConcertSeatInfo = async (concert_seat_info) => {
-    const conn = await pool.getConnection();
-    try {
-        await conn.query("START TRANSACTION");
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
 
-        await conn.query(
-            "INSERT INTO concert_seat_info(concert_area_price_id, concert_area_seat_row, concert_area_seat_column, status) VALUES ?",
-            [concert_seat_info]
-        );
-        await conn.query("COMMIT");
-        return "finish!";
-    } catch (error) {
-        await conn.query("ROLLBACK");
-        console.log(error);
-        return -1;
-    } finally {
-        await conn.release();
-    }
+    await conn.query(
+      "INSERT INTO concert_seat_info(concert_area_price_id, seat_row, seat_column, status) VALUES ?",
+      [concert_seat_info]
+    );
+    await conn.query("COMMIT");
+    return "finish!";
+  } catch (error) {
+    await conn.query("ROLLBACK");
+    console.log(error);
+    return -1;
+  } finally {
+    await conn.release();
+  }
 };
 
 const getCampaigns = async () => {
-    try {
-        const queryStr = `
+  try {
+    const queryStr = `
     SELECT 
       ci.id, 
       ci.concert_title, 
@@ -86,39 +95,39 @@ const getCampaigns = async () => {
     order by cd.concert_datetime
   `;
 
-        const [result] = await pool.query(queryStr);
-        return result;
-    } catch (error) {
-        console.log(error);
-        return error;
-    }
+    const [result] = await pool.query(queryStr);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
 };
 
 const getKeyvisuals = async () => {
-    try {
-        const queryStr = `
+  try {
+    const queryStr = `
     Select id AS concert_id, concert_main_image From concert_info;
     `;
-        const [result] = await pool.query(queryStr);
-        return result;
-    } catch (error) {
-        console.log(error);
-        return error;
-    }
+    const [result] = await pool.query(queryStr);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
 };
 
 const getCampaignCount = async (concert_id) => {
-    const queryStr = `
+  const queryStr = `
   SELECT count(*) as count FROM concert_info  WHERE id = ?;
   `;
-    const bindings = [concert_id];
-    const [count] = await pool.query(queryStr, bindings);
-    return count;
+  const bindings = [concert_id];
+  const [count] = await pool.query(queryStr, bindings);
+  return count;
 };
 
 const getConcertDetails = async (concert_id) => {
-    try {
-        const queryStr = `
+  try {
+    const queryStr = `
     WITH 
     DistinctDatePriceRaw AS (
     SELECT DISTINCT
@@ -161,21 +170,21 @@ const getConcertDetails = async (concert_id) => {
     on ddp.concert_id = ci.id
     GROUP BY 1,2,3,4,5,6,7,8,9;
       `;
-        const [result] = await pool.query(queryStr);
-        return result;
-    } catch (error) {
-        console.log(error);
-        return error;
-    }
+    const [result] = await pool.query(queryStr);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
 };
 
 module.exports = {
-    insertConcertInfo,
-    insertConcertDate,
-    insertConcertAreaPrice,
-    insertConcertSeatInfo,
-    getCampaigns,
-    getKeyvisuals,
-    getCampaignCount,
-    getConcertDetails,
+  insertConcertInfo,
+  insertConcertDate,
+  insertConcertAreaPrice,
+  insertConcertSeatInfo,
+  getCampaigns,
+  getKeyvisuals,
+  getCampaignCount,
+  getConcertDetails,
 };
