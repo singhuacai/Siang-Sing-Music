@@ -571,10 +571,10 @@ if (concertAreaPriceId) {
   })
     .done(function (res) {
       $(function () {
-        renderSeats(res);
         // ================================================
         // 倒數計時器(60秒)
         $(document).ready(function () {
+          renderSeats(res);
           let count = 100;
           $("#notice").html(
             `<p>&nbsp;&nbsp; 請您於60秒內選好座位，並將選好的座位加入購物車，否則系統會將您導回活動頁 &nbsp;&nbsp;</p>`
