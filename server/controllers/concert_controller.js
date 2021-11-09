@@ -107,7 +107,6 @@ const getConcertDetails = async (req, res) => {
   }
 
   let result = await Concert.getConcertDetails(concert_id);
-  // console.log(result);
 
   const [data] = result.map((v) => {
     v.sold_start = moment(v.sold_start)
@@ -118,11 +117,13 @@ const getConcertDetails = async (req, res) => {
       .format("YYYY-MM-DD HH:mm:ss");
     v.concert_main_image = `/${concert_id}/${v.concert_main_image}`;
     v.concert_area_image = `/${concert_id}/${v.concert_area_image}`;
-    v.concert_info[0].concert_datetime = moment(
-      v.concert_info[0].concert_datetime
-    )
-      .add(offset_hours, "hours")
-      .format("YYYY-MM-DD HH:mm:ss");
+    v.concert_info.map((s) => {
+      s.concert_datetime = moment(s.concert_datetime)
+        .add(offset_hours, "hours")
+        .format("YYYY-MM-DD HH:mm:ss");
+      return s;
+    });
+
     return v;
   });
   res.status(200).send({ data });
