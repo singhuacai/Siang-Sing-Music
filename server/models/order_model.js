@@ -18,17 +18,25 @@ const checkConcertByConcertDateId = async (concertDateId) => {
 };
 
 const checkConcertByConcertAreaPriceId = async (concertAreaPriceId) => {
-  const queryStr = `
-  SELECT
-    count(*) AS count
-  FROM
-    concert_seat_info
-  WHERE
-  concert_area_price_id = ?
-  `;
-  const bindings = [concertAreaPriceId];
-  const [result] = await pool.query(queryStr, bindings);
-  return result;
+  try {
+    const queryStr = `
+    SELECT
+      count(*) AS count
+    FROM
+      concert_seat_info
+    WHERE
+    concert_area_price_id = ?
+    `;
+    const bindings = [concertAreaPriceId];
+    const [result] = await pool.query(queryStr, bindings);
+    console.log(
+      "checkConcertByConcertAreaPriceId-------已確認是否有此場演唱會!"
+    );
+    return result;
+  } catch (error) {
+    console.log(error);
+    return { error };
+  }
 };
 
 const getConcertTitleAndAreaImage = async (concertDateId) => {
@@ -94,7 +102,9 @@ const getSoldandCartCount = async (concertAreaPriceId, userId) => {
     `;
     const bindings = [concertAreaPriceId, userId];
     const [result] = await pool.query(queryStr, bindings);
-    console.log("已取得該使用者已購買及已加入購物車的數量!");
+    console.log(
+      "getSoldandCartCount-------已取得該使用者已購買及已加入購物車的數量!"
+    );
     await conn.query("COMMIT");
     return result;
   } catch (error) {
@@ -124,7 +134,7 @@ const getSeatStatus = async (concertAreaPriceId) => {
     `;
     const bindings = [concertAreaPriceId];
     const [result] = await conn.query(queryStr, bindings);
-    console.log("已取得座位狀態!");
+    console.log("getSeatStatus------已取得座位狀態!");
     await conn.query("COMMIT");
     return result;
   } catch (error) {
