@@ -18,6 +18,32 @@ const checkConcertByConcertDateId = async (concertDateId) => {
 };
 
 const checkConcertByConcertAreaPriceId = async (concertAreaPriceId) => {
+  console.log("pool(checkConcertByConcertDateId):");
+  console.log(
+    "all connections length:" +
+      pool.pool.config.connectionConfig.pool._allConnections.length
+  );
+  console.log(
+    "free connections length:" +
+      pool.pool.config.connectionConfig.pool._freeConnections.length
+  );
+  console.log(
+    "connection queue length:" +
+      pool.pool.config.connectionConfig.pool._connectionQueue.length
+  );
+  console.log(
+    "connections limit:" +
+      pool.pool.config.connectionConfig.pool.config.connectionLimit
+  );
+  console.log(
+    "queue limit:" + pool.pool.config.connectionConfig.pool.config.queueLimit
+  );
+
+  let [connectionNum] = await pool.query(
+    "show status where variable_name = 'Threads_connected';"
+  );
+  console.log(connectionNum[0].Value);
+
   try {
     const queryStr = `
     SELECT
@@ -79,8 +105,42 @@ const getAreasAndTicketPrices = async (concertDateId) => {
 const getSoldandCartCount = async (concertAreaPriceId, userId) => {
   // 利用 concertAreaPriceId => 找到 concertDateId
   // 利用找到的 concertDateId => 找出該使用者購買及加入購物車的總數
+  // BEFORE ======================================
+  console.log("pool:(getSoldandCartCount)");
+  console.log(
+    "all connections length:" +
+      pool.pool.config.connectionConfig.pool._allConnections.length
+  );
+  console.log(
+    "free connections length:" +
+      pool.pool.config.connectionConfig.pool._freeConnections.length
+  );
+  console.log(
+    "connection queue length:" +
+      pool.pool.config.connectionConfig.pool._connectionQueue.length
+  );
+  console.log(
+    "connections limit:" +
+      pool.pool.config.connectionConfig.pool.config.connectionLimit
+  );
+  console.log(
+    "queue limit:" + pool.pool.config.connectionConfig.pool.config.queueLimit
+  );
+
+  let [connectionNum] = await pool.query(
+    "show status where variable_name = 'Threads_connected';"
+  );
+  console.log(connectionNum[0].Value);
+
+  // ======================================
   const conn = await pool.getConnection();
   try {
+    // AFTER ======================================
+    [connectionNum] = await pool.query(
+      "show status where variable_name = 'Threads_connected';"
+    );
+    console.log(connectionNum);
+    // ======================================
     await conn.query("START TRANSACTION");
     const queryStr = `
     WITH ConcertDateId AS (
@@ -117,11 +177,16 @@ const getSoldandCartCount = async (concertAreaPriceId, userId) => {
 };
 
 const getSeatStatus = async (concertAreaPriceId) => {
+  console.log("pool:(getSeatStatus)");
+  console.log(pool.pool.config.connectionConfig.pool._allConnections.length);
+  console.log(pool.pool.config.connectionConfig.pool._freeConnections.length);
+  console.log(pool.pool.config.connectionConfig.pool.config.connectionLimit);
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
+
     const queryStr = `
-      select 
+      select
         id AS concert_seat_id,
         seat_row,
         seat_column,
@@ -129,7 +194,7 @@ const getSeatStatus = async (concertAreaPriceId) => {
         user_id
       FROM
         concert_seat_info
-      where 
+      where
         concert_area_price_id = ? FOR UPDATE;
     `;
     const bindings = [concertAreaPriceId];

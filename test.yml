@@ -5,7 +5,7 @@ config:
     timeout: 20
   phases:
     - duration: 20
-      arrivalRate: 130
+      arrivalRate: 120
 scenarios:
   - flow:
       - get:
@@ -13,6 +13,4 @@ scenarios:
             Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcm92aWRlciI6Im5hdGl2ZSIsIm5hbWUiOiJ1c2VyMyIsImVtYWlsIjoidXNlcjNAZ21haWwuY29tIiwicGhvbmUiOiIwOTEyMzQ1Njc4IiwicGljdHVyZSI6Ii9pbWFnZXMvcHJvZmlsZS9kZWZhdWx0X3VzZXJfcHJvZmlsZS5wbmciLCJleHBpcmVzSW4iOiIyNTkyMDAwIiwiaWF0IjoxNjM2NDQ5MDY0fQ.ZGk9fGbzYvzeiDc8ziMMscOhOsJG3G42atXMJv0xSB0"
           url: "/api/1.0/order/seatStatus"
           qs:
-            concertId: 1
-            concertDateId: 1
             concertAreaPriceId: 1

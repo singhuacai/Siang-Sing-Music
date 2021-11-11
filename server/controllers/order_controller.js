@@ -54,27 +54,15 @@ const getSeatStatus = async (req, res) => {
   const { concertAreaPriceId } = req.query;
   const userId = req.user.id;
 
-  console.log("enter checkConcertByConcertAreaPriceId----------");
   // 給定 concertAreaPriceId => 確認確實有此場演唱會
   let result = await Order.checkConcertByConcertAreaPriceId(concertAreaPriceId);
-  if (result.error) {
-    res.status(403).send({ error: result.error });
-    return;
-  }
   if (result[0].count === 0) {
     res.status(400).send({ error: "Bad request!" });
     return;
   }
-  console.log("leave checkConcertByConcertAreaPriceId----------");
-
-  console.log("enter getSeatStatus----------");
   // 給定 concertAreaPriceId => 查詢此區域的座位狀態
   let data = await Order.getSeatStatus(concertAreaPriceId);
-  if (data.error) {
-    res.status(403).send({ error: data.error });
-    return;
-  }
-  console.log("leave getSeatStatus----------");
+
   // 若是你選擇的，則修改狀態為 "you-selected"
   data.map((v) => {
     if (v.status === "selected" && v.user_id === userId) {
@@ -88,18 +76,10 @@ const getSeatStatus = async (req, res) => {
     }
     return v;
   });
-  console.log("finish rewrite the status----------");
-
-  console.log("enter getSoldandCartCount----------");
   // 利用 concertAreaPriceId => 找到 concertDateId  => 找出該使用者購買及加入購物車的總數
   result = await Order.getSoldandCartCount(concertAreaPriceId, userId);
-  if (result.error) {
-    res.status(403).send({ error: result.error });
-    return;
-  }
-  console.log("leave getSoldandCartCount----------");
   const countOfCartAndSold = result[0].count;
-
+  console.log("END^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
   res.status(200).send({ countOfCartAndSold, data });
   return;
 };
