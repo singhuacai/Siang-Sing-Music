@@ -1,100 +1,106 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>想SING音樂售票系統</title>
-        <link href="../styles/reset.css" rel="stylesheet" />
-        <link href="../styles/header.css" rel="stylesheet" />
-        <link href="../styles/thankyou.css" rel="stylesheet" />
-        <link href="../styles/footer.css" rel="stylesheet" />
-        <script src="jquery-3.6.0.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.9/sweetalert2.all.js"></script>
-    </head>
+  <head>
+    <title>想SING音樂售票系統</title>
+    <link href="../styles/reset.css" rel="stylesheet" />
+    <link href="../styles/header.css" rel="stylesheet" />
+    <link href="../styles/thankyou.css" rel="stylesheet" />
+    <link href="../styles/footer.css" rel="stylesheet" />
+    <script src="jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.1.9/sweetalert2.all.js"></script>
+  </head>
 
-    <body>
-        <div class="wrapper">
-            <header>
-                <div class="desktop-header">
-                    <a href="/index.html" class="logo tag-all">
-                        <img src="./images/logo/logo_green.png" alt="想SING音樂售票系統" height="80" />
-                    </a>
+  <body>
+    <div class="wrapper">
+      <header>
+        <div class="desktop-header">
+          <a href="/index.html" class="logo tag-all">
+            <img
+              src="./images/logo/logo_green.png"
+              alt="想SING音樂售票系統"
+              height="80"
+            />
+          </a>
 
-                    <input type="text" class="search" />
+          <input type="text" class="search" />
 
-                    <a class="cart" href="/shoppingCart.html">
-                        <img src="./images/logo/cart.png" height="44" />
-                        <div class="count">0</div>
-                    </a>
+          <a class="cart" href="/shoppingCart.html">
+            <img src="./images/logo/cart.png" height="44" />
+            <div class="count">0</div>
+          </a>
 
-                    <a class="order" href="/orderTracking.html">
-                        <img src="./images/logo/order.png" height="44" />
-                    </a>
+          <a class="order" href="/orderTracking.html">
+            <img src="./images/logo/order.png" height="44" />
+          </a>
 
-                    <a href="/profile.html" class="member">
-                        <img src="./images/logo/member.png" height="44" />
-                    </a>
-                </div>
-            </header>
-
-            <main>
-                <div id="thankyou-block">
-                    <div id="order-flow-step"></div>
-
-                    <hr class="line-style content" />
-
-                    <div id="content-block">
-                        <!-- -------------------- -->
-                        <div id="order-complete-title" class="content">訂購完成</div>
-                        <div id="thanks-text" class="content">感謝您的購買，我們將盡快將商品送達！</div>
-                        <div id="order-number" class="content"></div>
-
-                        <div id="order-result-title" class="content">訂票結果</div>
-                        <div id="order-result-block" class="content">
-                            <div id="empty-order-text" class="content" hidden></div>
-                            <table id="order-result-table" hidden>
-                                <thead>
-                                    <tr id="column-name">
-                                        <th>活動名稱/Title</th>
-                                        <th>活動時間/Date & Time</th>
-                                        <th>活動地點/Location</th>
-                                        <th>座位/Seat</th>
-                                        <th>票價/Price</th>
-                                        <th>票券狀態/Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="order-result"></tbody>
-                            </table>
-                        </div>
-                        <!-- -------------------- -->
-                    </div>
-
-                    <div
-                        class="check-order-button content"
-                        id="check-order-button"
-                        onclick="location.href='/orderTracking.html';"
-                    >
-                        查看訂單
-                    </div>
-                </div>
-            </main>
+          <a href="/profile.html" class="member">
+            <img src="./images/logo/member.png" height="44" />
+          </a>
         </div>
+      </header>
 
-        <footer>
-            <nav>
-                <ul>
-                    <li>關於 想SING</li>
-                    <li>服務條款</li>
-                    <li>隱私政策</li>
-                    <li>聯絡我們</li>
-                    <li>FAQ</li>
-                </ul>
-            </nav>
-            <!-- <div class="links">
+      <main>
+        <div id="thankyou-block">
+          <div id="order-flow-step"></div>
+
+          <hr class="line-style content" />
+
+          <div id="content-block">
+            <!-- -------------------- -->
+            <div id="order-complete-title" class="content">訂購完成</div>
+            <div id="thanks-text" class="content">
+              感謝您的購買，我們將盡快將商品送達！
+            </div>
+            <div id="order-number" class="content"></div>
+
+            <div id="order-result-title" class="content">訂票結果</div>
+            <div id="order-result-block" class="content">
+              <div id="empty-order-text" class="content" hidden></div>
+              <table id="order-result-table" hidden>
+                <thead>
+                  <tr id="column-name">
+                    <th>活動名稱/Title</th>
+                    <th>活動時間/Date & Time</th>
+                    <th>活動地點/Location</th>
+                    <th>座位/Seat</th>
+                    <th>票價/Price</th>
+                    <th>票券狀態/Status</th>
+                  </tr>
+                </thead>
+                <tbody id="order-result"></tbody>
+              </table>
+            </div>
+            <!-- -------------------- -->
+          </div>
+
+          <div
+            class="check-order-button content"
+            id="check-order-button"
+            onclick="location.href='/orderTracking.html';"
+          >
+            查看訂單
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <footer>
+      <nav>
+        <ul>
+          <li>關於 想SING</li>
+          <li>服務條款</li>
+          <li>隱私政策</li>
+          <li>聯絡我們</li>
+          <li>FAQ</li>
+        </ul>
+      </nav>
+      <!-- <div class="links">
         <img src="./images/logo/line.png" />
         <img src="./images/logo/twitter.png" />
         <img src="./images/logo/facebook.png" />
       </div> -->
-            <div class="rights">© 2021. All rights reserved.</div>
-        </footer>
-        <script src="../JS/thankyou.js"></script>
-    </body>
+      <div class="rights">© 2021. All rights reserved.</div>
+    </footer>
+    <script src="../JS/thankyou.js"></script>
+  </body>
 </html>

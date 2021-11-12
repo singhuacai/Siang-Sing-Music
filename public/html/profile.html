@@ -177,5 +177,19 @@
     </footer>
     <script src="../JS/profile.js"></script>
     <script src="../JS/signinSignup.js"></script>
+    <script>
+      $(document).keyup(function (e) {
+        if ($(".search").is(":focus") && e.keyCode == 13) {
+          const search = $(".search").val();
+          window.location.assign(`./?tag=${search}`);
+        }
+      });
+
+      let urlParams = new URLSearchParams(window.location.search);
+      let keyword = urlParams.get("tag");
+      if (keyword) {
+        $.getScript("../JS/search.js");
+      }
+    </script>
   </body>
 </html>

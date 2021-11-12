@@ -213,5 +213,19 @@
     <script src="../JS/shoppingCart.js"></script>
     <script src="../JS/orderInfo.js"></script>
     <script src="../JS/checkout.js"></script>
+    <script>
+      $(document).keyup(function (e) {
+        if ($(".search").is(":focus") && e.keyCode == 13) {
+          const search = $(".search").val();
+          window.location.assign(`./?tag=${search}`);
+        }
+      });
+
+      let urlParams = new URLSearchParams(window.location.search);
+      let keyword = urlParams.get("tag");
+      if (keyword) {
+        $.getScript("../JS/search.js");
+      }
+    </script>
   </body>
 </html>

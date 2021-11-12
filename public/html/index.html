@@ -112,14 +112,24 @@
           <li>FAQ</li>
         </ul>
       </nav>
-      <!-- <div class="links">
-        <img src="./images/logo/line.png" />
-        <img src="./images/logo/twitter.png" />
-        <img src="./images/logo/facebook.png" />
-      </div> -->
       <div class="rights">© 2021. All rights reserved.</div>
     </footer>
     <script src="../JS/indexKeyvisuals.js"></script>
-    <script src="../JS/indexCampaigns.js"></script>
+    <script>
+      $(document).keyup(function (e) {
+        if ($(".search").is(":focus") && e.keyCode == 13) {
+          const search = $(".search").val();
+          window.location.assign(`./?tag=${search}`);
+        }
+      });
+
+      let urlParams = new URLSearchParams(window.location.search);
+      let keyword = urlParams.get("tag");
+      if (keyword) {
+        $.getScript("../JS/search.js");
+      } else {
+        $.getScript("../JS/indexCampaigns.js");
+      }
+    </script>
   </body>
 </html>
