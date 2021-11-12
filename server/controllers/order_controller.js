@@ -209,6 +209,11 @@ const addToCart = async (req, res) => {
     return;
   }
 
+  if (chosenSeats.length > 4) {
+    res.status(400).send({ error: "您已超過選位上限!" });
+    return;
+  }
+
   // 利用 addToCart function
   // 1. 查詢該座位目前的狀態是否為 selected 以及是否為同一個使用者
   // 2. 若是同一個使用者，再把座位狀態更改為cart狀態!

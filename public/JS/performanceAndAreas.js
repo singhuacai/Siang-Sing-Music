@@ -5,6 +5,7 @@ let concertAreaPriceId = urlParams.get("concertAreaPriceId");
 let Authorization = localStorage.getItem("Authorization");
 let UserCode = localStorage.getItem("UserCode");
 var chosenSeats = [];
+let countOfCartAndSold = 0;
 
 var isZero = false;
 
@@ -56,6 +57,7 @@ if (concertAreaPriceId) {
     if (msg.owner === localStorage.getItem("UserCode")) {
       $(`#${msg.seat_id}`).removeClass("not-selected").addClass("you-selected");
       $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_select.gif");
+      addSeatIntoChosenSeatsArray(msg.seat_id);
     } else {
       if ($(`#${msg.seat_id}`).hasClass("not-selected")) {
         $(`#${msg.seat_id}`).removeClass("not-selected").addClass("selected");
@@ -82,6 +84,7 @@ if (concertAreaPriceId) {
         "src",
         "../images/logo/icon_chair_not_selected.gif"
       );
+      removeSeatFromChosenSeatsArray(msg.seat_id);
     } else {
       $(`#${msg.seat_id}`).removeClass("selected").addClass("not-selected");
       $(`#${msg.seat_id}`).attr(
@@ -105,6 +108,8 @@ if (concertAreaPriceId) {
           "../images/logo/icon_chair_not_selected.gif"
         );
       }
+      chosenSeats = [];
+      console.log(` (after rollback)chosenSeats:${chosenSeats}`);
     } else {
       for (let i = 0; i < msg.rollBackSeat.length; i++) {
         console.log(`OPPS`);
@@ -126,12 +131,14 @@ if (concertAreaPriceId) {
       for (let i = 0; i < msg.addToCartSeat.length; i++) {
         $(`#${msg.addToCartSeat[i]}`)
           .removeClass("you-selected")
-          .addClass("cart");
+          .addClass("you-cart");
         $(`#${msg.addToCartSeat[i]}`).attr(
           "src",
           "../images/logo/icon_chair_cart.gif"
         );
       }
+      chosenSeats = [];
+      countOfCartAndSold += msg.addToCartSeat.length;
     } else {
       for (let i = 0; i < msg.addToCartSeat.length; i++) {
         $(`#${msg.addToCartSeat[i]}`).removeClass("selected").addClass("cart");
@@ -153,6 +160,7 @@ if (concertAreaPriceId) {
         "src",
         "../images/logo/icon_chair_not_selected.gif"
       );
+      countOfCartAndSold -= 1;
     } else {
       $(`#${msg.removeFromCartSeat}`)
         .removeClass("cart")
@@ -213,7 +221,13 @@ if (concertAreaPriceId) {
   };
   // 新增座位 => 給指定座位id, 將該座位加入 chooseSeats array
   function addSeatIntoChosenSeatsArray(id) {
-    chosenSeats.push(parseInt(id));
+    const seat_id = parseInt(id);
+    if (chosenSeats.indexOf(seat_id) === -1) {
+      chosenSeats.push(seat_id);
+    } else if (chosenSeats.indexOf(seat_id) > -1) {
+      console.log(seat_id + " already exists in the chosenSeats array.");
+    }
+    return;
   }
 
   // 刪除座位 => 給指定座位id, 將該座位移出 chooseSeats array
@@ -226,7 +240,7 @@ if (concertAreaPriceId) {
   }
 
   function renderSeats(res) {
-    let countOfCartAndSold = res.countOfCartAndSold;
+    countOfCartAndSold = res.countOfCartAndSold;
     let row = 0;
     for (let i = 0; i < res.data.length; i++) {
       if (parseInt(res.data[i].seat_row) !== row) {
@@ -268,16 +282,13 @@ if (concertAreaPriceId) {
             Authorization: `Bearer ${Authorization}`,
             SocketId: socketId,
           },
-          success: function () {
-            resolve(true);
-          },
           fail: function (res) {
             removeSeatFromChosenSeatsArray(res.data[i].concert_seat_id);
             Swal.fire("Error", res, "error");
-            reject(false);
           },
         });
       } else if (status === "you-selected" && !pageAccessedByReload) {
+        addSeatIntoChosenSeatsArray(res.data[i].concert_seat_id);
         $(`#row-${res.data[i].seat_row}`).append(
           `<td><img src="../images/logo/icon_chair_select.gif" class="you-selected" id = "${res.data[i].concert_seat_id}" width="100%"></td>`
         );
@@ -299,18 +310,16 @@ if (concertAreaPriceId) {
         );
       }
 
-      $(`#${res.data[i].concert_seat_id}`).click(
-        { param: countOfCartAndSold },
-        handleClick
-      );
+      $(`#${res.data[i].concert_seat_id}`).click(handleClick);
     }
   }
 
-  function handleClick(event) {
+  function handleClick() {
     if (!isZero) {
-      const countOfCartAndSold = event.data.param;
       const cls = this.className;
       const id = $(this).attr("id");
+      console.log(`className:${cls}`);
+      console.log(`buttonId:${id}`);
 
       switch (cls) {
         case "not-selected":
@@ -372,7 +381,7 @@ if (concertAreaPriceId) {
     });
   }
 
-  function chooseSeat(countOfCartAndSold, seatId) {
+  function chooseSeat(seatId) {
     return new Promise((resolve, reject) => {
       console.log("This seat is nobody selected");
       addSeatIntoChosenSeatsArray(seatId);
@@ -478,9 +487,13 @@ if (concertAreaPriceId) {
   function rollBackChoose() {
     return new Promise((resolve, reject) => {
       // 將剛剛選擇的座位rollback掉
+      const filterChosenSeats = chosenSeats.filter(
+        (ele, pos) => chosenSeats.indexOf(ele) == pos
+      );
+      console.log("The filtered array", filterChosenSeats);
       $.ajax({
         url: "/api/1.0/order/rollBackChoose",
-        data: JSON.stringify({ chosenSeats }),
+        data: JSON.stringify({ chosenSeats: filterChosenSeats }),
         async: true,
         method: "POST",
         dataType: "json",
@@ -632,9 +645,13 @@ if (concertAreaPriceId) {
 
   function addToCart() {
     // 將剛剛選擇的座位addToCart
+    const filterChosenSeats = chosenSeats.filter(
+      (ele, pos) => chosenSeats.indexOf(ele) == pos
+    );
+    console.log("The filtered array", filterChosenSeats);
     $.ajax({
       url: "/api/1.0/order/addToCart",
-      data: JSON.stringify({ chosenSeats }),
+      data: JSON.stringify({ chosenSeats: filterChosenSeats }),
       async: true,
       method: "POST",
       dataType: "json",
