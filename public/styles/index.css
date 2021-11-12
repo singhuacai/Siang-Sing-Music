@@ -5,21 +5,15 @@
 }
 
 #keyvisuals {
-  height: 500px;
-  position: relative;
-  margin-top: 65px;
+  margin: 145px auto 0px;
 }
 
-#keyvisuals > .keyvisual {
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  background-position: center;
-  opacity: 0.8;
+.carousel-inner img {
+  /* width: 80%; */
+  height: 505px;
   background-repeat: repeat-x;
-  transition: opacity 1.2s;
+  margin: auto;
 }
-
 /* ---------- campaigns ---------- */
 #campaigns {
   display: flex;
