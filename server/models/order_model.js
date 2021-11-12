@@ -161,7 +161,7 @@ const getSoldandCartCount = async (concertAreaPriceId, userId) => {
     WHERE csi.user_id = ? AND csi.status in ('cart', 'sold') FOR UPDATE;
     `;
     const bindings = [concertAreaPriceId, userId];
-    const [result] = await pool.query(queryStr, bindings);
+    const [result] = await conn.query(queryStr, bindings);
     console.log(
       "getSoldandCartCount-------已取得該使用者已購買及已加入購物車的數量!"
     );
@@ -230,6 +230,38 @@ const getChosenConcertInfo = async (concertAreaPriceId) => {
   const bindings = [concertAreaPriceId];
   const [result] = await pool.query(queryStr, bindings);
   return result;
+};
+
+const getTheNumOfSeatsYouHave = async (concertSeatId, userId) => {
+  try {
+    const queryStr = `
+    WITH ConcertDateId AS (
+      SELECT
+        cap.concert_date_id
+      FROM concert_area_price cap
+      INNER JOIN concert_seat_info csi
+         ON cap.id = csi.concert_area_price_id
+      where csi.id=?
+      )
+        SELECT
+          count(*) as count
+        FROM  ConcertDateId cdi
+        INNER JOIN concert_area_price cap
+          ON cdi.concert_date_id = cap.concert_date_id
+        INNER JOIN concert_seat_info csi
+          ON cap.id = csi.concert_area_price_id
+        WHERE csi.user_id = ? AND csi.status != 'not-selected';
+    `;
+    const bindings = [concertSeatId, userId];
+    const [result] = await pool.query(queryStr, bindings);
+    console.log(
+      "getTheNumOfSeatsYouHave----已取得該使用者加入購物車、選取、購買的所有座位數!"
+    );
+    return result;
+  } catch (error) {
+    console.log(error);
+    return { error };
+  }
 };
 
 const chooseSeat = async (concertSeatId, userId) => {
@@ -880,6 +912,7 @@ module.exports = {
   getSoldandCartCount,
   getSeatStatus,
   getChosenConcertInfo,
+  getTheNumOfSeatsYouHave,
   chooseSeat,
   deleteSeat,
   rollBackChoose,

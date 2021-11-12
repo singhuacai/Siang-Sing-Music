@@ -130,6 +130,12 @@ const chooseOrDeleteSeat = async (req, res) => {
 
   let result;
   if (seatStatus === 1) {
+    result = await Order.getTheNumOfSeatsYouHave(concertSeatId, userId);
+    const theNumOfSeatsYouHave = result[0].count;
+    if (theNumOfSeatsYouHave > 3) {
+      res.status(400).send({ error: "已達選位上限!" });
+      return;
+    }
     result = await Order.chooseSeat(concertSeatId, userId);
     console.log(result.seat_id);
   } else if (seatStatus === 0) {

@@ -287,7 +287,12 @@ if (concertAreaPriceId) {
           },
           fail: function (res) {
             removeSeatFromChosenSeatsArray(res.data[i].concert_seat_id);
-            Swal.fire("Error", res, "error");
+            Swal.fire({
+              title: JSON.parse(res.responseText).error,
+              icon: "error",
+              showConfirmButton: false,
+              timer: 1000,
+            });
           },
         });
       } else if (status === "you-selected" && !pageAccessedByReload) {
