@@ -282,6 +282,9 @@ if (concertAreaPriceId) {
             Authorization: `Bearer ${Authorization}`,
             SocketId: socketId,
           },
+          success: function () {
+            console.log("success!");
+          },
           fail: function (res) {
             removeSeatFromChosenSeatsArray(res.data[i].concert_seat_id);
             Swal.fire("Error", res, "error");
@@ -327,7 +330,7 @@ if (concertAreaPriceId) {
             console.log("run selected function");
             (async function () {
               try {
-                await chooseSeat(countOfCartAndSold, id);
+                await chooseSeat(id);
               } catch (err) {
                 Swal.fire({
                   title: JSON.parse(res.responseText).error,
