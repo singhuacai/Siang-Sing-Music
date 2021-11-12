@@ -138,6 +138,7 @@ const getConcertDetails = async (concert_id) => {
     FROM concert_date cd
     JOIN concert_area_price cap
     ON cd.id = cap.concert_date_id
+    WHERE cd.concert_id =?
     ),
     DistinctDatePrice AS (
     SELECT
@@ -170,7 +171,8 @@ const getConcertDetails = async (concert_id) => {
     on ddp.concert_id = ci.id
     GROUP BY 1,2,3,4,5,6,7,8,9;
       `;
-    const [result] = await pool.query(queryStr);
+    const bindings = [concert_id];
+    const [result] = await pool.query(queryStr, bindings);
     return result;
   } catch (error) {
     console.log(error);
@@ -178,6 +180,31 @@ const getConcertDetails = async (concert_id) => {
   }
 };
 
+const getCampaignsByKeyword = async (keyword) => {
+  try {
+    const queryStr = `
+    SELECT 
+      ci.id, 
+      ci.concert_title, 
+      ci.concert_main_image, 
+      JSON_ARRAYAGG(DATE_FORMAT(cd.concert_datetime, '%Y-%m-%d %T')) AS concert_datetime
+    FROM 
+      concert_info AS ci
+    JOIN
+      concert_date AS cd
+    on ci.id = cd.concert_id
+    WHERE CURRENT_TIMESTAMP() between DATE_SUB(ci.sold_start, INTERVAL 7 DAY) and ci.sold_end and ci.concert_title LIKE '%${keyword}%'
+    group by 1,2,3
+    order by cd.concert_datetime
+  `;
+
+    const [result] = await pool.query(queryStr);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
 module.exports = {
   insertConcertInfo,
   insertConcertDate,
@@ -187,4 +214,5 @@ module.exports = {
   getKeyvisuals,
   getCampaignCount,
   getConcertDetails,
+  getCampaignsByKeyword,
 };

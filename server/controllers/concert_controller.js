@@ -33,7 +33,6 @@ const createConcert = async (req, res) => {
     // console.log(concertDateId);
     for (let area = 0; area < data.concert_info[i].sku_info.length; area++) {
       const concert_area_price = {
-        concert_id: concertId,
         concert_date_id: concertDateId,
         concert_area: data.concert_info[i].sku_info[area].area_code,
         ticket_price: data.concert_info[i].sku_info[area].ticket_price,
@@ -80,7 +79,7 @@ const getCampaigns = async (req, res) => {
     v.concert_main_image = `/${v.id}/${v.concert_main_image}`;
     return v;
   });
-  res.send({ data });
+  res.status(200).send({ data });
 };
 
 const getKeyvisuals = async (req, res) => {
@@ -129,9 +128,28 @@ const getConcertDetails = async (req, res) => {
   res.status(200).send({ data });
 };
 
+const getCampaignsByKeyword = async (req, res) => {
+  const { keyword } = req.query;
+  if (!keyword) {
+    res.status(400).send({ error: "Bad request!" });
+    return;
+  }
+  let result = await Concert.getCampaignsByKeyword(keyword);
+  const data = result.map((v) => {
+    v.concert_main_image = `/${v.id}/${v.concert_main_image}`;
+    return v;
+  });
+
+  if (data.length === 0) {
+    res.status(403).send({ error: "查無此關鍵字的相關演出!" });
+  }
+  res.status(200).send({ data });
+};
+
 module.exports = {
   createConcert,
   getCampaigns,
   getKeyvisuals,
   getConcertDetails,
+  getCampaignsByKeyword,
 };
