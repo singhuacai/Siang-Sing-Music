@@ -285,7 +285,9 @@ if (concertAreaPriceId) {
           success: function () {
             console.log("success!");
           },
-          fail: function (res) {
+          error: function (res) {
+            console.log(`res============:${res}`);
+            console.log(res);
             removeSeatFromChosenSeatsArray(res.data[i].concert_seat_id);
             Swal.fire({
               title: JSON.parse(res.responseText).error,
@@ -334,16 +336,7 @@ if (concertAreaPriceId) {
           if ($(".you-selected").length + countOfCartAndSold < 4) {
             console.log("run selected function");
             (async function () {
-              try {
-                await chooseSeat(id);
-              } catch (err) {
-                Swal.fire({
-                  title: JSON.parse(res.responseText).error,
-                  icon: "error",
-                  showConfirmButton: false,
-                  timer: 1000,
-                });
-              }
+              await chooseSeat(id);
             })();
           } else {
             Swal.fire({
@@ -359,16 +352,7 @@ if (concertAreaPriceId) {
         case "you-selected":
           console.log("run un-selected function");
           (async function () {
-            try {
-              await cancelSeat(id);
-            } catch (err) {
-              Swal.fire({
-                title: JSON.parse(res.responseText).error,
-                icon: "error",
-                showConfirmButton: false,
-                timer: 1000,
-              });
-            }
+            await cancelSeat(id);
           })();
           break;
         case "selected":
@@ -427,7 +411,7 @@ if (concertAreaPriceId) {
           });
           resolve(true);
         },
-        fail: function (res) {
+        error: function (res) {
           removeSeatFromChosenSeatsArray(seatId);
           Swal.fire({
             title: JSON.parse(res.responseText).error,
@@ -479,7 +463,7 @@ if (concertAreaPriceId) {
             timerProgressBar: true,
           });
         },
-        fail: function (res) {
+        error: function (res) {
           addSeatIntoChosenSeatsArray(seatId);
           Swal.fire({
             title: JSON.parse(res.responseText).error,
@@ -514,7 +498,7 @@ if (concertAreaPriceId) {
           console.log(res);
           resolve(true);
         },
-        fail: function (res) {
+        error: function (res) {
           reject(false);
           Swal.fire({
             title: JSON.parse(res.responseText).error,
