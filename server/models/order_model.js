@@ -232,38 +232,6 @@ const getChosenConcertInfo = async (concertAreaPriceId) => {
   return result;
 };
 
-const getTheNumOfSeatsYouHave = async (concertSeatId, userId) => {
-  try {
-    const queryStr = `
-    WITH ConcertDateId AS (
-      SELECT
-        cap.concert_date_id
-      FROM concert_area_price cap
-      INNER JOIN concert_seat_info csi
-         ON cap.id = csi.concert_area_price_id
-      where csi.id=?
-      )
-        SELECT
-          count(*) as count
-        FROM  ConcertDateId cdi
-        INNER JOIN concert_area_price cap
-          ON cdi.concert_date_id = cap.concert_date_id
-        INNER JOIN concert_seat_info csi
-          ON cap.id = csi.concert_area_price_id
-        WHERE csi.user_id = ? AND csi.status != 'not-selected';
-    `;
-    const bindings = [concertSeatId, userId];
-    const [result] = await pool.query(queryStr, bindings);
-    console.log(
-      "getTheNumOfSeatsYouHave----已取得該使用者加入購物車、選取、購買的所有座位數!"
-    );
-    return result;
-  } catch (error) {
-    console.log(error);
-    return { error };
-  }
-};
-
 const chooseSeat = async (concertSeatId, userId) => {
   const conn = await pool.getConnection();
   try {
@@ -301,6 +269,7 @@ const chooseSeat = async (concertSeatId, userId) => {
       [concertSeatId, userId]
     );
     if (count[0].count >= 4) {
+      await conn.query("ROLLBACK");
       return { error: "You have selected 4 seats!" };
     }
 
@@ -912,7 +881,6 @@ module.exports = {
   getSoldandCartCount,
   getSeatStatus,
   getChosenConcertInfo,
-  getTheNumOfSeatsYouHave,
   chooseSeat,
   deleteSeat,
   rollBackChoose,
