@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>想SING音樂售票系統-購買完成通知信</title>
+  </head>
+
+  <body>
+    <div>
+      <img src="http://ec2-18-188-66-2.us-east-2.compute.amazonaws.com/images/logo/logo_green.png" alt="想SING音樂售票系統" height="50"/>
+      <pre style="font-size: 14px; color:rgb(255, 51, 0); margin:0 0 50px 50px">注意：本郵件是由 想Sing音樂售票系統 自動產生與發送，請勿直接回覆。</pre>
+    </div>
+    <div>
+      <pre style="font-size: 14px">
+        {{userName}}您好，恭喜您：
+
+
+            您已經成功購買了「<a href="http://ec2-18-188-66-2.us-east-2.compute.amazonaws.com/">想SING音樂售票系統</a>」的商品，我們將在對帳後為您安排後續相關作業。
+            
+            以下是您的購買資訊：
+      </pre>
+      <div style="margin-left: 50px;">
+        <div id="order-info">
+          <div style="font-size: 20px; color: rgb(148, 190, 8); font-weight: bold">【訂單資訊】</div>
+          <ul style="font-size: 14px">
+            <li><p>訂單編號: &ensp; {{orderCode}}</p></li>
+            <li><p>訂單狀態: &ensp; <span style="color:rgb(255, 51, 0)">{{orderStatus}} </span></p></li>
+            <li><p>購買時間: &ensp; {{buyTime}}</p></li>
+            <li><p>取票方式: &ensp; 國內郵寄</p></li>
+            <li><p>總票價: &ensp; NT$ {{subtotal}}</p></li>
+            <li><p>運費: &ensp; NT$ {{freight}}</p></li>
+            <li><p>總金額: &ensp; <span style="color:rgb(255, 51, 0)"> NT$ {{total}} </span></p></li>
+          </ul>
+        </div>
+
+        <div id="recipient">
+          <div style="font-size: 20px; color: rgb(148, 190, 8); font-weight: bold">【收件資訊】</div>
+          <ul style="font-size: 14px">
+            <li><p>收件人: &ensp; {{recipientName}}</p></li>
+            <li><p>聯絡電話: &ensp; {{recipientPhone}}</p></li>
+            <li><p>收件地址: &ensp; {{recipientAddress}}</p></li>
+          </ul>
+        </div>
+        <div id="note">
+          <div style="font-size: 20px; color: rgb(255, 51, 0); font-weight: bold">【小叮嚀】</div>
+          <div>
+            <ul style="font-size: 14px; font-weight: bold;">
+              <li><p>若您於垃圾郵件中收到此通知信，請點選上方【非垃圾郵件】的按鍵，將信件移至【收件匣】。</p></li>
+              <li>
+                <p>
+                  如欲查詢詳細訂單狀況，請至「<a href="http://ec2-18-188-66-2.us-east-2.compute.amazonaws.com/">想SING音樂售票系統</a>」登入 ⇒ 登入後，請於首頁右上方點選「<a href="http://ec2-18-188-66-2.us-east-2.compute.amazonaws.com/orderTracking.html">訂單查詢</a>」，您即可看到詳細的訂單資訊。
+                </p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

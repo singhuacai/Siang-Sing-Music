@@ -33,15 +33,6 @@ app.get("/", (req, res) => {
   res.send("This is TICKETING-SYSTEM!");
 });
 
-const {
-  send_email,
-  Mail_Type,
-} = require("./server/controllers/mail_controller");
-app.get("/finishOrder", (req, res) => {
-  send_email(process.env.TEST_EMAIL, Mail_Type.FinishOrder);
-  res.send("This is TICKETING-SYSTEM!");
-});
-
 // Error handling
 app.use(function (err, req, res, next) {
   console.log(err);
