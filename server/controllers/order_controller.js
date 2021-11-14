@@ -1,4 +1,5 @@
 const Order = require("../models/order_model");
+const Mail = require("../controllers/mail_controller");
 const moment = require("moment");
 const offset_hours = process.env.TIMEZONE_OFFSET || 8;
 const {
@@ -304,8 +305,29 @@ const checkout = async (req, res) => {
       concertAreaPriceIds: result.concertAreaPriceIds,
       removeToOrderSeat: result.orderSeatId,
     });
+
+    // socket.io
     notifyRemoveToOrder(msg);
+
+    // api response
     res.status(200).send({ mainOrderCode: result.mainOrderCode });
+
+    // send email
+    const send_info = {
+      userName: result.ordererName,
+      userEmail: result.ordererEmail,
+      buyTime: result.orderTime,
+      orderCode: result.mainOrderCode,
+      orderStatus: result.order_status,
+      shipping: result.shipping,
+      subtotal: result.subtotal,
+      freight: result.freight,
+      total: result.total,
+      recipientName: result.recipientName,
+      recipientPhone: result.recipientPhone,
+      recipientAddress: result.recipientAddress,
+    };
+    await Mail.send_email(send_info, Mail.Mail_Type.FinishOrder);
     return;
   }
 };

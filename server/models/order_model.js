@@ -2,6 +2,7 @@ const { TAPPAY_PARTNER_KEY } = process.env;
 const { pool } = require("./mysql");
 const got = require("got");
 const validator = require("validator");
+const moment = require("moment");
 
 const checkConcertByConcertDateId = async (concertDateId) => {
   const queryStr = `
@@ -686,6 +687,7 @@ const checkout = async (data, user) => {
       total: data.order.total,
       details: validator.blacklist(JSON.stringify(data.order.recipient), "<>"),
     };
+
     const [result] = await pool.query(
       "INSERT INTO main_order SET ?",
       mainOrderRecord
@@ -750,6 +752,18 @@ const checkout = async (data, user) => {
       mainOrderCode,
       concertAreaPriceIds,
       orderSeatId,
+      ordererName: user.name,
+      ordererEmail: user.email,
+      orderTime: moment().format("YYYY-MM-DD HH:mm:ss"),
+      order_status: "待出貨",
+      payment_status: "paid",
+      shipping: data.order.shipping,
+      subtotal: data.order.subtotal,
+      freight: data.order.freight,
+      total: data.order.total,
+      recipientName: data.order.recipient.name,
+      recipientPhone: data.order.recipient.phone,
+      recipientAddress: data.order.recipient.address,
     };
   } catch (error) {
     console.log(error);
