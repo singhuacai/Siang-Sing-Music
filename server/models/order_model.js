@@ -805,7 +805,9 @@ const getOrderResultByOrderNum = async (mainOrderCode, userId) => {
         `;
     const bindings = [mainOrderCode, userId];
     const [result] = await pool.query(queryStr, bindings);
-
+    if (result.length === 0) {
+      return { error: "You have no right to check this order!" };
+    }
     return result;
   } catch (error) {
     console.log(error);
