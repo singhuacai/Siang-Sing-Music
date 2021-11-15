@@ -97,14 +97,18 @@
             /><br />
             <label
               >Password
-              <pre id="password-notice"> ( At least 5 codes ) </pre>
+              <pre id="password-notice"> (min 5 characters) </pre>
             </label>
             <input
-              type="text"
+              type="password"
               id="password_signup"
               name="password"
               required="required"
             /><br />
+            <div class="show-pass">
+              <input type="checkbox" onclick="ShowSignUpPass()" />
+              <div class="show-pass-text">Show Password</div>
+            </div>
           </div>
           <input
             type="button"
@@ -135,17 +139,21 @@
               type="email"
               id="email_signin"
               name="email"
-              value="user1@gmail.com"
+              value="singhuacai@gmail.com"
               required="required"
             /><br />
             <label>Password </label>
             <input
-              type="text"
+              type="password"
               id="password_signin"
               name="password"
               value="12345"
               required="required"
             /><br />
+            <div class="show-pass">
+              <input type="checkbox" onclick="ShowSignInPass()" />
+              <div class="show-pass-text">Show Password</div>
+            </div>
           </div>
 
           <input

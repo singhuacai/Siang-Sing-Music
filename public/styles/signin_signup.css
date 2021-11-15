@@ -107,3 +107,14 @@
   font-size: 10px;
   color: #979797;
 }
+
+.show-pass {
+  margin-top: -15px;
+  margin-bottom: 10px;
+  display: flex;
+}
+
+.show-pass-text {
+  margin-top: 12px;
+  font-size: 10px;
+}

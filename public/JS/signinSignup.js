@@ -93,3 +93,19 @@ function ShowSignIn() {
   $("#add-signin-block").hide();
   $("#add-signup-block").show();
 }
+
+function ShowSignUpPass() {
+  if ($("#password_signup").attr("type") === "password") {
+    $("#password_signup").attr("type", "text");
+  } else {
+    $("#password_signup").attr("type", "password");
+  }
+}
+
+function ShowSignInPass() {
+  if ($("#password_signin").attr("type") === "password") {
+    $("#password_signin").attr("type", "text");
+  } else {
+    $("#password_signin").attr("type", "password");
+  }
+}
