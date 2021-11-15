@@ -6,7 +6,7 @@ $("#order-flow-step").html(
     src="../images/order_flow/Step3.png"
     alt="step3-ChooseArea"
     title="step3-ChooseArea" 
-    width="800px"
+    width="600px"
   />`
 );
 

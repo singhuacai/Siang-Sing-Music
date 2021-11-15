@@ -14,7 +14,7 @@ $("#order-flow-step").html(
     src="../images/order_flow/Step4.png"
     alt="step4-ChooseArea"
     title="step4-ChooseArea" 
-    width="800px"
+    width="600px"
   />`
 );
 

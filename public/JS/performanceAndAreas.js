@@ -33,7 +33,7 @@ $.ajax({
           src="../images/order_flow/Step1.png"
           alt="step1-ChooseArea"
           title="step1-ChooseArea"
-          width="800px"
+          width="600px"
           />`
       );
 

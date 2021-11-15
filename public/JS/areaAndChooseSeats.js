@@ -519,7 +519,7 @@ $.ajax({
           src="../images/order_flow/Step2.png"
           alt="step2-ChooseArea"
           title="step2-ChooseArea"
-          width="800px"
+          width="600px"
       />`
       );
       $("#concert-title").text(`${res.data[0].concert_title}`);
