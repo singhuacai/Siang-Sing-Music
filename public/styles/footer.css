@@ -1,8 +1,7 @@
 /* ---------- footer ---------- */
 footer {
   display: block;
-  height: 115px;
-  /* background-color: rgb(5, 5, 75); */
+  height: 90px;
   background-color: rgb(148, 190, 8);
   display: flex;
   align-items: center;
@@ -21,7 +20,7 @@ footer > nav > ul {
 }
 
 footer > nav > ul > li {
-  width: 130px;
+  width: 150px;
   text-align: center;
   line-height: 16px;
   font-size: 16px;
@@ -30,6 +29,9 @@ footer > nav > ul > li {
 
 footer > nav > ul > li:hover {
   color: #8b572a;
+}
+.contact-info {
+  width: 400px;
 }
 
 footer > .links {
@@ -51,4 +53,13 @@ footer > .rights {
   font-size: 12px;
   color: #828282;
   text-align: center;
+}
+
+a {
+  text-decoration: none;
+  color: #f5f5f5;
+}
+
+a:hover {
+  color: #8b572a;
 }

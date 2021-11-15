@@ -70,63 +70,17 @@ hr.line-style {
 }
 
 #concert-area-image img {
+  margin-top: -100px;
   max-width: 800px;
 }
 
-#A1:hover,
-#A2:hover,
-#A3:hover,
-#A4:hover {
+#choose-zone-title {
+  margin-top: -100px;
+}
+
+.concert-zone-price-qty:hover {
   border-radius: 3px;
   color: rgb(255, 255, 255);
   border: 1px solid rgba(16, 38, 112);
   background-color: rgba(16, 38, 112, 0.863);
-}
-
-#B1:hover,
-#B2:hover,
-#B3:hover,
-#B4:hover {
-  border-radius: 3px;
-  color: rgb(255, 255, 255);
-  border: 1px solid rgba(39, 79, 189);
-  background-color: rgba(39, 79, 189, 0.863);
-}
-
-#C1:hover,
-#C2:hover,
-#C3:hover,
-#C4:hover {
-  border-radius: 3px;
-  color: rgb(255, 255, 255);
-  border: 1px solid rgba(10, 163, 223);
-  background-color: rgba(10, 163, 223, 0.863);
-}
-
-/* ------------------------------------------- */
-.chair-style ul {
-  display: flex;
-}
-
-#notice {
-  font-size: 24px;
-  font-weight: bold;
-  background-color: rgb(148, 190, 8);
-  color: aliceblue;
-  border-radius: 3px;
-}
-
-#count {
-  font-size: 28px;
-  font-weight: bold;
-}
-
-#add-to-cart-button {
-  font-size: 28px;
-  width: 120%;
-  height: 120%;
-  border-color: rgb(255, 80, 80);
-  border-radius: 5px;
-  background-color: rgb(255, 80, 80);
-  color: #fff;
 }

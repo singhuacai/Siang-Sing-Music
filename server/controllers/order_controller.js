@@ -171,7 +171,7 @@ const rollBackChoose = async (req, res) => {
   }
 
   if (chosenSeats.length === 0) {
-    res.status(200).send({ result: "chosenSeats is empty" });
+    res.status(200).send({ result: "您尚未選擇座位" });
     return;
   }
 
@@ -206,7 +206,7 @@ const addToCart = async (req, res) => {
   }
 
   if (chosenSeats.length === 0) {
-    res.status(400).send({ error: "chosenSeats is empty" });
+    res.status(400).send({ error: "您尚未選擇座位" });
     return;
   }
 

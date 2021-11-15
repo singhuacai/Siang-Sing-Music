@@ -52,15 +52,15 @@ $.ajax({
           $("#cart-table").show();
           $("#cart-content").append(
             `
-                        <tr class = "cart-item" id = "item-of-cart-${shoppingCartId}">
-                        <td class = "concert-title">${cartStatus.concert_title}</td>
-                        <td class = "concert-date-time">${cartStatus.concert_datetime}</td>
-                        <td class = "concert-location">${cartStatus.concert_location}</td>
-                        <td class = "concert-seat">${cartStatus.concert_area} 區  ${cartStatus.seat_row}排 ${cartStatus.seat_column}號</td>
-                        <td class = "price">NT$ ${cartStatus.ticket_price}</td>
-                        <td class="cart-remove-block"><img src="../images/logo/cart-remove.png" id = "seat-${concertSeatId}-delete" class = "remove-button" width="20%" title="刪除"></td>
-                        </tr>
-                    `
+                <tr class = "cart-item" id = "item-of-cart-${shoppingCartId}" >
+                <td class = "concert-title" style="word-wrap:break-word;">${cartStatus.concert_title} </td>
+                <td class = "concert-date-time" style="word-wrap:break-word;">${cartStatus.concert_datetime}</td>
+                <td class = "concert-location" style="word-wrap:break-word;">${cartStatus.concert_location}</td>
+                <td class = "concert-seat">${cartStatus.concert_area} 區 <br> ${cartStatus.seat_row}排 ${cartStatus.seat_column}號</td>
+                <td class = "price">NT$ ${cartStatus.ticket_price}</td>
+                <td class="cart-remove-block"><img src="../images/logo/cart-remove.png" id = "seat-${concertSeatId}-delete" class = "remove-button" width="35%" title="刪除"></td>
+                </tr>
+            `
           );
 
           // 為每一個刪除鈕註冊事件

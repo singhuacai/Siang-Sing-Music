@@ -1,133 +1,119 @@
 .wrapper {
-    flex-grow: 1; /*可佔滿垂直剩餘的空間*/
+  flex-grow: 1; /*可佔滿垂直剩餘的空間*/
 }
 
 #content-block,
 #order-result-block {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    align-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
 }
 
 hr.line-style {
-    width: 100%;
-    border: 0;
-    height: 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  width: 100%;
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .content {
-    margin: 50px auto 10px auto;
+  margin: 50px auto 10px auto;
 }
 
 #thankyou-block {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    align-content: center;
-    margin-top: 200px;
-    margin-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+  margin-top: 200px;
+  margin-bottom: 80px;
 }
 
 #order-complete-title,
 #order-result-title {
-    width: 180px;
-    height: 40px;
-    line-height: 40px;
-    text-align: center;
-    font-size: 28px;
-    font-weight: bold;
-    background-color: rgb(148, 190, 8);
-    color: aliceblue;
-    border-radius: 3px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: rgb(148, 190, 8);
 }
 
-#thanks-text {
-    font-size: 20px;
-    font-weight: bold;
+#order-result-title {
+  margin-top: 70px;
 }
-
+#thanks-text,
 #order-number {
-    font-size: 20px;
-    font-weight: bold;
+  margin: 20px auto;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 #empty-order-text {
-    font-size: 20px;
-    font-weight: bold;
-    margin: 0px auto;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0px auto;
 }
 
 table,
 td {
-    font-size: 20px;
-    border: 1px solid rgb(218, 215, 215);
-    text-align: center;
-    vertical-align: middle;
-    height: 60px;
-    margin: auto;
+  font-size: 20px;
+  border: 1px solid rgb(218, 215, 215);
+  text-align: center;
+  vertical-align: middle;
+  height: 60px;
+  padding: 10px;
+  margin: auto;
+}
+
+table {
+  width: 80vw;
 }
 
 th {
-    vertical-align: middle;
+  vertical-align: middle;
 }
 
 tr:nth-child(even) {
-    background-color: #f2f2f2;
+  background-color: #f2f2f2;
 }
 
 thead,
 tfoot {
-    height: 60px;
-    background-color: rgb(148, 190, 8);
-    color: #fff;
+  height: 60px;
+  background-color: rgb(148, 190, 8);
+  color: #fff;
 }
 
 #column-name {
-    background-color: rgb(148, 190, 8);
-}
-
-.concert-title {
-    min-width: 500px;
-}
-
-.concert-date-time {
-    min-width: 240px;
-}
-
-.concert-location {
-    min-width: 430px;
-}
-
-.concert-seat {
-    min-width: 180px;
-}
-
-.price {
-    min-width: 180px;
+  background-color: rgb(148, 190, 8);
 }
 
 .ticket-status {
-    font-weight: bold;
-    color: rgb(255, 80, 80);
-    min-width: 220px;
+  font-weight: bold;
+  color: rgb(255, 80, 80);
 }
 
+.total {
+  font-weight: bold;
+  color: rgb(255, 80, 80);
+}
 .check-order-button {
-    font-size: 24px;
-    width: 180px;
-    height: 40px;
-    line-height: 40px;
-    color: #fff;
-    border-radius: 3px;
-    text-align: center;
-    border: 1px solid rgb(255, 80, 80);
-    background-color: rgb(255, 80, 80);
+  font-size: 24px;
+  width: 180px;
+  height: 40px;
+  line-height: 40px;
+  color: #fff;
+  border-radius: 3px;
+  text-align: center;
+  border: 1px solid rgb(255, 80, 80);
+  background-color: rgb(255, 80, 80);
 }
 
 .check-order-button:hover {
-    color: rgb(255, 80, 80);
-    background-color: #fff;
+  color: rgb(255, 80, 80);
+  background-color: #fff;
+  cursor: pointer;
 }

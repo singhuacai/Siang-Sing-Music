@@ -67,6 +67,9 @@ $("#submit").click(async () => {
   // 2. 確認收件人資料均有填寫
   const recipientName = $("#recipient-name").val();
   const recipientPhone = $("#recipient-phone").val();
+  const recipientAddrZip = $(".recipient-addr-zip").val();
+  const recipientAddrCounty = $(".recipient-addr-county").val();
+  const recipientAddrArea = $(".recipient-addr-area").val();
   const recipientAddress =
     $(".recipient-addr-zip").val() +
     $(".recipient-addr-county").val() +
@@ -96,9 +99,14 @@ $("#submit").click(async () => {
     });
     return;
   }
-  if (!recipientAddress) {
+  if (
+    !recipientAddress ||
+    !recipientAddrZip ||
+    !recipientAddrCounty ||
+    !recipientAddrArea
+  ) {
     Swal.fire({
-      title: "您未填寫收件地址",
+      title: "您的收件地址填寫不完全",
       icon: "error",
       showConfirmButton: false,
       timer: 1000,

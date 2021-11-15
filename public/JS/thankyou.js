@@ -72,34 +72,21 @@ $.ajax({
           <td class = "concert-location">${orderResult.concert_location}</td>
           <td class = "concert-seat">${orderResult.concert_area} 區  ${orderResult.seat_row}排 ${orderResult.seat_column}號</td>
           <td class = "price">NT$ ${orderResult.ticket_price}</td>
-          <td class= "ticket-status">已付款，待出貨</td>
+          <td class= "ticket-status">已付款<br>待出貨</td>
           </tr>
           `
           );
         }
 
-        // 總票價
         $("#order-result").append(`
             <tr id="sum">
-            <td colspan="4"> 總票價 </td>
-            <td colspan="2" class = "price-sum"></td>
+              <td> 總票價 </td>
+              <td class = "price-sum"></td>
+              <td> 運費 </td>
+              <td class = "freight">NT$ 50 </td>
+              <td> 合計 </td>
+              <td class = "total"></td>
             </tr>
-        `);
-
-        // 運費
-        $("#order-result").append(`
-            <tr id="freight">
-            <td colspan="4"> 運費 </td>
-            <td colspan="2" class = "freight">NT$ 50 </td>
-            </tr>
-        `);
-
-        // 合計
-        $("#order-result").append(`
-             <tr id="total">
-             <td colspan="4"> 合計 </td>
-             <td colspan="2" class = "total"></td>
-             </tr>
          `);
 
         flushSumPrice();

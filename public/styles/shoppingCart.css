@@ -28,13 +28,10 @@ hr.line-style {
 }
 
 #shopping-cart-title {
-  width: 150px;
   text-align: center;
   font-size: 24px;
   font-weight: bold;
-  background-color: rgb(148, 190, 8);
-  color: aliceblue;
-  border-radius: 3px;
+  color: rgb(148, 190, 8);
 }
 
 .content {
@@ -53,7 +50,12 @@ td {
   text-align: center;
   vertical-align: middle;
   height: 60px;
+  padding: 10px;
   margin: auto;
+}
+
+table {
+  width: 80vw;
 }
 
 th {
@@ -75,35 +77,9 @@ tfoot {
   background-color: rgb(148, 190, 8);
 }
 
-.concert-title {
-  min-width: 500px;
-}
-
-.concert-date-time {
-  min-width: 240px;
-}
-
-.concert-location {
-  min-width: 430px;
-}
-
-.concert-seat {
-  min-width: 180px;
-}
-
-.price {
-  min-width: 180px;
-}
-
-.cart-remove-block {
-  min-width: 160px;
-}
-
-.remove-button {
-  width: 50px;
-}
 .remove-button:hover {
   content: url("../images/logo/cart-remove-hover.png");
+  cursor: pointer;
 }
 
 #sum {

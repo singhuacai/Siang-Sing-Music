@@ -24,7 +24,7 @@ $.ajax({
           `
         <tr>
           <td>${res.data.concert_info[i].concert_datetime}</td>
-          <td>${res.data.concert_location}</td>
+          <td style="word-wrap:break-word;">${res.data.concert_location}</td>
           <td>${res.data.concert_info[i].ticket_prices}</td>
           <td><button class = "booking-button" onclick = "javascript:location.href='/order.html?concertId=${concert_id}&concertDateId=${res.data.concert_info[i].concert_date_id}'">立即訂購</button></td>
         </tr>

@@ -1,0 +1,35 @@
+.chair-style ul {
+  display: flex;
+}
+
+#notice {
+  font-size: 20px;
+  font-weight: bold;
+  padding: 10px;
+  color: rgb(255, 80, 80);
+  /* border: 2px solid rgb(255, 80, 80); */
+  border-radius: 3px;
+}
+
+#count {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+#add-to-cart-button {
+  font-size: 24px;
+  width: 120%;
+  height: 120%;
+  border-color: rgb(255, 80, 80);
+  border-radius: 5px;
+  background-color: rgb(255, 80, 80);
+  color: #fff;
+}
+
+#add-to-cart-button:hover {
+  border-color: rgb(255, 80, 80);
+  border-radius: 5px;
+  background-color: #fff;
+  color: rgb(255, 80, 80);
+  cursor: pointer;
+}

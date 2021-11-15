@@ -29,22 +29,18 @@
 }
 
 .item {
-  /* text-align: center; */
-  border: 1px solid rgb(148, 190, 8);
-  background-color: rgb(148, 190, 8);
-  border-radius: 3px;
-  text-align: center;
-  color: #fff;
-  width: 120px;
-  margin-left: 20%;
+  color: rgb(148, 190, 8);
+  width: 130px;
   font-weight: bold;
   font-size: 24px;
+  text-align: center;
   margin-top: 10px;
+  margin-left: 13%;
 }
 
 .content {
   margin: 10px auto 80px auto;
-  font-size: 24px;
+  font-size: 20px;
 }
 
 table,
@@ -53,7 +49,18 @@ td {
   text-align: center;
   vertical-align: middle;
   min-width: 200px;
-  min-height: 200px;
+  min-height: 150px;
+  padding: 5px;
+}
+
+th {
+  vertical-align: middle;
+  padding: 3px;
+  height: 50px;
+}
+
+table {
+  width: 70vw;
 }
 
 thead,
@@ -63,7 +70,7 @@ tfoot {
 }
 
 .booking-button {
-  font-size: 28px;
+  font-size: 24px;
   width: 80%;
   height: 80%;
   border-color: rgb(255, 80, 80);
@@ -75,4 +82,10 @@ tfoot {
 .booking-button:hover {
   background-color: #fff;
   color: rgb(255, 80, 80);
+  cursor: pointer;
+}
+
+#notice {
+  font-size: 20px;
+  width: 70vw;
 }
