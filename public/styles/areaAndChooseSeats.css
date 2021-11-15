@@ -3,11 +3,11 @@
 }
 
 #notice {
+  margin-top: 20px;
   font-size: 20px;
   font-weight: bold;
   padding: 10px;
   color: rgb(255, 80, 80);
-  /* border: 2px solid rgb(255, 80, 80); */
   border-radius: 3px;
 }
 
