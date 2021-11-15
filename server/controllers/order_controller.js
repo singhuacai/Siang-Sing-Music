@@ -338,7 +338,10 @@ const getOrderResult = async (req, res) => {
   if (mainOrderCode) {
     //TODO: 利用 mainOrderCode => 訂票結果
     result = await Order.getOrderResultByOrderNum(mainOrderCode, userId);
-
+    if (result.error) {
+      res.status(403).send({ error: result.error });
+      return;
+    }
     result.map((v) => {
       v.concert_datetime = moment(v.concert_datetime)
         .add(offset_hours, "hours")
@@ -348,6 +351,10 @@ const getOrderResult = async (req, res) => {
   } else {
     //TODO: 利用 userId => 所有訂票結果
     result = await Order.getOrderResultByUserId(userId);
+    if (result.error) {
+      res.status(403).send({ error: result.error });
+      return;
+    }
     result.map((v) => {
       v.ticket_info.map((v) => {
         v.concert_datetime = moment(v.concert_datetime)
@@ -360,13 +367,8 @@ const getOrderResult = async (req, res) => {
       return v;
     });
   }
-  if (result.error) {
-    res.status(403).send({ error: result.error });
-    return;
-  } else {
-    res.status(200).send({ orderResult: result });
-    return;
-  }
+  res.status(200).send({ orderResult: result });
+  return;
 };
 
 module.exports = {

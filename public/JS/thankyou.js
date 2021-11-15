@@ -1,5 +1,5 @@
-const urlParams = new URLSearchParams(window.location.search);
-const mainOrderCode = urlParams.get("number");
+urlParams = new URLSearchParams(window.location.search);
+mainOrderCode = urlParams.get("number");
 const Authorization = localStorage.getItem("Authorization");
 
 // get all query string's key
@@ -52,50 +52,55 @@ $.ajax({
       Swal.close();
       if (res.orderResult.length === 0) {
         // 查詢不到此訂單的內容
+        $("#order-complete-title").hide();
+        $("#thanks-text").hide();
         $("#empty-order-text").show();
+        $("order-result-title").show();
         $("#empty-order-text").text("查詢不到此訂單的內容");
       } else {
+        $("#order-complete-title").show();
+        $("thanks-text").show();
         $("#order-number").text(`訂單編號：${mainOrderCode}`);
         $("#order-result-table").show();
         for (let i = 0; i < res.orderResult.length; i++) {
           const orderResult = res.orderResult[i];
           $("#order-result").append(
             `
-                    <tr class = "order-item">
-                    <td class = "concert-title">${orderResult.concert_title}</td>
-                    <td class = "concert-date-time">${orderResult.concert_datetime}</td>
-                    <td class = "concert-location">${orderResult.concert_location}</td>
-                    <td class = "concert-seat">${orderResult.concert_area} 區  ${orderResult.seat_row}排 ${orderResult.seat_column}號</td>
-                    <td class = "price">NT$ ${orderResult.ticket_price}</td>
-                    <td class= "ticket-status">已付款，待出貨</td>
-                    </tr>
-                    `
+          <tr class = "order-item">
+          <td class = "concert-title">${orderResult.concert_title}</td>
+          <td class = "concert-date-time">${orderResult.concert_datetime}</td>
+          <td class = "concert-location">${orderResult.concert_location}</td>
+          <td class = "concert-seat">${orderResult.concert_area} 區  ${orderResult.seat_row}排 ${orderResult.seat_column}號</td>
+          <td class = "price">NT$ ${orderResult.ticket_price}</td>
+          <td class= "ticket-status">已付款，待出貨</td>
+          </tr>
+          `
           );
         }
 
         // 總票價
         $("#order-result").append(`
-                    <tr id="sum">
-                    <td colspan="4"> 總票價 </td>
-                    <td colspan="2" class = "price-sum"></td>
-                    </tr>
-                `);
+            <tr id="sum">
+            <td colspan="4"> 總票價 </td>
+            <td colspan="2" class = "price-sum"></td>
+            </tr>
+        `);
 
         // 運費
         $("#order-result").append(`
-                    <tr id="freight">
-                    <td colspan="4"> 運費 </td>
-                    <td colspan="2" class = "freight">NT$ 50 </td>
-                    </tr>
-                `);
+            <tr id="freight">
+            <td colspan="4"> 運費 </td>
+            <td colspan="2" class = "freight">NT$ 50 </td>
+            </tr>
+        `);
 
         // 合計
         $("#order-result").append(`
-                    <tr id="total">
-                    <td colspan="4"> 合計 </td>
-                    <td colspan="2" class = "total"></td>
-                    </tr>
-                `);
+             <tr id="total">
+             <td colspan="4"> 合計 </td>
+             <td colspan="2" class = "total"></td>
+             </tr>
+         `);
 
         flushSumPrice();
       }
@@ -103,11 +108,23 @@ $.ajax({
   })
   .fail(function (res) {
     if (!Authorization) {
-      alert("請先登入");
-      window.location.assign("/profile.html");
+      Swal.fire({
+        title: "請先登入",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1200,
+      }).then(function () {
+        window.location = "/profile.html";
+      });
     } else {
-      alert(`Error: ${res.responseText}.`);
-      window.location.assign("/");
+      Swal.fire({
+        title: JSON.parse(res.responseText).error,
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1200,
+      }).then(function () {
+        window.location = "/";
+      });
     }
   });
 

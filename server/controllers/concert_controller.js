@@ -142,8 +142,10 @@ const getCampaignsByKeyword = async (req, res) => {
 
   if (data.length === 0) {
     res.status(403).send({ error: "查無此關鍵字的相關演出!" });
+    return;
   }
   res.status(200).send({ data });
+  return;
 };
 
 module.exports = {

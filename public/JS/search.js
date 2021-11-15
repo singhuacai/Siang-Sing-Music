@@ -29,6 +29,12 @@ $.ajax({
     });
   })
   .fail(function (res) {
-    alert(`Error: ${res.responseText}.`);
-    window.location.assign(`/`);
+    Swal.fire({
+      title: JSON.parse(res.responseText).error,
+      icon: "error",
+      showConfirmButton: false,
+      timer: 1200,
+    }).then(function () {
+      window.location = "/";
+    });
   });

@@ -33,7 +33,6 @@
 
           <a class="cart" href="/shoppingCart.html">
             <img src="./images/logo/cart.png" height="44" />
-            <div class="count">0</div>
           </a>
 
           <a class="order" href="/orderTracking.html">
@@ -87,6 +86,27 @@
       </nav>
       <div class="rights">© 2021. All rights reserved.</div>
     </footer>
-    <script src="../JS/performanceAndAreas.js"></script>
+    <script>
+      let urlParams = new URLSearchParams(window.location.search);
+      let concertId = urlParams.get("concertId");
+      let concertDateId = urlParams.get("concertDateId");
+      let concertAreaPriceId = urlParams.get("concertAreaPriceId");
+      let keyword = urlParams.get("tag");
+
+      $(document).keyup(function (e) {
+        if ($(".search").is(":focus") && e.keyCode == 13) {
+          const search = $(".search").val();
+          window.location.assign(`./?tag=${search}`);
+        }
+      });
+
+      if (keyword) {
+        $.getScript("../JS/search.js");
+      } else if (concertAreaPriceId) {
+        $.getScript("../JS/areaAndChooseSeats.js");
+      } else if (concertDateId) {
+        $.getScript("../JS/performanceAndAreas.js");
+      }
+    </script>
   </body>
 </html>
