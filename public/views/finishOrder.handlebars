@@ -4,54 +4,135 @@
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <title>想SING音樂售票系統-購買完成通知信</title>
+    <style>
+      body {
+        border: 1px solid rgb(218, 215, 215);
+        width: 60vw;
+        margin: 20px auto;
+      }
+      table {
+        padding: 0px;
+        font-size: 14px;
+        border: 1px solid rgb(218, 215, 215);
+        height: 30px;
+        width: 300px;
+        margin-left: 120px;
+      }
+      th {
+        vertical-align: middle;
+        font-size: 20px;
+      }
+      td {
+        vertical-align: middle;
+        height: 30px;
+      }
+      .left-item {
+        text-align: start;
+        padding-left: 10px;
+      }
+      .right-item {
+        display: flex;
+        justify-content: space-between;
+        padding-left: 110px;
+        padding-right: 10px;
+      }
+      thead,
+      tfoot {
+        height: 40px;
+        background-color: rgb(148, 190, 8);
+        color: #fff;
+      }
+      .warning {
+        font-size: 14px;
+        color: rgb(255, 51, 0);
+        margin: 0 0 50px 50px;
+      }
+      .pre-text {
+        font-size: 14px;
+        white-space: pre-wrap;
+      }
+      #order-info-block {
+        margin-left: 50px;
+      }
+      .content-text {
+        font-size: 14px;
+      }
+      .note {
+        font-weight: bold;
+        margin-bottom: 50px;
+        margin-right: 50px;
+      }
+      .red-text {
+        color: rgb(255, 51, 0);
+      }
+      .green-text {
+        color: rgb(148, 190, 8);
+      }
+      .title-text {
+        margin: 50px auto 20px;
+        font-size: 20px;
+        font-weight: bold;
+      }
+      .total-price {
+        font-size: 18px;
+      }
+    </style>
   </head>
 
   <body>
     <div>
-      <img src="http://ec2-18-188-66-2.us-east-2.compute.amazonaws.com/images/logo/logo_green.png" alt="想SING音樂售票系統" height="50"/>
-      <pre style="font-size: 14px; color:rgb(255, 51, 0); margin:0 0 50px 50px">注意：本郵件是由 想Sing音樂售票系統 自動產生與發送，請勿直接回覆。</pre>
+      <img src="https://siangsing-music.site/images/logo/logo_green.png" alt="想SING音樂售票系統" height="50"/>
+      <div class="warning">注意：本郵件是由 想Sing音樂售票系統 自動產生與發送，請勿直接回覆。</div>
     </div>
     <div>
-      <pre style="font-size: 14px">
+      <pre class="pre-text">
         {{userName}}您好，恭喜您：
 
 
-            您已經成功購買了「<a href="http://ec2-18-188-66-2.us-east-2.compute.amazonaws.com/">想SING音樂售票系統</a>」的商品，我們將在對帳後為您安排後續相關作業。
+            您已經成功購買了「<a href="https://siangsing-music.site">想SING音樂售票系統</a>」的商品，我們將在對帳後為您安排後續相關作業。
             
             以下是您的購買資訊：
       </pre>
-      <div style="margin-left: 50px;">
+      <div id="order-info-block">
         <div id="order-info">
-          <div style="font-size: 20px; color: rgb(148, 190, 8); font-weight: bold">【訂單資訊】</div>
-          <ul style="font-size: 14px">
-            <li><p>訂單編號: &ensp; {{orderCode}}</p></li>
-            <li><p>訂單狀態: &ensp; <span style="color:rgb(255, 51, 0)">{{orderStatus}} </span></p></li>
-            <li><p>購買時間: &ensp; {{buyTime}}</p></li>
-            <li><p>取票方式: &ensp; 國內郵寄</p></li>
-            <li><p>總票價: &ensp; NT$ {{subtotal}}</p></li>
-            <li><p>運費: &ensp; NT$ {{freight}}</p></li>
-            <li><p>總金額: &ensp; <span style="color:rgb(255, 51, 0)"> NT$ {{total}} </span></p></li>
-          </ul>
+          <table>
+            <thead>
+              <tr>
+                <th>訂單資訊</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="left-item">訂單編號: &ensp; {{orderCode}}</td></tr>
+              <tr><td class="left-item"> 訂單狀態: &ensp; <span class="red-text">{{orderStatus}}</span> </td></tr>
+              <tr><td class="left-item">購買時間: &ensp; {{buyTime}}</td></tr>
+              <tr><td class="left-item"> 取票方式: &ensp; 國內郵寄<br /> <hr /> </td></tr>
+              <tr><td class="right-item"><div>總票價:</div> &emsp;&emsp;&emsp; <div>NT$ {{subtotal}}</div></td></tr>
+              <tr><td class="right-item"><div>運費:</div> &emsp;&emsp;&emsp;&emsp;&emsp; <div>NT$ {{freight}}</div></td></tr>
+              <tr><td class="right-item"><div>總金額:</div> &emsp;&emsp;<div class="red-text total-price">NT$ {{total}}</div></td></tr>
+            </tbody>
+          </table>
         </div>
 
         <div id="recipient">
-          <div style="font-size: 20px; color: rgb(148, 190, 8); font-weight: bold">【收件資訊】</div>
-          <ul style="font-size: 14px">
-            <li><p>收件人: &ensp; {{recipientName}}</p></li>
-            <li><p>聯絡電話: &ensp; {{recipientPhone}}</p></li>
-            <li><p>收件地址: &ensp; {{recipientAddress}}</p></li>
-          </ul>
+          <table>
+            <thead>
+              <tr>
+                <th>收件資訊</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr> <td class="left-item">收件人: &ensp; {{recipientName}}</td> </tr>
+              <tr> <td class="left-item">聯絡電話: &ensp;{{recipientPhone}}</td> </tr>
+              <tr> <td class="left-item">收件地址: &ensp; {{recipientAddress}}</td> </tr>
+            </tbody>
+          </table>
         </div>
         <div id="note">
-          <div style="font-size: 20px; color: rgb(255, 51, 0); font-weight: bold">【小叮嚀】</div>
+          <div class="red-text title-text">【小叮嚀】</div>
           <div>
-            <ul style="font-size: 14px; font-weight: bold;">
+            <ul class="content-text note">
               <li><p>若您於垃圾郵件中收到此通知信，請點選上方【非垃圾郵件】的按鍵，將信件移至【收件匣】。</p></li>
-              <li>
-                <p>
-                  如欲查詢詳細訂單狀況，請至「<a href="http://ec2-18-188-66-2.us-east-2.compute.amazonaws.com/">想SING音樂售票系統</a>」登入 ⇒ 登入後，請於首頁右上方點選「<a href="http://ec2-18-188-66-2.us-east-2.compute.amazonaws.com/orderTracking.html">訂單查詢</a>」，您即可看到詳細的訂單資訊。
-                </p>
-              </li>
+              <li><p>如欲查詢詳細訂單狀況，請至「<a href="https://siangsing-music.site">想SING音樂售票系統</a>」登入 ⇒ 登入後，請於首頁右上方點選「<a href="https://siangsing-music.site/orderTracking.html">訂單查詢</a>」，您即可看到詳細的訂單資訊。</p></li>
             </ul>
           </div>
         </div>
