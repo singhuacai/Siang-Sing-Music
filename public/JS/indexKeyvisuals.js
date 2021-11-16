@@ -17,7 +17,7 @@ $.ajax({
         $(".carousel-inner").append(
           `
           <div class="carousel-item">
-          <a href='/campaign.html?id=${res.data[0].concert_id}'><img src="${res.data[i].concert_main_image}" class="d-block"/></a>
+          <a href='/campaign.html?id=${res.data[i].concert_id}'><img src="${res.data[i].concert_main_image}" class="d-block"/></a>
           </div>
           `
         );
