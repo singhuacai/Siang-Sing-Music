@@ -11,6 +11,7 @@ function signUp() {
       showConfirmButton: false,
       timer: 1000,
     });
+    return;
   }
   $.ajax({
     url: "/api/1.0/user/signup",
@@ -48,6 +49,7 @@ function signIn() {
       showConfirmButton: false,
       timer: 1000,
     });
+    return;
   }
   $.ajax({
     url: "/api/1.0/user/signin",

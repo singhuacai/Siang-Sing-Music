@@ -79,10 +79,7 @@ const signUp = async (req, res) => {
 
 const nativeSignIn = async (email, password) => {
   if (!email || !password) {
-    res
-      .status(400)
-      .send({ error: "Request Error: email and password are required." });
-    return;
+    return { error: "Request Error: email and password are required." };
   }
   try {
     return await User.nativeSignIn(email, password);

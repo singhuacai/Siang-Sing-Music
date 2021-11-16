@@ -193,12 +193,13 @@ const getCampaignsByKeyword = async (keyword) => {
     JOIN
       concert_date AS cd
     on ci.id = cd.concert_id
-    WHERE CURRENT_TIMESTAMP() between DATE_SUB(ci.sold_start, INTERVAL 7 DAY) and ci.sold_end and ci.concert_title LIKE '%${keyword}%'
+    WHERE CURRENT_TIMESTAMP() between DATE_SUB(ci.sold_start, INTERVAL 7 DAY) and ci.sold_end and ci.concert_title LIKE ?
     group by 1,2,3
     order by cd.concert_datetime
   `;
 
-    const [result] = await pool.query(queryStr);
+    const bindings = [`%${keyword}%`];
+    const [result] = await pool.query(queryStr, bindings);
     return result;
   } catch (error) {
     console.log(error);
