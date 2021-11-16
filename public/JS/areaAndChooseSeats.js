@@ -115,6 +115,7 @@ socket.on("NotifyAddToCart", (msg) => {
       $(`#${msg.addToCartSeat[i]}`)
         .removeClass("you-selected")
         .addClass("you-cart");
+
       $(`#${msg.addToCartSeat[i]}`).attr(
         "src",
         "../images/logo/icon_chair_cart.gif"
@@ -122,6 +123,7 @@ socket.on("NotifyAddToCart", (msg) => {
     }
     chosenSeats = [];
     countOfCartAndSold += msg.addToCartSeat.length;
+    window.location.assign(`/shoppingCart.html`);
   } else {
     for (let i = 0; i < msg.addToCartSeat.length; i++) {
       $(`#${msg.addToCartSeat[i]}`).removeClass("selected").addClass("cart");
@@ -245,8 +247,6 @@ function renderSeats(res) {
       $(`#row-${res.data[i].seat_row}`).append(
         `<td><img src="../images/logo/icon_chair_select.gif" class="you-selected" id = "${res.data[i].concert_seat_id}" width="100%"></td>`
       );
-      // 是否進入bug mode
-      // alert(pageAccessedByReload);
 
       // 進入時，若座位狀態已有"you-selected"，再打一次 API 讓他真的被選起來
       addSeatIntoChosenSeatsArray(res.data[i].concert_seat_id);
@@ -533,16 +533,23 @@ $.ajax({
   })
   .fail(function (res) {
     if (!Authorization) {
-      alert("請先登入");
-      window.location.assign("/profile.html");
+      Swal.fire({
+        title: "請先登入",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1200,
+      }).then(function () {
+        window.location = "/profile.html";
+      });
     } else {
       Swal.fire({
         title: JSON.parse(res.responseText).error,
         icon: "error",
         showConfirmButton: false,
-        timer: 1000,
+        timer: 1200,
+      }).then(function () {
+        window.location = "/";
       });
-      window.location.assign("/");
     }
   });
 
@@ -604,16 +611,23 @@ $.ajax({
   })
   .fail(function (res) {
     if (!Authorization) {
-      alert("請先登入");
-      window.location.assign("/profile.html");
+      Swal.fire({
+        title: "請先登入",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1200,
+      }).then(function () {
+        window.location = "/profile.html";
+      });
     } else {
       Swal.fire({
         title: JSON.parse(res.responseText).error,
         icon: "error",
         showConfirmButton: false,
         timer: 1000,
+      }).then(function () {
+        window.location = "/";
       });
-      window.location.assign("/");
     }
   });
 
