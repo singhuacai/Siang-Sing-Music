@@ -130,7 +130,6 @@ function deleteSeat(event) {
         console.log(res);
         $(`#item-of-cart-${shoppingCartId}`).remove();
         flushSumPrice();
-        // alert("已成功將票從購物車移除!!!");
         Swal.fire({
           position: "center",
           icon: "success",

@@ -78,15 +78,22 @@ $.ajax({
   })
   .fail(function (res) {
     if (!Authorization) {
-      alert("請先登入");
-      window.location.assign("/profile.html");
+      Swal.fire({
+        title: "請先登入",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1200,
+      }).then(function () {
+        window.location = "/profile.html";
+      });
     } else {
       Swal.fire({
         title: JSON.parse(res.responseText).error,
         icon: "error",
         showConfirmButton: false,
-        timer: 1000,
+        timer: 1200,
+      }).then(function () {
+        window.location = "/";
       });
-      window.location.assign("/");
     }
   });

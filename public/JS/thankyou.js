@@ -19,13 +19,25 @@ $("#order-flow-step").html(
 );
 
 if (keys.length !== 1) {
-  alert("Error: URL is wrong!");
-  window.location.assign("/");
+  Swal.fire({
+    title: "Error: URL is wrong!",
+    icon: "error",
+    showConfirmButton: false,
+    timer: 1200,
+  }).then(function () {
+    window.location = "/";
+  });
 }
 
 if (!mainOrderCode) {
-  alert("Error: number is required!");
-  window.location.assign("/");
+  Swal.fire({
+    title: "Error: number is required!",
+    icon: "error",
+    showConfirmButton: false,
+    timer: 1200,
+  }).then(function () {
+    window.location = "/";
+  });
 }
 
 // 取得訂票結果
