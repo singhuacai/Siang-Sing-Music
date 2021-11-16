@@ -62,10 +62,6 @@ th {
   vertical-align: middle;
 }
 
-tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
 thead,
 tfoot {
   height: 60px;
@@ -85,4 +81,5 @@ tfoot {
 #sum {
   font-size: 20px;
   font-weight: bold;
+  background-color: #f2f2f2;
 }

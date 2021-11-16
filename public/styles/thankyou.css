@@ -76,15 +76,15 @@ th {
   vertical-align: middle;
 }
 
-tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
 thead,
 tfoot {
   height: 60px;
   background-color: rgb(148, 190, 8);
   color: #fff;
+}
+
+#sum {
+  background-color: #f2f2f2;
 }
 
 #column-name {

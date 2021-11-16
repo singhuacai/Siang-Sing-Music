@@ -91,7 +91,7 @@ $.ajax({
 
           // 總票價 + 運費 + 合計
           $(`#order-main-info-${i}`).append(`
-                        <tr>
+                        <tr class = "total-row">
                         <td colspan="1" id="sum-${i}"> 總票價 </td>
                         <td colspan="1" class = "price-sum-${i}"></td>
                         <td colspan="1" id="freight-${i}"> 運費 </td>

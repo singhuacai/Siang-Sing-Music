@@ -59,7 +59,7 @@
   word-wrap: break-word;
 }
 
-tr:nth-child(even) {
+.total-row {
   background-color: #f2f2f2;
 }
 
