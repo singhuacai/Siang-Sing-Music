@@ -33,6 +33,11 @@ app.get("/", (req, res) => {
   res.send("This is TICKETING-SYSTEM!");
 });
 
+// Page not found
+app.use(function (req, res, next) {
+  res.status(404).sendFile(__dirname + "/public/html/404.html");
+});
+
 // Error handling
 app.use(function (err, req, res, next) {
   console.log(err);
