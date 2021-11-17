@@ -28,7 +28,7 @@ router
 
 router
   .route("/order/chooseOrDeleteSeat")
-  .post(authentication(), parseSocketId(), wrapAsync(chooseOrDeleteSeat));
+  .post(authentication(), /*parseSocketId(),*/ wrapAsync(chooseOrDeleteSeat));
 
 router
   .route("/order/rollBackChoose")

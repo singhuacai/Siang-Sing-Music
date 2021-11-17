@@ -10,30 +10,28 @@ const signUp = async (req, res) => {
 
   if (!name || !email || !phone || !password) {
     res.status(400).send({
-      error: "Request Error: name, email, phone and password are required.",
+      error: "您的資料填寫不完全，請再檢查一下",
     });
     return;
   }
 
   if (!validator.isEmail(email)) {
-    res.status(400).send({ error: "Request Error: Invalid email format" });
+    res.status(400).send({ error: "email的格式有誤" });
     return;
   }
 
   if (!validator.isMobilePhone(phone.toString())) {
-    res
-      .status(400)
-      .send({ error: "Request Error: Invalid mobile phone format" });
+    res.status(400).send({ error: "手機號碼的格式有誤" });
     return;
   }
 
   if (!validator.isLength(phone.toString(), { min: 10 })) {
-    res.status(400).send({ error: "Request Error: 您的手機號碼有漏打喔!" });
+    res.status(400).send({ error: "您的手機號碼有漏打喔!" });
     return;
   }
 
   if (!validator.isLength(password, { min: 5 })) {
-    res.status(400).send({ error: "Request Error: 密碼至少要5碼喔!" });
+    res.status(400).send({ error: "密碼至少要5碼喔!" });
     return;
   }
 
@@ -79,7 +77,7 @@ const signUp = async (req, res) => {
 
 const nativeSignIn = async (email, password) => {
   if (!email || !password) {
-    return { error: "Request Error: email and password are required." };
+    return { error: "您的資料填寫不完全，請再檢查一下" };
   }
   try {
     return await User.nativeSignIn(email, password);

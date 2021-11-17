@@ -97,10 +97,7 @@ const getChosenConcertInfo = async (req, res) => {
 
   // 給定 concertAreaPriceId => 查詢此區域的座位狀態
   let data = await Order.getChosenConcertInfo(concertAreaPriceId);
-  if (data.error) {
-    res.status(403).send({ error: data.error });
-    return;
-  }
+
   data.map((v) => {
     v.concert_datetime = moment(v.concert_datetime)
       .add(offset_hours, "hours")
@@ -117,15 +114,14 @@ const chooseOrDeleteSeat = async (req, res) => {
   const userId = req.user.id;
   const userCode = req.user.user_code;
 
+  console.log(concertSeatId);
   if (!concertSeatId) {
-    res
-      .status(400)
-      .send({ error: "Request Error: concertSeatId is required." });
+    res.status(400).send({ error: "請提供concertSeatId！" });
     return;
   }
 
   if (seatStatus !== 0 && seatStatus !== 1) {
-    res.status(400).send({ error: "Request Error: seatStatus is error." });
+    res.status(400).send({ error: "seatStatus 錯誤！" });
     return;
   }
 
@@ -166,12 +162,12 @@ const rollBackChoose = async (req, res) => {
   const userCode = req.user.user_code;
 
   if (!chosenSeats) {
-    res.status(400).send({ error: "Request Error: chosenSeats is required." });
+    res.status(400).send({ error: "請提供所選的座位" });
     return;
   }
 
   if (chosenSeats.length === 0) {
-    res.status(200).send({ result: "您尚未選擇座位" });
+    res.status(400).send({ error: "您尚未選擇座位" });
     return;
   }
 
@@ -201,7 +197,7 @@ const addToCart = async (req, res) => {
   const userCode = req.user.user_code;
 
   if (!chosenSeats) {
-    res.status(400).send({ error: "Request Error: chosenSeats is required." });
+    res.status(400).send({ error: "請提供所選的座位" });
     return;
   }
 
@@ -239,6 +235,10 @@ const getCartStatus = async (req, res) => {
   const userId = req.user.id;
   // TODO: 利用 userId 到 DB 查詢：該使用者已加入購物車的演唱會座位資訊
   let cartStatus = await Order.getCartStatus(userId);
+  if (cartStatus.error) {
+    res.status(403).send({ error: cartStatus.error });
+    return;
+  }
 
   cartStatus.map((v) => {
     v.concert_datetime = moment(v.concert_datetime)
@@ -257,7 +257,7 @@ const removeItemFromCart = async (req, res) => {
   const userCode = req.user.user_code;
 
   if (!deleteSeatId) {
-    res.status(400).send({ error: "Request Error: deleteSeatId is required." });
+    res.status(400).send({ error: "請提供欲刪除的座位" });
     return;
   }
 
@@ -277,9 +277,7 @@ const removeItemFromCart = async (req, res) => {
       removeFromCartSeat: result.remove_from_cart_seat_id,
     });
     notifyRemoveFromCart(msg);
-    res
-      .status(200)
-      .send({ result: `Already remove the seat ${deleteSeatId} from cart!` });
+    res.status(200).send({ result: `已將座位 ${deleteSeatId} 從購物車移除!` });
     return;
   }
 };
@@ -290,9 +288,7 @@ const checkout = async (req, res) => {
   const userCode = req.user.user_code;
 
   if (!data) {
-    res
-      .status(400)
-      .send({ error: "Request Error: Data of order is required." });
+    res.status(400).send({ error: "請提供訂單資訊" });
     return;
   }
   result = await Order.checkout(data, user);

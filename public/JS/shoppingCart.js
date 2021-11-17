@@ -1,4 +1,4 @@
-const Authorization = localStorage.getItem("Authorization");
+let Authorization = localStorage.getItem("Authorization");
 
 $("#order-flow-step").html(
   `<img

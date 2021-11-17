@@ -6,8 +6,9 @@ function signUp() {
 
   if (!name || !email || !phone || !password) {
     Swal.fire({
-      title: "Name, Email, Phone and Password are required!",
+      title: "您的資料填寫不完全，請再檢查一下",
       icon: "error",
+      width: "600px",
       showConfirmButton: false,
       timer: 1000,
     });
@@ -44,8 +45,9 @@ function signIn() {
 
   if (!email || !password) {
     Swal.fire({
-      title: "Email and Password are required!",
+      title: "您的資料填寫不完全，請再檢查一下",
       icon: "error",
+      width: "600px",
       showConfirmButton: false,
       timer: 1000,
     });

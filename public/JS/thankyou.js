@@ -18,26 +18,17 @@ $("#order-flow-step").html(
   />`
 );
 
-if (keys.length !== 1) {
-  Swal.fire({
-    title: "Error: URL is wrong!",
-    icon: "error",
-    showConfirmButton: false,
-    timer: 1200,
-  }).then(function () {
-    window.location = "/";
-  });
-}
-
-if (!mainOrderCode) {
-  Swal.fire({
-    title: "Error: number is required!",
-    icon: "error",
-    showConfirmButton: false,
-    timer: 1200,
-  }).then(function () {
-    window.location = "/";
-  });
+if (keys.length !== 1 || !mainOrderCode) {
+  alert("Error: 您提供的資訊錯誤 !");
+  window.location.assign("/");
+  // Swal.fire({
+  //   title: "您提供的資訊錯誤 !",
+  //   icon: "error",
+  //   showConfirmButton: true,
+  //   timer: 1200,
+  // }).then(function () {
+  //   window.location = "/";
+  // });
 }
 
 // 取得訂票結果

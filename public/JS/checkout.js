@@ -54,12 +54,15 @@ setupCard();
 
 $("#submit").click(async () => {
   // 1. 確認有 token
+  Authorization = localStorage.getItem("Authorization");
   if (!Authorization) {
     Swal.fire({
-      title: "No token",
+      title: "請先登入",
       icon: "error",
       showConfirmButton: false,
       timer: 1000,
+    }).then(function () {
+      window.location = "/profile.html";
     });
     return;
   }
@@ -75,10 +78,6 @@ $("#submit").click(async () => {
     $(".recipient-addr-county").val() +
     $(".recipient-addr-area").val() +
     $("#recipient-detail-address").val();
-
-  // const ordererName = $("#orderer-name").val();
-  // const ordererPhone = $("#orderer-phone").val();
-  // const ordererEmail = $("#orderer-email").val();
 
   // 未填寫收件人資訊 => alert!
   if (!recipientName) {

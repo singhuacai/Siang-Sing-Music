@@ -101,7 +101,7 @@ const getConcertDetails = async (req, res) => {
   const concertCount = await Concert.getCampaignCount(concert_id);
 
   if (concertCount[0].count === 0) {
-    res.status(400).send({ error: "Concert id is not exist!" });
+    res.status(400).send({ error: "查無此場演唱會" });
     return;
   }
 

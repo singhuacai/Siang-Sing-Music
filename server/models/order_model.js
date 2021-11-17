@@ -304,25 +304,6 @@ const deleteSeat = async (concertSeatId, userId) => {
       [concertSeatId]
     );
 
-    //========= use setTimout function to test the race condition (below) ==================
-    /*
-    function promiseFn(num, time = 5 * 1000) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          num ? resolve(`${num}, 成功`) : reject("失敗");
-        }, time);
-      });
-    }
-    //======================================================================================
-    async function getData() {
-      const data1 = await promiseFn(1); // 因為 await，promise 函式被中止直到回傳
-      const data2 = await promiseFn(2);
-      console.log(data1, data2); // 1, 成功 2, 成功
-    }
-    await getData();
-    */
-    //========= use setTimout function to test the race condition (above) ==================
-
     // 此座位的狀態早就是 Not-selected 的了
     if (result[0].status === "not-selected") {
       await conn.query("ROLLBACK");
@@ -429,9 +410,6 @@ const addToCart = async (chosenSeats, userId) => {
     if (addToCartSeat.length === 0) {
       return { error: "addToCartSeat is empty" };
     }
-
-    console.log(insertData);
-    console.log(`addToCartSeat:${addToCartSeat}`);
 
     await conn.query(
       "UPDATE concert_seat_info SET status ='cart' where id IN (?)",
