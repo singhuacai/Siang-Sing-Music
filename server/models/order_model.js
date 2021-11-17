@@ -244,7 +244,7 @@ const chooseSeat = async (concertSeatId, userId) => {
 
     if (status[0].status !== "not-selected") {
       await conn.query("ROLLBACK");
-      return { error: "This seat has been selected!" };
+      return { error: "此座位已被選走囉!" };
     }
 
     const [count] = await conn.query(
@@ -271,7 +271,7 @@ const chooseSeat = async (concertSeatId, userId) => {
     );
     if (count[0].count >= 4) {
       await conn.query("ROLLBACK");
-      return { error: "You have selected 4 seats!" };
+      return { error: "每人每場限購四張，您已達到選位上限!!!" };
     }
 
     await conn.query(
@@ -307,19 +307,19 @@ const deleteSeat = async (concertSeatId, userId) => {
     // 此座位的狀態早就是 Not-selected 的了
     if (result[0].status === "not-selected") {
       await conn.query("ROLLBACK");
-      return { error: "This seat has been not-selected already!" };
+      return { error: "此座位早已被您取消選擇囉!" };
     }
 
     // 此座位的狀態若是 "Sold" 或 "cart" 的 => 無法取消
     if (result[0].status === "sold" || result[0].status === "cart") {
       await conn.query("ROLLBACK");
-      return { error: "You CANNOT delete the order in this page!" };
+      return { error: "您無法於此頁刪除此座位的預訂喔!" };
     }
 
     // 確認"想取消此座位者"與"預訂者"為同一人
     if (result[0].user_id !== userId) {
       await conn.query("ROLLBACK");
-      return { error: "You have no right to delete the order of the seat!" };
+      return { error: "您無權限取消選擇此座位!" };
     }
 
     await conn.query(
@@ -362,7 +362,7 @@ const rollBackChoose = async (chosenSeats, userId) => {
     }
 
     if (rollBackSeat.length === 0) {
-      return { result: "rollBackSeat is empty" };
+      return { result: "需清空的座位是空的" };
     }
 
     await conn.query(
@@ -408,7 +408,7 @@ const addToCart = async (chosenSeats, userId) => {
     }
 
     if (addToCartSeat.length === 0) {
-      return { error: "addToCartSeat is empty" };
+      return { error: "您欲加入購物車的座位選擇是空的" };
     }
 
     await conn.query(
@@ -495,7 +495,7 @@ const removeItemFromCart = async (deleteSeatId, userId) => {
 
     if (result.length === 0) {
       await conn.query("ROLLBACK");
-      return { error: "This seat never in the cart!" };
+      return { error: "此座位未曾出現在購物車中!" };
     }
 
     let removeFromCartInfo = [];
@@ -510,13 +510,13 @@ const removeItemFromCart = async (deleteSeatId, userId) => {
 
     if (removeFromCartInfo.length === 0) {
       await conn.query("ROLLBACK");
-      return { error: "This seat CANNOT be remove from the cart!" };
+      return { error: "此座位無法從購物車被移除!" };
     }
 
     // 確認"想移除此座位者"與"預訂者"為同一人
     if (removeFromCartInfo[0].user_id !== userId) {
       await conn.query("ROLLBACK");
-      return { error: "You have no right to remove the seat from the cart!" };
+      return { error: "您無權將此座位從購物車移除!" };
     }
 
     // 將 concert_seat_info table 中, 該座位的 status 更改為 'not-selected'
@@ -531,7 +531,7 @@ const removeItemFromCart = async (deleteSeatId, userId) => {
       [removeFromCartInfo[0].shopping_cart_id]
     );
 
-    console.log("Seat already remove from the cart!");
+    console.log("此座位早已被您從購物車中移除囉!");
 
     await conn.query("COMMIT");
 
@@ -571,7 +571,7 @@ const checkout = async (data, user) => {
     console.log(`check:${check}`);
     if (check.length === 0) {
       await conn.query("ROLLBACK");
-      return { error: "Can't find the seat you ordered in the shopping Cart!" };
+      return { error: "無法在購物車中找到您預訂的此座位!" };
     }
 
     // 1. 確認你撈出來的 userId 與前台傳過來的 user.id 是同一個
@@ -591,7 +591,7 @@ const checkout = async (data, user) => {
 
     if (orderSeatId.length !== check.length) {
       await conn.query("ROLLBACK");
-      return { error: "You have no right to order these seats!" };
+      return { error: "您無法權限預訂這些座位!" };
     }
 
     // 3.確認總金額是對的 (利用 concert_seat_id => concert_area_price_id => ticket_price)
@@ -609,7 +609,7 @@ const checkout = async (data, user) => {
     const [subtotal] = await pool.query(queryStr, bindings);
     if (parseInt(subtotal[0].subtotal) !== data.order.subtotal) {
       await conn.query("ROLLBACK");
-      return { error: "The subtotal price was wrong!" };
+      return { error: "總票價有誤!" };
     }
 
     // 4.信用卡付款
@@ -784,7 +784,7 @@ const getOrderResultByOrderNum = async (mainOrderCode, userId) => {
     const bindings = [mainOrderCode, userId];
     const [result] = await pool.query(queryStr, bindings);
     if (result.length === 0) {
-      return { error: "You have no right to check this order!" };
+      return { error: "您無權限結帳此訂單!" };
     }
     return result;
   } catch (error) {

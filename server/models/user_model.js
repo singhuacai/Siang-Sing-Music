@@ -22,7 +22,7 @@ const signUp = async (name, roleId, email, phone, password) => {
     );
     if (emails[0].length > 0) {
       await conn.query("COMMIT");
-      return { error: "Email Already Exists" };
+      return { error: "此 Email 已被註冊過" };
     }
 
     const userCode = () => {
@@ -120,11 +120,8 @@ const signUp = async (name, roleId, email, phone, password) => {
 
 const nativeSignIn = async (email, password) => {
   const conn = await pool.getConnection();
-  if (!email) {
-    return { error: "Email is required!" };
-  }
-  if (!password) {
-    return { error: "Password is required!" };
+  if (!email || !password) {
+    return { error: "您的資料填寫不完全，請再檢查一下" };
   }
   try {
     await conn.query("START TRANSACTION");
@@ -134,12 +131,12 @@ const nativeSignIn = async (email, password) => {
     );
     const user = users[0][0];
     if (user.count === 0) {
-      return { error: "You have NOT registered!" };
+      return { error: "您尚未註冊!" };
     }
 
     if (!bcrypt.compareSync(password, user.password)) {
       await conn.query("COMMIT");
-      return { error: "Password is wrong" };
+      return { error: "密碼有誤" };
     }
 
     const loginAt = new Date();
