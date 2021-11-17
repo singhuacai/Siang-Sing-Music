@@ -1,3 +1,8 @@
+function validatePhoneNumber(phone) {
+  var phoneNumberPattern = /^09[0-9]{8}$/;
+  return phoneNumberPattern.test(phone);
+}
+
 function signUp() {
   const name = $("#name_signup").val();
   const email = $("#email_signup").val();
@@ -14,6 +19,18 @@ function signUp() {
     });
     return;
   }
+
+  if (!validatePhoneNumber(phone)) {
+    Swal.fire({
+      title: "手機號碼格式錯誤",
+      icon: "error",
+      width: "600px",
+      showConfirmButton: false,
+      timer: 1000,
+    });
+    return;
+  }
+
   $.ajax({
     url: "/api/1.0/user/signup",
     data: JSON.stringify({ name, email, phone, password }),

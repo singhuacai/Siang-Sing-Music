@@ -784,7 +784,7 @@ const getOrderResultByOrderNum = async (mainOrderCode, userId) => {
     const bindings = [mainOrderCode, userId];
     const [result] = await pool.query(queryStr, bindings);
     if (result.length === 0) {
-      return { error: "您無權限結帳此訂單!" };
+      return { error: "您無權限查看此訂單結果" };
     }
     return result;
   } catch (error) {
