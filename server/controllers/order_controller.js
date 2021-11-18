@@ -63,6 +63,10 @@ const getSeatStatus = async (req, res) => {
   }
   // 給定 concertAreaPriceId => 查詢此區域的座位狀態
   let data = await Order.getSeatStatus(concertAreaPriceId);
+  if (data.error || !data) {
+    res.status(500).send({ error: "server error" });
+    return;
+  }
 
   // 若是你選擇的，則修改狀態為 "you-selected"
   data.map((v) => {
@@ -102,7 +106,10 @@ const getChosenConcertInfo = async (req, res) => {
 
   // 給定 concertAreaPriceId => 查詢此區域的座位狀態
   let data = await Order.getChosenConcertInfo(concertAreaPriceId);
-
+  if (data.error || !data) {
+    res.status(500).send({ error: "server error" });
+    return;
+  }
   data.map((v) => {
     v.concert_datetime = moment(v.concert_datetime)
       .add(offset_hours, "hours")

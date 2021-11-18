@@ -75,6 +75,10 @@ const createConcert = async (req, res) => {
 
 const getCampaigns = async (req, res) => {
   let result = await Concert.getCampaigns();
+  if (result.error || !result) {
+    res.status(500).send({ error: "server error" });
+    return;
+  }
   const data = result.map((v) => {
     v.concert_main_image = `/${v.id}/${v.concert_main_image}`;
     return v;
@@ -84,6 +88,10 @@ const getCampaigns = async (req, res) => {
 
 const getKeyvisuals = async (req, res) => {
   let result = await Concert.getKeyvisuals();
+  if (result.error || !result) {
+    res.status(500).send({ error: "server error" });
+    return;
+  }
 
   const data = result.map((v) => {
     v.concert_main_image = `/${v.concert_id}/${v.concert_main_image}`;
@@ -106,6 +114,10 @@ const getConcertDetails = async (req, res) => {
   }
 
   let result = await Concert.getConcertDetails(concert_id);
+  if (result.error || !result) {
+    res.status(500).send({ error: "server error" });
+    return;
+  }
 
   const [data] = result.map((v) => {
     v.sold_start = moment(v.sold_start)
@@ -135,6 +147,10 @@ const getCampaignsByKeyword = async (req, res) => {
     return;
   }
   let result = await Concert.getCampaignsByKeyword(keyword);
+  if (result.error || !result) {
+    res.status(500).send({ error: "server error" });
+    return;
+  }
   const data = result.map((v) => {
     v.concert_main_image = `/${v.id}/${v.concert_main_image}`;
     return v;
