@@ -79,6 +79,11 @@ const getSeatStatus = async (req, res) => {
   });
   // 利用 concertAreaPriceId => 找到 concertDateId  => 找出該使用者購買及加入購物車的總數
   result = await Order.getSoldandCartCount(concertAreaPriceId, userId);
+  if (result.error || !result) {
+    res.status(500).send({ error: "server error" });
+    return;
+  }
+
   const countOfCartAndSold = result[0].count;
   console.log("END^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
   res.status(200).send({ countOfCartAndSold, data });
