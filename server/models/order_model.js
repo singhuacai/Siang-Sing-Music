@@ -891,7 +891,7 @@ const filterReleasedTickets = async () => {
       WHERE 
       csi.status = 'cart' 
       AND sc.status = 'add-to-cart' 
-      AND csi.user_updated_status_datetime < CURRENT_TIMESTAMP
+      AND csi.user_updated_status_datetime < CURRENT_TIMESTAMP - INTERVAL 1 HOUR
       ORDER BY csi.id;
       `;
     const [result] = await pool.query(queryStr);

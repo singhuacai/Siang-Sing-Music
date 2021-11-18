@@ -1,4 +1,5 @@
 const Order = require("../Ticketing-System/server/models/order_model");
+const { notifyReleaseTickets } = require("./socket");
 
 const getfilterReleasedTickets = async () => {
   let result = await Order.filterReleasedTickets();
@@ -44,8 +45,13 @@ const releaseTickets = async () => {
 };
 
 const init = async () => {
-  const a = await releaseTickets();
-  console.log(a);
+  const msg = await releaseTickets();
+  // const msg = [
+  //   { concertAreaPriceId: 15, concertSeatIds: [1407, 1408] },
+  //   { concertAreaPriceId: 26, concertSeatIds: [2629, 2633] },
+  // ];
+  console.log(msg);
+  notifyReleaseTickets(msg);
 };
 
 init();
