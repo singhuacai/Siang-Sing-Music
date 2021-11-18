@@ -362,6 +362,7 @@ const rollBackChoose = async (chosenSeats, userId) => {
     }
 
     if (rollBackSeat.length === 0) {
+      await conn.query("ROLLBACK");
       return { result: "需清空的座位是空的" };
     }
 
@@ -867,6 +868,120 @@ const payOrderByPrime = async function (tappayKey, prime, order, user) {
   return res.body;
 };
 
+const filterReleasedTickets = async () => {
+  try {
+    // const queryStr = `select
+    //     csi.concert_area_price_id,
+    //     csi.id AS concert_seat_id,
+    //     sc.id AS shopping_cart_id
+    //   from concert_seat_info csi
+    //   INNER JOIN shopping_cart sc
+    //     on csi.id = sc.concert_seat_id
+    //   WHERE
+    //   csi.status = 'cart'
+    //   AND sc.status = 'add-to-cart'
+    //   AND csi.user_updated_status_datetime < CURRENT_TIMESTAMP - INTERVAL 1 HOUR
+    //   ORDER BY csi.id;
+    //   `;
+    const queryStr = `select 
+        csi.id AS concert_seat_id
+      from concert_seat_info csi
+      INNER JOIN shopping_cart sc
+        on csi.id = sc.concert_seat_id
+      WHERE 
+      csi.status = 'cart' 
+      AND sc.status = 'add-to-cart' 
+      AND csi.user_updated_status_datetime < CURRENT_TIMESTAMP
+      ORDER BY csi.id;
+      `;
+    const [result] = await pool.query(queryStr);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return { error };
+  }
+};
+
+const releaseTickets = async (tickets) => {
+  if (tickets.length === 0) {
+    console.log("=================================");
+    return { error: "沒有需清除的票" };
+  }
+  const conn = await pool.getConnection();
+  try {
+    await conn.query("START TRANSACTION");
+    const [result] = await conn.query(
+      `
+      SELECT
+        csi.concert_area_price_id,
+        csi.id AS concert_seat_id,
+        csi.status AS seat_status,
+        sc.id AS shopping_cart_id,
+        sc.status AS status_in_cart
+      FROM concert_seat_info csi
+      INNER JOIN shopping_cart sc
+        ON csi.id = sc.concert_seat_id
+      WHERE csi.id in (?) FOR UPDATE;
+      `,
+      [tickets]
+    );
+
+    console.log(result);
+
+    let shopping_cart_ids = [];
+    let concert_seat_ids = [];
+    let concert_area_price_ids = [];
+    for (let i = 0; i < result.length; i++) {
+      if (
+        result[i].seat_status === "cart" &&
+        result[i].status_in_cart === "add-to-cart"
+      ) {
+        concert_area_price_ids.push(result[i].concert_area_price_id);
+        concert_seat_ids.push(result[i].concert_seat_id);
+        shopping_cart_ids.push(result[i].shopping_cart_id);
+      }
+    }
+    // console.log(concert_area_price_ids);
+    // console.log(concert_seat_ids);
+    // console.log(shopping_cart_ids);
+
+    if (concert_seat_ids.length !== shopping_cart_ids.length) {
+      await conn.query("ROLLBACK");
+      return { error: "座位資訊有錯!" };
+    }
+
+    if (concert_seat_ids.length === 0) {
+      await conn.query("ROLLBACK");
+      return { error: "沒有需清除的票" };
+    }
+
+    // 將 concert_seat_info table 中, 該座位的 status 更改為 'not-selected'
+    await conn.query(
+      "UPDATE concert_seat_info SET status ='not-selected', user_id = NULL , user_updated_status_datetime = NULL where id IN (?)",
+      [concert_seat_ids]
+    );
+
+    // 將 shopping_cart table 中, 根據 shopping cart id 找到所對應到的座位，並將 shopping cart table 的 status 更改為 'remove-from-cart'
+    await conn.query(
+      "UPDATE shopping_cart SET status ='remove-from-cart' where  id IN (?) ",
+      [shopping_cart_ids]
+    );
+
+    await conn.query("COMMIT");
+
+    return {
+      concertAreaPriceIds: concert_area_price_ids,
+      concertSeatIds: concert_seat_ids,
+    };
+  } catch (error) {
+    console.log(error);
+    await conn.query("ROLLBACK");
+    return { error };
+  } finally {
+    await conn.release();
+  }
+};
+
 module.exports = {
   getConcertTitleAndAreaImage,
   checkConcertByConcertDateId,
@@ -884,4 +999,6 @@ module.exports = {
   checkout,
   getOrderResultByOrderNum,
   getOrderResultByUserId,
+  filterReleasedTickets,
+  releaseTickets,
 };

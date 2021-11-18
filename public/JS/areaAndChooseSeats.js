@@ -462,6 +462,10 @@ function rollBackChoose() {
       (ele, pos) => chosenSeats.indexOf(ele) == pos
     );
     console.log("The filtered array", filterChosenSeats);
+    if (filterChosenSeats.length === 0) {
+      console.log("沒有座位需要被rollback");
+      return;
+    }
     $.ajax({
       url: "/api/1.0/order/rollBackChoose",
       data: JSON.stringify({ chosenSeats: filterChosenSeats }),
