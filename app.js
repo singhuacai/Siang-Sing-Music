@@ -36,12 +36,14 @@ app.get("/", (req, res) => {
 // Page not found
 app.use(function (req, res, next) {
   res.status(404).sendFile(__dirname + "/public/html/404.html");
+  return;
 });
 
 // Error handling
 app.use(function (err, req, res, next) {
   console.log(err);
   res.status(500).send("Internal Server Error");
+  return;
 });
 
 server.listen(port, () => {

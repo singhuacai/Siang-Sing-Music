@@ -53,11 +53,10 @@ const signUp = async (req, res) => {
 
   const user = result.user;
   if (!user) {
-    res.status(500).send({ error: "Database Query Error" });
-    return;
+    return res.status(500).send({ error: "Database Query Error" });
   }
 
-  res.status(200).send({
+  return res.status(200).send({
     data: {
       access_token: user.access_token,
       user_code: user.user_code,
@@ -136,7 +135,7 @@ const signIn = async (req, res) => {
 const getUserProfile = async (req, res) => {
   const email = encodeEmail(req.user.email);
   const phone = encodePhone(req.user.phone);
-  res.status(200).send({
+  return res.status(200).send({
     data: {
       provider: req.user.provider,
       name: req.user.name,
@@ -145,7 +144,6 @@ const getUserProfile = async (req, res) => {
       picture: req.user.picture,
     },
   });
-  return;
 };
 
 const encodeEmail = (email) => {
