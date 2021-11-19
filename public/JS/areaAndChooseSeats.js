@@ -20,6 +20,28 @@ const pageAccessedByReload =
     .map((nav) => nav.type)
     .includes("reload");
 
+$("#content-block").html(
+  `
+    <div id="concert-seats" class="content concert-seats">
+        <table id="seats-table" class="table">
+            <tbody id="seats-table-list"></tbody>
+        </table>
+    </div>
+    <div class="content chair-style"></div>
+    <div id="add-to-cart" class="content"></div>
+    `
+);
+
+$("#order-flow-step").html(
+  `<img
+        id="order-flow-step-img"
+        src="../images/order_flow/Step2.png"
+        alt="step2-ChooseArea"
+        title="step2-ChooseArea"
+        width="600px"
+    />`
+);
+
 // socket.io
 let socketId = null;
 var socket = io({
@@ -516,28 +538,6 @@ $.ajax({
   .done(function (res) {
     $(function () {
       console.log(res);
-
-      $("#content-block").html(
-        `
-      <div id="concert-seats" class="content concert-seats">
-          <table id="seats-table" class="table">
-              <tbody id="seats-table-list"></tbody>
-          </table>
-      </div>
-      <div class="content chair-style"></div>
-      <div id="add-to-cart" class="content"></div>
-      `
-      );
-
-      $("#order-flow-step").html(
-        `<img
-          id="order-flow-step-img"
-          src="../images/order_flow/Step2.png"
-          alt="step2-ChooseArea"
-          title="step2-ChooseArea"
-          width="600px"
-      />`
-      );
       $("#concert-title").text(`${res.data[0].concert_title}`);
       $("#time-location-block").html(
         `<p>時間：${res.data[0].concert_datetime}&nbsp; &nbsp; 地點：${res.data[0].concert_location}</p>`
