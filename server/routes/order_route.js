@@ -12,6 +12,7 @@ const {
   removeItemFromCart,
   checkout,
   getOrderResult,
+  postReleaseTicketsResult,
 } = require("../controllers/order_controller");
 
 router
@@ -53,5 +54,7 @@ router
 router
   .route("/order/orderResult")
   .get(authentication(role.ALL), wrapAsync(getOrderResult));
+
+router.route("/order/ReleaseTickets").post(wrapAsync(postReleaseTicketsResult));
 
 module.exports = router;

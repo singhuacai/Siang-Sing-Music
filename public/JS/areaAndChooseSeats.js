@@ -176,7 +176,15 @@ socket.on("NotifyRemoveToOrder", (msg) => {
 });
 
 socket.on("NotifyReleaseTickets", (msg) => {
-  console.log(msg);
+  for (let i = 0; i < msg.length; i++) {
+    if ($(`#${msg[i]}`).hasClass("you-cart")) {
+      $(`#${msg[i]}`).removeClass("you-cart").addClass("not-selected");
+      $(`#${msg[i]}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
+    } else if ($(`#${msg[i]}`).hasClass("cart")) {
+      $(`#${msg[i]}`).removeClass("cart").addClass("not-selected");
+      $(`#${msg[i]}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
+    }
+  }
 });
 
 socket.on("connect_error", (err) => {

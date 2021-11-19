@@ -2,6 +2,7 @@ const Order = require("../models/order_model");
 const Mail = require("../controllers/mail_controller");
 const moment = require("moment");
 const offset_hours = process.env.TIMEZONE_OFFSET || 8;
+const { notifyReleaseTickets } = require("../../socket");
 const {
   BOARDCAST,
   notifySeatSelected,
@@ -379,6 +380,13 @@ const getOrderResult = async (req, res) => {
   return;
 };
 
+const postReleaseTicketsResult = async (req, res) => {
+  let msg = req.body;
+  notifyReleaseTickets(msg);
+  res.status(200).send({ result: "finish release tickets!" });
+  return;
+};
+
 module.exports = {
   getPerformanceAndAreas,
   getSeatStatus,
@@ -390,4 +398,5 @@ module.exports = {
   removeItemFromCart,
   checkout,
   getOrderResult,
+  postReleaseTicketsResult,
 };

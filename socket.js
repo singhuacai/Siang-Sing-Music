@@ -119,10 +119,6 @@ const notifyRemoveToOrder = (msg) => {
 };
 
 const notifyReleaseTickets = (msg) => {
-  console.log(`socket================`);
-  console.log(msg);
-
-  console.log(io); // null
   for (let i = 0; i < msg.length; i++) {
     console.log(msg[i].concertAreaPriceId);
     console.log(msg[i].concertSeatIds);

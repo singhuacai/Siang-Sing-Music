@@ -1,5 +1,5 @@
 const Order = require("../Ticketing-System/server/models/order_model");
-const { notifyReleaseTickets } = require("./socket");
+const got = require("got");
 
 const getfilterReleasedTickets = async () => {
   let result = await Order.filterReleasedTickets();
@@ -39,19 +39,19 @@ const releaseTickets = async () => {
       concertSeatId
     );
   }
-  // console.log(socketReleasedTickets);
-  // console.log(Object.values(socketReleasedTickets));
   return Object.values(socketReleasedTickets);
 };
 
 const init = async () => {
   const msg = await releaseTickets();
-  // const msg = [
-  //   { concertAreaPriceId: 15, concertSeatIds: [1407, 1408] },
-  //   { concertAreaPriceId: 26, concertSeatIds: [2629, 2633] },
-  // ];
-  console.log(msg);
-  notifyReleaseTickets(msg);
+  await got.post("http://127.0.0.1:3000/api/1.0/order/ReleaseTickets", {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    json: msg,
+    responseType: "json",
+  });
+  return;
 };
 
 init();
