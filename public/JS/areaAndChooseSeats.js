@@ -145,7 +145,7 @@ socket.on("NotifyAddToCart", (msg) => {
     }
     chosenSeats = [];
     countOfCartAndSold += msg.addToCartSeat.length;
-    window.location.assign(`/shoppingCart.html`);
+    window.location.assign(`/index.html`);
   } else {
     for (let i = 0; i < msg.addToCartSeat.length; i++) {
       $(`#${msg.addToCartSeat[i]}`).removeClass("selected").addClass("cart");

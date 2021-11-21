@@ -42,7 +42,6 @@ const authentication = (roleId) => {
           return next();
         }
       }
-      return;
     } catch (err) {
       res.status(403).send({ error: "Forbidden" });
       return;
