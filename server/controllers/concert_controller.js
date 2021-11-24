@@ -1,18 +1,18 @@
 const Concert = require("../models/concert_model");
 const moment = require("moment");
-const offset_hours = process.env.TIMEZONE_OFFSET || 8;
+const offsetHours = process.env.TIMEZONE_OFFSET || 8;
 
 const createConcert = async (req, res) => {
   const data = req.body.data[0];
 
-  const concert_info = {
+  const concertInfo = {
     concert_title: data.concert_title,
     concert_story: data.concert_story,
     sold_start: moment(data.sold_start)
-      .subtract(offset_hours, "hours")
+      .subtract(offsetHours, "hours")
       .format("YYYY-MM-DD HH:mm:ss"),
     sold_end: moment(data.sold_end)
-      .subtract(offset_hours, "hours")
+      .subtract(offsetHours, "hours")
       .format("YYYY-MM-DD HH:mm:ss"),
     concert_location: data.concert_location,
     concert_main_image: data.concert_main_image,
@@ -20,29 +20,27 @@ const createConcert = async (req, res) => {
     notice: data.notice,
   };
 
-  const concertId = await Concert.insertConcertInfo(concert_info);
+  const concertId = await Concert.insertConcertInfo(concertInfo);
   for (let i = 0; i < data.concert_info.length; i++) {
-    const concert_date = {
+    const concertDate = {
       concert_id: concertId,
       concert_datetime: moment(data.concert_info[i].concert_datetime)
-        .subtract(offset_hours, "hours")
+        .subtract(offsetHours, "hours")
         .format("YYYY-MM-DD HH:mm:ss"),
     };
 
-    const concertDateId = await Concert.insertConcertDate(concert_date);
-    // console.log(concertDateId);
+    const concertDateId = await Concert.insertConcertDate(concertDate);
     for (let area = 0; area < data.concert_info[i].sku_info.length; area++) {
-      const concert_area_price = {
+      const concertAreaPrice = {
         concert_date_id: concertDateId,
         concert_area: data.concert_info[i].sku_info[area].area_code,
         ticket_price: data.concert_info[i].sku_info[area].ticket_price,
       };
       const concertAreaPriceId = await Concert.insertConcertAreaPrice(
-        concert_area_price
+        concertAreaPrice
       );
-      // console.log(concertAreaPriceId);
 
-      let concert_seat_info = [];
+      let concertSeatInfo = [];
       for (
         let row = 0;
         row < data.concert_info[i].sku_info[area].seat_allocation.length;
@@ -59,10 +57,10 @@ const createConcert = async (req, res) => {
             col + 1, // seat_column
             "not-selected", // status
           ];
-          concert_seat_info.push(seat);
+          concertSeatInfo.push(seat);
         }
       }
-      await Concert.insertConcertSeatInfo(concert_seat_info);
+      await Concert.insertConcertSeatInfo(concertSeatInfo);
     }
   }
 
@@ -121,16 +119,16 @@ const getConcertDetails = async (req, res) => {
 
   const [data] = result.map((v) => {
     v.sold_start = moment(v.sold_start)
-      .add(offset_hours, "hours")
+      .add(offsetHours, "hours")
       .format("YYYY-MM-DD HH:mm:ss");
     v.sold_end = moment(v.sold_end)
-      .add(offset_hours, "hours")
+      .add(offsetHours, "hours")
       .format("YYYY-MM-DD HH:mm:ss");
     v.concert_main_image = `/${concert_id}/${v.concert_main_image}`;
     v.concert_area_image = `/${concert_id}/${v.concert_area_image}`;
     v.concert_info.map((s) => {
       s.concert_datetime = moment(s.concert_datetime)
-        .add(offset_hours, "hours")
+        .add(offsetHours, "hours")
         .format("YYYY-MM-DD HH:mm:ss");
       return s;
     });

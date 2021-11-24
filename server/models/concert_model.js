@@ -19,13 +19,13 @@ const insertConcertInfo = async (concert_info) => {
   }
 };
 
-const insertConcertDate = async (concert_date) => {
+const insertConcertDate = async (concertDate) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
     const [result] = await conn.query(
       "INSERT INTO concert_date SET ?",
-      concert_date
+      concertDate
     );
     await conn.query("COMMIT");
     return result.insertId;
@@ -38,13 +38,13 @@ const insertConcertDate = async (concert_date) => {
   }
 };
 
-const insertConcertAreaPrice = async (concert_area_price) => {
+const insertConcertAreaPrice = async (concertAreaPrice) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
     const [result] = await conn.query(
       "INSERT INTO concert_area_price SET ?",
-      concert_area_price
+      concertAreaPrice
     );
     await conn.query("COMMIT");
     return result.insertId;
@@ -57,14 +57,14 @@ const insertConcertAreaPrice = async (concert_area_price) => {
   }
 };
 
-const insertConcertSeatInfo = async (concert_seat_info) => {
+const insertConcertSeatInfo = async (concertSeatInfo) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
 
     await conn.query(
       "INSERT INTO concert_seat_info(concert_area_price_id, seat_row, seat_column, status) VALUES ?",
-      [concert_seat_info]
+      [concertSeatInfo]
     );
     await conn.query("COMMIT");
     return "finish!";

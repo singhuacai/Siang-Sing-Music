@@ -1,7 +1,7 @@
 const Order = require("../models/order_model");
 const Mail = require("../controllers/mail_controller");
 const moment = require("moment");
-const offset_hours = process.env.TIMEZONE_OFFSET || 8;
+const offsetHours = process.env.TIMEZONE_OFFSET || 8;
 const { notifyReleaseTickets } = require("../../socket");
 const {
   BOARDCAST,
@@ -16,29 +16,29 @@ const {
 const getPerformanceAndAreas = async (req, res) => {
   const { concertId, concertDateId } = req.query;
 
-  // 給定 concertDateId => 確認確實有此場演唱會
+  // Given concertDateId to confirm this concert
   let result = await Order.checkConcertByConcertDateId(concertDateId);
   if (result[0].count === 0) {
     res.status(400).send({ error: "Bad request!" });
     return;
   }
 
-  // 給定 concertDateId => 搜尋 concert_info
-  result = await Order.getConcertTitleAndAreaImage(concertDateId);
+  // Given concertDateId to search for concert information
+  result = await Order.getTitleAndAreaImage(concertDateId);
 
   if (!result[0]) {
-    res.status(400).send({ error: "Error request!" });
+    res.status(400).send({ error: "Bad request!" });
     return;
   }
   result.map((v) => {
     v.concert_area_image = `/${concertId}/${v.concert_area_image}`;
     v.concert_datetime = moment(v.concert_datetime)
-      .add(offset_hours, "hours")
+      .add(offsetHours, "hours")
       .format("YYYY-MM-DD HH:mm:ss");
     return v;
   });
 
-  // 給定 concertDateId => 查詢 Area 與 ticket prices
+  // Given concertDateId, query Area and ticket prices
   const areaAndTicketPrices = await Order.getAreasAndTicketPrices(
     concertDateId
   );
@@ -52,11 +52,10 @@ const getPerformanceAndAreas = async (req, res) => {
 };
 
 const getSeatStatus = async (req, res) => {
-  console.log("start ---------------------");
   const { concertAreaPriceId } = req.query;
   const userId = req.user.id;
 
-  // 給定 concertAreaPriceId => 確認確實有此場演唱會
+  // Given concertAreaPriceId to confirm this concert
   let result = await Order.checkConcertByConcertAreaPriceId(concertAreaPriceId);
   if (result[0].count === 0) {
     res.status(400).send({ error: "Bad request!" });
@@ -90,7 +89,6 @@ const getSeatStatus = async (req, res) => {
   }
 
   const countOfCartAndSold = result[0].count;
-  console.log("END^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
   res.status(200).send({ countOfCartAndSold, data });
   return;
 };
@@ -113,7 +111,7 @@ const getChosenConcertInfo = async (req, res) => {
   }
   data.map((v) => {
     v.concert_datetime = moment(v.concert_datetime)
-      .add(offset_hours, "hours")
+      .add(offsetHours, "hours")
       .format("YYYY-MM-DD HH:mm:ss");
     return v;
   });
@@ -255,7 +253,7 @@ const getCartStatus = async (req, res) => {
 
   cartStatus.map((v) => {
     v.concert_datetime = moment(v.concert_datetime)
-      .add(offset_hours, "hours")
+      .add(offsetHours, "hours")
       .format("YYYY-MM-DD HH:mm:ss");
     return v;
   });
@@ -322,7 +320,7 @@ const checkout = async (req, res) => {
     res.status(200).send({ mainOrderCode: result.mainOrderCode });
 
     // send email
-    const send_info = {
+    const sendInfo = {
       userName: result.ordererName,
       userEmail: result.ordererEmail,
       buyTime: result.orderTime,
@@ -336,7 +334,7 @@ const checkout = async (req, res) => {
       recipientPhone: result.recipientPhone,
       recipientAddress: result.recipientAddress,
     };
-    await Mail.send_email(send_info, Mail.Mail_Type.FinishOrder);
+    await Mail.sendEmail(sendInfo, Mail.mailType.FinishOrder);
     return;
   }
 };
@@ -353,7 +351,7 @@ const getOrderResult = async (req, res) => {
     }
     result.map((v) => {
       v.concert_datetime = moment(v.concert_datetime)
-        .add(offset_hours, "hours")
+        .add(offsetHours, "hours")
         .format("YYYY-MM-DD HH:mm:ss");
       return v;
     });
@@ -367,11 +365,11 @@ const getOrderResult = async (req, res) => {
     result.map((v) => {
       v.ticket_info.map((v) => {
         v.concert_datetime = moment(v.concert_datetime)
-          .add(offset_hours, "hours")
+          .add(offsetHours, "hours")
           .format("YYYY-MM-DD HH:mm:ss");
       });
       v.created_at = moment(v.created_at)
-        .add(offset_hours, "hours")
+        .add(offsetHours, "hours")
         .format("YYYY-MM-DD HH:mm:ss");
       return v;
     });

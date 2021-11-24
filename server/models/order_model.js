@@ -5,60 +5,17 @@ const validator = require("validator");
 const moment = require("moment");
 
 const checkConcertByConcertDateId = async (concertDateId) => {
-  const queryStr = `
-  SELECT
-    count(*) AS count
-  FROM
-    concert_date
-  WHERE
-    id = ?
-  `;
+  const queryStr = `SELECT count(*) AS count FROM concert_date WHERE id = ?`;
   const bindings = [concertDateId];
   const [result] = await pool.query(queryStr, bindings);
   return result;
 };
 
 const checkConcertByConcertAreaPriceId = async (concertAreaPriceId) => {
-  console.log("pool(checkConcertByConcertDateId):");
-  console.log(
-    "all connections length:" +
-      pool.pool.config.connectionConfig.pool._allConnections.length
-  );
-  console.log(
-    "free connections length:" +
-      pool.pool.config.connectionConfig.pool._freeConnections.length
-  );
-  console.log(
-    "connection queue length:" +
-      pool.pool.config.connectionConfig.pool._connectionQueue.length
-  );
-  console.log(
-    "connections limit:" +
-      pool.pool.config.connectionConfig.pool.config.connectionLimit
-  );
-  console.log(
-    "queue limit:" + pool.pool.config.connectionConfig.pool.config.queueLimit
-  );
-
-  let [connectionNum] = await pool.query(
-    "show status where variable_name = 'Threads_connected';"
-  );
-  console.log(connectionNum[0].Value);
-
   try {
-    const queryStr = `
-    SELECT
-      count(*) AS count
-    FROM
-      concert_seat_info
-    WHERE
-    concert_area_price_id = ?
-    `;
+    const queryStr = `SELECT count(*) AS count FROM concert_seat_info WHERE concert_area_price_id = ?`;
     const bindings = [concertAreaPriceId];
     const [result] = await pool.query(queryStr, bindings);
-    console.log(
-      "checkConcertByConcertAreaPriceId-------已確認是否有此場演唱會!"
-    );
     return result;
   } catch (error) {
     console.log(error);
@@ -66,7 +23,7 @@ const checkConcertByConcertAreaPriceId = async (concertAreaPriceId) => {
   }
 };
 
-const getConcertTitleAndAreaImage = async (concertDateId) => {
+const getTitleAndAreaImage = async (concertDateId) => {
   const queryStr = `
     SELECT
       cd.concert_datetime,
@@ -983,7 +940,7 @@ const releaseTickets = async (tickets) => {
 };
 
 module.exports = {
-  getConcertTitleAndAreaImage,
+  getTitleAndAreaImage,
   checkConcertByConcertDateId,
   checkConcertByConcertAreaPriceId,
   getAreasAndTicketPrices,

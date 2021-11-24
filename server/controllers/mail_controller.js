@@ -8,12 +8,12 @@ const auth = {
   pass: process.env.EMAIL_AUTH_PASS,
 };
 
-const Mail_Type = {
+const mailType = {
   FinishOrder: 1,
   SignUpValify: 2,
 };
 
-const send_email = async (send_info, mail_type) => {
+const sendEmail = async (sendInfo, mailType) => {
   const {
     userName,
     userEmail,
@@ -27,7 +27,7 @@ const send_email = async (send_info, mail_type) => {
     recipientName,
     recipientPhone,
     recipientAddress,
-  } = send_info;
+  } = sendInfo;
 
   // initialize nodemailer
   const transporter = nodemailer.createTransport({
@@ -48,12 +48,12 @@ const send_email = async (send_info, mail_type) => {
   transporter.use("compile", hbs(handlebarOptions));
 
   // TODO 1: 依信件類型，取得信件標題跟內容模板
-  switch (mail_type) {
-    case Mail_Type.FinishOrder:
+  switch (mailType) {
+    case mailType.FinishOrder:
       title = "購買完成通知信";
       template = "finishOrder";
       break;
-    case Mail_Type.SignUpValify:
+    case mailType.SignUpValify:
       title = "註冊驗證通知信";
       template = "finishOrder"; // TODO: 待修改
       break;
@@ -93,6 +93,6 @@ const send_email = async (send_info, mail_type) => {
 };
 
 module.exports = {
-  send_email,
-  Mail_Type,
+  sendEmail,
+  mailType,
 };
