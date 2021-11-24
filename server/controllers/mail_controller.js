@@ -47,7 +47,7 @@ const sendEmail = async (sendInfo, mailType) => {
   // use a template file with nodemailer
   transporter.use("compile", hbs(handlebarOptions));
 
-  // TODO 1: 依信件類型，取得信件標題跟內容模板
+  // According to the letter type, get the letter title and content template
   switch (mailType) {
     case mailType.FinishOrder:
       title = "購買完成通知信";
@@ -59,7 +59,7 @@ const sendEmail = async (sendInfo, mailType) => {
       break;
   }
 
-  // TODO 2: 置換對應類型信件需要的參數內容
+  // Replace the parameter required by the corresponding type of letter
   let mailOptions = {
     from: "no-reply@gmail.com",
     to: userEmail,
@@ -88,7 +88,6 @@ const sendEmail = async (sendInfo, mailType) => {
     } else {
       console.log("Email sent: " + info.response);
     }
-    console.log(info);
   });
 };
 

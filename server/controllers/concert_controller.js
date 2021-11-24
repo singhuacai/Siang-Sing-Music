@@ -21,6 +21,9 @@ const createConcert = async (req, res) => {
   };
 
   const concertId = await Concert.insertConcertInfo(concertInfo);
+  if (concertId === -1) {
+    return res.status(500);
+  }
   for (let i = 0; i < data.concert_info.length; i++) {
     const concertDate = {
       concert_id: concertId,
@@ -30,6 +33,10 @@ const createConcert = async (req, res) => {
     };
 
     const concertDateId = await Concert.insertConcertDate(concertDate);
+    if (concertDateId === -1) {
+      return res.status(500);
+    }
+
     for (let area = 0; area < data.concert_info[i].sku_info.length; area++) {
       const concertAreaPrice = {
         concert_date_id: concertDateId,
@@ -39,6 +46,9 @@ const createConcert = async (req, res) => {
       const concertAreaPriceId = await Concert.insertConcertAreaPrice(
         concertAreaPrice
       );
+      if (concertAreaPriceId === -1) {
+        return res.status(500);
+      }
 
       let concertSeatInfo = [];
       for (

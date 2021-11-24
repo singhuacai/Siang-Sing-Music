@@ -7,7 +7,6 @@ const signUp = async (req, res) => {
   const { email, password, phone } = req.body;
 
   /* ----------------- 初步驗證 ----------------- */
-
   if (!name || !email || !phone || !password) {
     res.status(400).send({
       error: "您的資料填寫不完全，請再檢查一下",
@@ -36,8 +35,6 @@ const signUp = async (req, res) => {
   }
 
   name = validator.escape(name);
-
-  //TODO: signUp function
 
   const result = await User.signUp(
     name,
@@ -162,7 +159,4 @@ module.exports = {
   signUp,
   signIn,
   getUserProfile,
-  // getUserOrders,
-  // postUserCancelOrder,
-  // postUserComment,
 };

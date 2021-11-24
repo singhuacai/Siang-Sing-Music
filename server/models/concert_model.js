@@ -67,7 +67,7 @@ const insertConcertSeatInfo = async (concertSeatInfo) => {
       [concertSeatInfo]
     );
     await conn.query("COMMIT");
-    return "finish!";
+    return;
   } catch (error) {
     await conn.query("ROLLBACK");
     console.log(error);

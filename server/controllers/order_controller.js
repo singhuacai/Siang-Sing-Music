@@ -16,8 +16,7 @@ const {
 const getPerformanceAndAreas = async (req, res) => {
   const { concertId, concertDateId } = req.query;
 
-  // Given concertDateId to confirm this concert
-  let result = await Order.checkConcertByConcertDateId(concertDateId);
+  let result = await Order.checkConcert("concert_date", concertDateId);
   if (result[0].count === 0) {
     res.status(400).send({ error: "Bad request!" });
     return;
@@ -30,6 +29,7 @@ const getPerformanceAndAreas = async (req, res) => {
     res.status(400).send({ error: "Bad request!" });
     return;
   }
+
   result.map((v) => {
     v.concert_area_image = `/${concertId}/${v.concert_area_image}`;
     v.concert_datetime = moment(v.concert_datetime)
@@ -56,7 +56,10 @@ const getSeatStatus = async (req, res) => {
   const userId = req.user.id;
 
   // Given concertAreaPriceId to confirm this concert
-  let result = await Order.checkConcertByConcertAreaPriceId(concertAreaPriceId);
+  let result = await Order.checkConcert(
+    "concert_seat_info",
+    concertAreaPriceId
+  );
   if (result[0].count === 0) {
     res.status(400).send({ error: "Bad request!" });
     return;
@@ -97,7 +100,10 @@ const getChosenConcertInfo = async (req, res) => {
   const { concertAreaPriceId } = req.query;
 
   // 給定 concertAreaPriceId => 確認確實有此場演唱會
-  let result = await Order.checkConcertByConcertAreaPriceId(concertAreaPriceId);
+  let result = await await Order.checkConcert(
+    "concert_seat_info",
+    concertAreaPriceId
+  );
   if (result[0].count === 0) {
     res.status(400).send({ error: "Bad request!" });
     return;
