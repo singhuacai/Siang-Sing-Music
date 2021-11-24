@@ -4,17 +4,19 @@ const got = require("got");
 const validator = require("validator");
 const moment = require("moment");
 
-const checkConcertByConcertDateId = async (concertDateId) => {
-  const queryStr = `SELECT count(*) AS count FROM concert_date WHERE id = ?`;
-  const bindings = [concertDateId];
-  const [result] = await pool.query(queryStr, bindings);
-  return result;
-};
-
-const checkConcertByConcertAreaPriceId = async (concertAreaPriceId) => {
+const checkConcert = async (tableName, id) => {
+  const condition = { sql: "", bindings: [id] };
   try {
-    const queryStr = `SELECT count(*) AS count FROM concert_seat_info WHERE concert_area_price_id = ?`;
-    const bindings = [concertAreaPriceId];
+    switch (tableName) {
+      case "concert_date":
+        condition.sql = "WHERE id = ?";
+        break;
+      case "concert_seat_info":
+        condition.sql = "WHERE concert_area_price_id = ?";
+        break;
+    }
+    const queryStr = `SELECT count(*) AS count FROM ${tableName} ${condition.sql}`;
+    const bindings = condition.bindings;
     const [result] = await pool.query(queryStr, bindings);
     return result;
   } catch (error) {
@@ -46,7 +48,10 @@ const getTitleAndAreaImage = async (concertDateId) => {
 const getAreasAndTicketPrices = async (concertDateId) => {
   const queryStr = `
   SELECT
-    cap.id AS concert_area_price_id, cap.concert_area, cap.ticket_price, count(csi.status = 'not-selected' or null) AS total_seats
+    cap.id AS concert_area_price_id, 
+    cap.concert_area, 
+    cap.ticket_price, 
+    count(csi.status = 'not-selected' or null) AS total_seats
   FROM
     concert_area_price cap
   INNER JOIN
@@ -63,42 +68,16 @@ const getAreasAndTicketPrices = async (concertDateId) => {
 const getSoldandCartCount = async (concertAreaPriceId, userId) => {
   // 利用 concertAreaPriceId => 找到 concertDateId
   // 利用找到的 concertDateId => 找出該使用者購買及加入購物車的總數
-  // BEFORE ======================================
-  console.log("pool:(getSoldandCartCount)");
-  console.log(
-    "all connections length:" +
-      pool.pool.config.connectionConfig.pool._allConnections.length
-  );
-  console.log(
-    "free connections length:" +
-      pool.pool.config.connectionConfig.pool._freeConnections.length
-  );
-  console.log(
-    "connection queue length:" +
-      pool.pool.config.connectionConfig.pool._connectionQueue.length
-  );
-  console.log(
-    "connections limit:" +
-      pool.pool.config.connectionConfig.pool.config.connectionLimit
-  );
-  console.log(
-    "queue limit:" + pool.pool.config.connectionConfig.pool.config.queueLimit
-  );
 
   let [connectionNum] = await pool.query(
     "show status where variable_name = 'Threads_connected';"
   );
-  console.log(connectionNum[0].Value);
-
-  // ======================================
   const conn = await pool.getConnection();
   try {
-    // AFTER ======================================
     [connectionNum] = await pool.query(
       "show status where variable_name = 'Threads_connected';"
     );
-    console.log(connectionNum);
-    // ======================================
+
     await conn.query("START TRANSACTION");
     const queryStr = `
     WITH ConcertDateId AS (
@@ -120,9 +99,7 @@ const getSoldandCartCount = async (concertAreaPriceId, userId) => {
     `;
     const bindings = [concertAreaPriceId, userId];
     const [result] = await conn.query(queryStr, bindings);
-    console.log(
-      "getSoldandCartCount-------已取得該使用者已購買及已加入購物車的數量!"
-    );
+
     await conn.query("COMMIT");
     return result;
   } catch (error) {
@@ -135,10 +112,6 @@ const getSoldandCartCount = async (concertAreaPriceId, userId) => {
 };
 
 const getSeatStatus = async (concertAreaPriceId) => {
-  console.log("pool:(getSeatStatus)");
-  console.log(pool.pool.config.connectionConfig.pool._allConnections.length);
-  console.log(pool.pool.config.connectionConfig.pool._freeConnections.length);
-  console.log(pool.pool.config.connectionConfig.pool.config.connectionLimit);
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
@@ -157,7 +130,6 @@ const getSeatStatus = async (concertAreaPriceId) => {
     `;
     const bindings = [concertAreaPriceId];
     const [result] = await conn.query(queryStr, bindings);
-    console.log("getSeatStatus------已取得座位狀態!");
     await conn.query("COMMIT");
     return result;
   } catch (error) {
@@ -235,8 +207,6 @@ const chooseSeat = async (concertSeatId, userId) => {
       "UPDATE concert_seat_info SET status ='selected', user_id = ?, user_updated_status_datetime = CURRENT_TIMESTAMP() where id = ?",
       [userId, concertSeatId]
     );
-
-    console.log("已將status更改為selected了!");
     await conn.query("COMMIT");
     return {
       concert_area_price_id: status[0].concert_area_price_id,
@@ -283,7 +253,6 @@ const deleteSeat = async (concertSeatId, userId) => {
       "UPDATE concert_seat_info SET status ='not-selected', user_id =NULL , user_updated_status_datetime = NULL where id = ?",
       [concertSeatId]
     );
-    console.log("Seat cancelled!");
     await conn.query("COMMIT");
     return {
       concert_area_price_id: result[0].concert_area_price_id,
@@ -327,8 +296,6 @@ const rollBackChoose = async (chosenSeats, userId) => {
       "UPDATE concert_seat_info SET status ='not-selected', user_id = NULL , user_updated_status_datetime = NULL where id IN (?)",
       [rollBackSeat]
     );
-
-    console.log(`[rollBackSeat]:${rollBackSeat}`);
     await conn.query("COMMIT");
     return {
       concert_area_price_id,
@@ -420,7 +387,6 @@ const getCartStatus = async (userId) => {
         `;
     const bindings = [userId];
     const [result] = await pool.query(queryStr, bindings);
-    console.log("已取得購物車狀態!");
 
     return result;
   } catch (error) {
@@ -435,21 +401,19 @@ const removeItemFromCart = async (deleteSeatId, userId) => {
     await conn.query("START TRANSACTION");
     const [result] = await conn.query(
       `
-            SELECT 
-              csi.concert_area_price_id,
-              csi.status AS seat_status, 
-              csi.user_id , 
-              sc.id AS shopping_cart_id, 
-              sc.status AS status_in_cart
-            FROM concert_seat_info csi
-            INNER JOIN shopping_cart sc
-              ON csi.id = sc.concert_seat_id 
-            WHERE csi.id = ? FOR UPDATE;
-            `,
+      SELECT 
+        csi.concert_area_price_id,
+        csi.status AS seat_status, 
+        csi.user_id , 
+        sc.id AS shopping_cart_id, 
+        sc.status AS status_in_cart
+      FROM concert_seat_info csi
+      INNER JOIN shopping_cart sc
+        ON csi.id = sc.concert_seat_id 
+      WHERE csi.id = ? FOR UPDATE;
+      `,
       [deleteSeatId]
     );
-
-    console.log(result);
 
     if (result.length === 0) {
       await conn.query("ROLLBACK");
@@ -489,8 +453,6 @@ const removeItemFromCart = async (deleteSeatId, userId) => {
       [removeFromCartInfo[0].shopping_cart_id]
     );
 
-    console.log("此座位早已被您從購物車中移除囉!");
-
     await conn.query("COMMIT");
 
     return {
@@ -511,22 +473,20 @@ const checkout = async (data, user) => {
   try {
     await conn.query("START TRANSACTION");
     let queryStr = `
-          SELECT 
-            csi.concert_area_price_id,
-            csi.id AS concert_seat_id,
-            csi.user_id,
-            csi.status AS concert_seat_status,
-            sc.status AS shopping_cart_status
-          FROM concert_seat_info csi
-          INNER JOIN shopping_cart sc
-            ON csi.id = sc.concert_seat_id
-          WHERE sc.id IN (?) 
-          ORDER BY sc.id FOR UPDATE
-        `;
+      SELECT 
+        csi.concert_area_price_id,
+        csi.id AS concert_seat_id,
+        csi.user_id,
+        csi.status AS concert_seat_status,
+        sc.status AS shopping_cart_status
+      FROM concert_seat_info csi
+      INNER JOIN shopping_cart sc
+        ON csi.id = sc.concert_seat_id
+      WHERE sc.id IN (?) 
+      ORDER BY sc.id FOR UPDATE
+    `;
     let bindings = [data.order.shoppingCartSeat];
     const [check] = await pool.query(queryStr, bindings);
-
-    console.log(`check:${check}`);
     if (check.length === 0) {
       await conn.query("ROLLBACK");
       return { error: "無法在購物車中找到您預訂的此座位!" };
@@ -827,19 +787,6 @@ const payOrderByPrime = async function (tappayKey, prime, order, user) {
 
 const filterReleasedTickets = async () => {
   try {
-    // const queryStr = `select
-    //     csi.concert_area_price_id,
-    //     csi.id AS concert_seat_id,
-    //     sc.id AS shopping_cart_id
-    //   from concert_seat_info csi
-    //   INNER JOIN shopping_cart sc
-    //     on csi.id = sc.concert_seat_id
-    //   WHERE
-    //   csi.status = 'cart'
-    //   AND sc.status = 'add-to-cart'
-    //   AND csi.user_updated_status_datetime < CURRENT_TIMESTAMP - INTERVAL 1 HOUR
-    //   ORDER BY csi.id;
-    //   `;
     const queryStr = `select 
         csi.id AS concert_seat_id
       from concert_seat_info csi
@@ -861,7 +808,6 @@ const filterReleasedTickets = async () => {
 
 const releaseTickets = async (tickets) => {
   if (tickets.length === 0) {
-    console.log("=================================");
     return { error: "沒有需清除的票" };
   }
   const conn = await pool.getConnection();
@@ -883,8 +829,6 @@ const releaseTickets = async (tickets) => {
       [tickets]
     );
 
-    console.log(result);
-
     let shopping_cart_ids = [];
     let concert_seat_ids = [];
     let concert_area_price_ids = [];
@@ -898,9 +842,6 @@ const releaseTickets = async (tickets) => {
         shopping_cart_ids.push(result[i].shopping_cart_id);
       }
     }
-    // console.log(concert_area_price_ids);
-    // console.log(concert_seat_ids);
-    // console.log(shopping_cart_ids);
 
     if (concert_seat_ids.length !== shopping_cart_ids.length) {
       await conn.query("ROLLBACK");
@@ -941,8 +882,7 @@ const releaseTickets = async (tickets) => {
 
 module.exports = {
   getTitleAndAreaImage,
-  checkConcertByConcertDateId,
-  checkConcertByConcertAreaPriceId,
+  checkConcert,
   getAreasAndTicketPrices,
   getSoldandCartCount,
   getSeatStatus,
