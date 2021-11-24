@@ -1,13 +1,10 @@
 const { pool } = require("./mysql");
 
-const insertConcertInfo = async (concert_info) => {
+const executeTransaction = async (queryStr, bindings) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
-    const [result] = await conn.query(
-      "INSERT INTO concert_info SET ?",
-      concert_info
-    );
+    const [result] = await conn.query(queryStr, bindings);
     await conn.query("COMMIT");
     return result.insertId;
   } catch (error) {
@@ -17,64 +14,31 @@ const insertConcertInfo = async (concert_info) => {
   } finally {
     await conn.release();
   }
+};
+
+const insertConcertInfo = async (concertInfo) => {
+  const queryStr = "INSERT INTO concert_info SET ?";
+  const bindings = concertInfo;
+  return await executeTransaction(queryStr, bindings);
 };
 
 const insertConcertDate = async (concertDate) => {
-  const conn = await pool.getConnection();
-  try {
-    await conn.query("START TRANSACTION");
-    const [result] = await conn.query(
-      "INSERT INTO concert_date SET ?",
-      concertDate
-    );
-    await conn.query("COMMIT");
-    return result.insertId;
-  } catch (error) {
-    await conn.query("ROLLBACK");
-    console.log(error);
-    return -1;
-  } finally {
-    await conn.release();
-  }
+  const queryStr = "INSERT INTO concert_date SET ?";
+  const bindings = concertDate;
+  return await executeTransaction(queryStr, bindings);
 };
 
 const insertConcertAreaPrice = async (concertAreaPrice) => {
-  const conn = await pool.getConnection();
-  try {
-    await conn.query("START TRANSACTION");
-    const [result] = await conn.query(
-      "INSERT INTO concert_area_price SET ?",
-      concertAreaPrice
-    );
-    await conn.query("COMMIT");
-    return result.insertId;
-  } catch (error) {
-    await conn.query("ROLLBACK");
-    console.log(error);
-    return -1;
-  } finally {
-    await conn.release();
-  }
+  const queryStr = "INSERT INTO concert_area_price SET ?";
+  const bindings = concertAreaPrice;
+  return await executeTransaction(queryStr, bindings);
 };
 
 const insertConcertSeatInfo = async (concertSeatInfo) => {
-  const conn = await pool.getConnection();
-  try {
-    await conn.query("START TRANSACTION");
-
-    await conn.query(
-      "INSERT INTO concert_seat_info(concert_area_price_id, seat_row, seat_column, status) VALUES ?",
-      [concertSeatInfo]
-    );
-    await conn.query("COMMIT");
-    return;
-  } catch (error) {
-    await conn.query("ROLLBACK");
-    console.log(error);
-    return -1;
-  } finally {
-    await conn.release();
-  }
+  const queryStr =
+    "INSERT INTO concert_seat_info(concert_area_price_id, seat_row, seat_column, status) VALUES ?";
+  const bindings = [concertSeatInfo];
+  return await executeTransaction(queryStr, bindings);
 };
 
 const getCampaigns = async () => {
@@ -207,6 +171,7 @@ const getCampaignsByKeyword = async (keyword) => {
   }
 };
 module.exports = {
+  executeTransaction,
   insertConcertInfo,
   insertConcertDate,
   insertConcertAreaPrice,

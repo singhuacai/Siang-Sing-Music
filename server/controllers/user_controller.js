@@ -50,7 +50,7 @@ const signUp = async (req, res) => {
 
   const user = result.user;
   if (!user) {
-    return res.status(500).send({ error: "Database Query Error" });
+    return res.status(500);
   }
 
   return res.status(200).send({
@@ -107,7 +107,7 @@ const signIn = async (req, res) => {
 
   const user = result.user;
   if (!user) {
-    res.status(500).send({ error: "Database Query Error" });
+    res.status(500);
     return;
   }
 

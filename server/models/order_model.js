@@ -25,6 +25,30 @@ const checkConcert = async (tableName, id) => {
   }
 };
 
+const checkConcertByConcertDateId = async (concertDateId) => {
+  try {
+    const queryStr = `SELECT count(*) AS count FROM concert_date WHERE id = ?`;
+    const bindings = [concertDateId];
+    const [result] = await pool.query(queryStr, bindings);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return { error };
+  }
+};
+
+const checkConcertByConcertAreaPriceId = async (concertAreaPriceId) => {
+  try {
+    const queryStr = `SELECT count(*) AS count FROM concert_seat_info WHERE concert_area_price_id = ?`;
+    const bindings = [concertAreaPriceId];
+    const [result] = await pool.query(queryStr, bindings);
+    return result;
+  } catch (error) {
+    console.log(error);
+    return { error };
+  }
+};
+
 const getTitleAndAreaImage = async (concertDateId) => {
   const queryStr = `
     SELECT
@@ -883,6 +907,8 @@ const releaseTickets = async (tickets) => {
 module.exports = {
   getTitleAndAreaImage,
   checkConcert,
+  checkConcertByConcertDateId,
+  checkConcertByConcertAreaPriceId,
   getAreasAndTicketPrices,
   getSoldandCartCount,
   getSeatStatus,

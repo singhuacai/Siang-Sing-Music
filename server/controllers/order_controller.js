@@ -1,6 +1,6 @@
 const Order = require("../models/order_model");
+const { adjustTimeZone } = require("../../util/util");
 const Mail = require("../controllers/mail_controller");
-const moment = require("moment");
 const offsetHours = process.env.TIMEZONE_OFFSET || 8;
 const { notifyReleaseTickets } = require("../../socket");
 const {
@@ -16,7 +16,7 @@ const {
 const getPerformanceAndAreas = async (req, res) => {
   const { concertId, concertDateId } = req.query;
 
-  let result = await Order.checkConcert("concert_date", concertDateId);
+  let result = await Order.checkConcertByConcertDateId(concertDateId);
   if (result[0].count === 0) {
     res.status(400).send({ error: "Bad request!" });
     return;
@@ -32,9 +32,7 @@ const getPerformanceAndAreas = async (req, res) => {
 
   result.map((v) => {
     v.concert_area_image = `/${concertId}/${v.concert_area_image}`;
-    v.concert_datetime = moment(v.concert_datetime)
-      .add(offsetHours, "hours")
-      .format("YYYY-MM-DD HH:mm:ss");
+    v.concert_datetime = adjustTimeZone(v.concert_datetime, offsetHours);
     return v;
   });
 
@@ -56,10 +54,7 @@ const getSeatStatus = async (req, res) => {
   const userId = req.user.id;
 
   // Given concertAreaPriceId to confirm this concert
-  let result = await Order.checkConcert(
-    "concert_seat_info",
-    concertAreaPriceId
-  );
+  let result = await Order.checkConcertByConcertAreaPriceId(concertAreaPriceId);
   if (result[0].count === 0) {
     res.status(400).send({ error: "Bad request!" });
     return;
@@ -67,7 +62,7 @@ const getSeatStatus = async (req, res) => {
   // 給定 concertAreaPriceId => 查詢此區域的座位狀態
   let data = await Order.getSeatStatus(concertAreaPriceId);
   if (data.error || !data) {
-    res.status(500).send({ error: "server error" });
+    res.status(500);
     return;
   }
 
@@ -87,7 +82,7 @@ const getSeatStatus = async (req, res) => {
   // 利用 concertAreaPriceId => 找到 concertDateId  => 找出該使用者購買及加入購物車的總數
   result = await Order.getSoldandCartCount(concertAreaPriceId, userId);
   if (result.error || !result) {
-    res.status(500).send({ error: "server error" });
+    res.status(500);
     return;
   }
 
@@ -100,8 +95,7 @@ const getChosenConcertInfo = async (req, res) => {
   const { concertAreaPriceId } = req.query;
 
   // 給定 concertAreaPriceId => 確認確實有此場演唱會
-  let result = await await Order.checkConcert(
-    "concert_seat_info",
+  let result = await await Order.checkConcertByConcertAreaPriceId(
     concertAreaPriceId
   );
   if (result[0].count === 0) {
@@ -112,13 +106,11 @@ const getChosenConcertInfo = async (req, res) => {
   // 給定 concertAreaPriceId => 查詢此區域的座位狀態
   let data = await Order.getChosenConcertInfo(concertAreaPriceId);
   if (data.error || !data) {
-    res.status(500).send({ error: "server error" });
+    res.status(500);
     return;
   }
   data.map((v) => {
-    v.concert_datetime = moment(v.concert_datetime)
-      .add(offsetHours, "hours")
-      .format("YYYY-MM-DD HH:mm:ss");
+    v.concert_datetime = adjustTimeZone(v.concert_datetime, offsetHours);
     return v;
   });
 
@@ -258,9 +250,7 @@ const getCartStatus = async (req, res) => {
   }
 
   cartStatus.map((v) => {
-    v.concert_datetime = moment(v.concert_datetime)
-      .add(offsetHours, "hours")
-      .format("YYYY-MM-DD HH:mm:ss");
+    v.concert_datetime = adjustTimeZone(v.concert_datetime, offsetHours);
     return v;
   });
 
@@ -356,9 +346,7 @@ const getOrderResult = async (req, res) => {
       return;
     }
     result.map((v) => {
-      v.concert_datetime = moment(v.concert_datetime)
-        .add(offsetHours, "hours")
-        .format("YYYY-MM-DD HH:mm:ss");
+      v.concert_datetime = adjustTimeZone(v.concert_datetime, offsetHours);
       return v;
     });
   } else {
@@ -370,13 +358,9 @@ const getOrderResult = async (req, res) => {
     }
     result.map((v) => {
       v.ticket_info.map((v) => {
-        v.concert_datetime = moment(v.concert_datetime)
-          .add(offsetHours, "hours")
-          .format("YYYY-MM-DD HH:mm:ss");
+        v.concert_datetime = adjustTimeZone(v.concert_datetime, offsetHours);
       });
-      v.created_at = moment(v.created_at)
-        .add(offsetHours, "hours")
-        .format("YYYY-MM-DD HH:mm:ss");
+      v.created_at = adjustTimeZone(v.created_at, offsetHours);
       return v;
     });
   }

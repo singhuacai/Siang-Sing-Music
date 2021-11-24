@@ -1,11 +1,16 @@
 const User = require("../server/models/user_model");
 const { TOKEN_SECRET } = process.env; // 30 days by seconds
 const jwt = require("jsonwebtoken");
+const moment = require("moment");
 
 const wrapAsync = (fn) => {
   return function (req, res, next) {
     fn(req, res, next).catch(next);
   };
+};
+
+const adjustTimeZone = (time, hours) => {
+  return moment(time).add(hours, "hours").format("YYYY-MM-DD HH:mm:ss");
 };
 
 const authentication = (roleId) => {
@@ -62,6 +67,7 @@ const parseSocketId = () => {
 
 module.exports = {
   wrapAsync,
+  adjustTimeZone,
   authentication,
   parseSocketId,
 };
