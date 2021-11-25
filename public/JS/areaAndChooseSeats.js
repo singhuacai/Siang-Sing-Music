@@ -250,36 +250,35 @@ function removeSeatFromChosenSeatsArray(id) {
 function renderSeats(res) {
   countOfCartAndSold = res.countOfCartAndSold;
   let row = 0;
-  for (let i = 0; i < res.data.length; i++) {
-    if (parseInt(res.data[i].seat_row) !== row) {
-      $("#seats-table-list").append(
-        `<tr id="row-${res.data[i].seat_row}"></tr>`
-      );
+  res.data.forEach((e) => {
+    const { status, seatRow, concertSeatId } = e;
+    if (parseInt(seatRow) !== row) {
+      $("#seats-table-list").append(`<tr id="row-${seatRow}"></tr>`);
       row++;
     }
-    const status = res.data[i].status;
+
     if (status === "not-selected") {
-      $(`#row-${res.data[i].seat_row}`).append(
+      $(`#row-${seatRow}`).append(
         `<td>
-        <img src="../images/logo/icon_chair_not_selected.gif" class="not-selected" id="${res.data[i].concert_seat_id}" title ="" width="100%" >
+        <img src="../images/logo/icon_chair_not_selected.gif" class="not-selected" id="${concertSeatId}" title ="" width="100%" >
         </td>`
       );
     } else if (status === "selected") {
-      $(`#row-${res.data[i].seat_row}`).append(
-        `<td><img src="../images/logo/icon_chair_selected.gif" class = "selected" id = "${res.data[i].concert_seat_id}" width="100%" ></td>`
+      $(`#row-${seatRow}`).append(
+        `<td><img src="../images/logo/icon_chair_selected.gif" class = "selected" id = "${concertSeatId}" width="100%" ></td>`
       );
     } else if (status === "you-selected" && pageAccessedByReload) {
-      $(`#row-${res.data[i].seat_row}`).append(
-        `<td><img src="../images/logo/icon_chair_select.gif" class="you-selected" id = "${res.data[i].concert_seat_id}" width="100%"></td>`
+      $(`#row-${seatRow}`).append(
+        `<td><img src="../images/logo/icon_chair_select.gif" class="you-selected" id = "${concertSeatId}" width="100%"></td>`
       );
 
       // 進入時，若座位狀態已有"you-selected"，再打一次 API 讓他真的被選起來
-      addSeatIntoChosenSeatsArray(res.data[i].concert_seat_id);
+      addSeatIntoChosenSeatsArray(concertSeatId);
       $.ajax({
         url: "/api/1.0/order/chooseOrDeleteSeat",
         data: JSON.stringify({
           seatStatus: 1,
-          concertSeatId: res.data[i].concert_seat_id,
+          concertSeatId,
         }),
         method: "POST",
         dataType: "json",
@@ -292,7 +291,7 @@ function renderSeats(res) {
           console.log("success!");
         },
         error: function (res) {
-          removeSeatFromChosenSeatsArray(res.data[i].concert_seat_id);
+          removeSeatFromChosenSeatsArray(concertSeatId);
           Swal.fire({
             title: JSON.parse(res.responseText).error,
             icon: "error",
@@ -302,30 +301,30 @@ function renderSeats(res) {
         },
       });
     } else if (status === "you-selected" && !pageAccessedByReload) {
-      addSeatIntoChosenSeatsArray(res.data[i].concert_seat_id);
-      $(`#row-${res.data[i].seat_row}`).append(
-        `<td><img src="../images/logo/icon_chair_select.gif" class="you-selected" id = "${res.data[i].concert_seat_id}" width="100%"></td>`
+      addSeatIntoChosenSeatsArray(concertSeatId);
+      $(`#row-${seatRow}`).append(
+        `<td><img src="../images/logo/icon_chair_select.gif" class="you-selected" id = "${concertSeatId}" width="100%"></td>`
       );
     } else if (status === "cart") {
-      $(`#row-${res.data[i].seat_row}`).append(
-        `<td><img src="../images/logo/icon_chair_cart.gif" class = "cart" id = "${res.data[i].concert_seat_id}" width="100%"></td>`
+      $(`#row-${seatRow}`).append(
+        `<td><img src="../images/logo/icon_chair_cart.gif" class = "cart" id = "${concertSeatId}" width="100%"></td>`
       );
     } else if (status === "you-cart") {
-      $(`#row-${res.data[i].seat_row}`).append(
-        `<td><img src="../images/logo/icon_chair_cart.gif" class = "you-cart" id = "${res.data[i].concert_seat_id}" width="100%"></td>`
+      $(`#row-${seatRow}`).append(
+        `<td><img src="../images/logo/icon_chair_cart.gif" class = "you-cart" id = "${concertSeatId}" width="100%"></td>`
       );
     } else if (status === "sold") {
-      $(`#row-${res.data[i].seat_row}`).append(
-        `<td><img src="../images/logo/icon_chair_sold.gif" class = "sold" id = "${res.data[i].concert_seat_id}" width="100%"></td>`
+      $(`#row-${seatRow}`).append(
+        `<td><img src="../images/logo/icon_chair_sold.gif" class = "sold" id = "${concertSeatId}" width="100%"></td>`
       );
     } else if (status === "you-sold") {
-      $(`#row-${res.data[i].seat_row}`).append(
-        `<td><img src="../images/logo/icon_chair_sold.gif" class = "you-sold" id = "${res.data[i].concert_seat_id}" width="100%"></td>`
+      $(`#row-${seatRow}`).append(
+        `<td><img src="../images/logo/icon_chair_sold.gif" class = "you-sold" id = "${concertSeatId}" width="100%"></td>`
       );
     }
 
-    $(`#${res.data[i].concert_seat_id}`).click(handleClick);
-  }
+    $(`#${concertSeatId}`).click(handleClick);
+  });
 }
 
 function handleClick() {
@@ -566,7 +565,6 @@ $.ajax({
   headers: { Authorization: `Bearer ${Authorization}` },
 })
   .done(function (res) {
-    console.log(res);
     $(document).ready(function () {
       renderSeats(res);
       // ================================================

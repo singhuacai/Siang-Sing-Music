@@ -16,8 +16,8 @@ const {
 const getPerformanceAndAreas = async (req, res) => {
   const { concertId, concertDateId } = req.query;
 
-  let result = await Order.checkConcertByConcertDateId(concertDateId);
-  if (result[0].count === 0) {
+  let [result] = await Order.checkConcertByConcertDateId(concertDateId);
+  if (result.count === 0) {
     res.status(400).send({ error: "Bad request!" });
     return;
   }
@@ -66,13 +66,13 @@ const getSeatStatus = async (req, res) => {
   }
 
   data.map((v) => {
-    if (v.status === "selected" && v.user_id === userId) {
+    if (v.status === "selected" && v.userId === userId) {
       v.status = "you-selected";
     }
-    if (v.status === "cart" && v.user_id === userId) {
+    if (v.status === "cart" && v.userId === userId) {
       v.status = "you-cart";
     }
-    if (v.status === "sold" && v.user_id === userId) {
+    if (v.status === "sold" && v.userId === userId) {
       v.status = "you-sold";
     }
     return v;

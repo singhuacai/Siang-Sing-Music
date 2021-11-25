@@ -114,11 +114,10 @@ const getSeatStatus = async (concertAreaPriceId) => {
 
     const queryStr = `
       select
-        id AS concert_seat_id,
-        seat_row,
-        seat_column,
-        status,
-        user_id
+        id AS concertSeatId,
+        seat_row AS seatRow,
+        user_id AS userId,
+        status
       FROM concert_seat_info
       where concert_area_price_id = ? FOR UPDATE;
     `;
