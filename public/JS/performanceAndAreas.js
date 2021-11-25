@@ -2,8 +2,8 @@ urlParams = new URLSearchParams(window.location.search);
 concertId = urlParams.get("concertId");
 concertDateId = urlParams.get("concertDateId");
 concertAreaPriceId = urlParams.get("concertAreaPriceId");
-let Authorization = localStorage.getItem("Authorization");
-let UserCode = localStorage.getItem("UserCode");
+const Authorization = localStorage.getItem("Authorization");
+const UserCode = localStorage.getItem("UserCode");
 
 $.ajax({
   url: `/api/1.0/order/performanceAndAreas?concertId=${concertId}&concertDateId=${concertDateId}`,
@@ -14,6 +14,14 @@ $.ajax({
 })
   .done(function (res) {
     $(function () {
+      const {
+        concertTitle,
+        concertDatetime,
+        concertLocation,
+        concertAreaImage,
+        areasAndTicketPrices,
+      } = res;
+
       $("#content-block").html(
         `
         <div id="concert-area-image-and-choose-zone" class="content">
@@ -37,28 +45,26 @@ $.ajax({
           />`
       );
 
-      $("#concert-title").text(`${res.concert_title}`);
+      $("#concert-title").text(`${concertTitle}`);
 
       $("#time-location-block").html(
-        `<p>時間：${res.concert_datetime}&nbsp; &nbsp; 地點：${res.concert_location}</p>`
+        `<p>時間：${concertDatetime}&nbsp; &nbsp; 地點：${concertLocation}</p>`
       );
 
       $("#concert-area-image").html(
-        `<img src="${res.concert_area_image}" alt="concert-area-image" title="concert area image"/>`
+        `<img src="${concertAreaImage}" alt="concert-area-image" title="concert area image"/>`
       );
 
       $("#choose-zone-title").text("請選擇區域");
-      for (let i = 0; i < res.area_and_ticket_prices.length; i++) {
-        const concertAreaPriceId =
-          res.area_and_ticket_prices[i].concert_area_price_id;
-        const { concert_area, ticket_price, total_seats } =
-          res.area_and_ticket_prices[i];
+      for (let i = 0; i < areasAndTicketPrices.length; i++) {
+        const { concertArea, ticketPrice, totalSeats, concertAreaPriceId } =
+          areasAndTicketPrices[i];
 
-        if (parseInt(res.area_and_ticket_prices[i].total_seats) === 0) {
+        if (parseInt(totalSeats) === 0) {
           $("#concert-zone-price-qty").append(
             `
             <li id='${concertAreaPriceId}' class ="area-list">
-                <div class = "concert-zone-price-qty">${concert_area}  NT$${ticket_price}   已無空座位可選</div>
+                <div class = "concert-zone-price-qty">${concertArea}  NT$${ticketPrice}   已無空座位可選</div>
             </li>
             `
           );
@@ -67,7 +73,7 @@ $.ajax({
             `
             <li id='${concertAreaPriceId}' class ="area-list">
                 <a href="/order.html?concertId=${concertId}&concertDateId=${concertDateId}&concertAreaPriceId=${concertAreaPriceId}">
-                <div class="concert-zone-price-qty" id = "${concert_area}">${concert_area} NT$${ticket_price}   剩餘 ${total_seats} 個空位</div>
+                <div class="concert-zone-price-qty" id = "${concertArea}">${concertArea} NT$${ticketPrice}   剩餘 ${totalSeats} 個空位</div>
                 </a>
             </li>
             `

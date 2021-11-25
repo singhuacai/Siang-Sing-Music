@@ -29,8 +29,8 @@ const getPerformanceAndAreas = async (req, res) => {
   }
 
   result.map((v) => {
-    v.concert_area_image = `/${concertId}/${v.concert_area_image}`;
-    v.concert_datetime = adjustTimeZone(v.concert_datetime, offsetHours);
+    v.concertAreaImage = `/${concertId}/${v.concertAreaImage}`;
+    v.concertDatetime = adjustTimeZone(v.concertDatetime, offsetHours);
     return v;
   });
 
@@ -38,12 +38,14 @@ const getPerformanceAndAreas = async (req, res) => {
     concertDateId
   );
 
+  const { concertTitle, concertLocation, concertAreaImage, concertDatetime } =
+    result[0];
   res.status(200).send({
-    concert_title: result[0].concert_title,
-    concert_location: result[0].concert_location,
-    concert_area_image: result[0].concert_area_image,
-    concert_datetime: result[0].concert_datetime,
-    area_and_ticket_prices: areasAndTicketPrices,
+    concertTitle,
+    concertLocation,
+    concertAreaImage,
+    concertDatetime,
+    areasAndTicketPrices,
   });
 };
 

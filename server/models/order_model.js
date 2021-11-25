@@ -4,27 +4,6 @@ const got = require("got");
 const validator = require("validator");
 const moment = require("moment");
 
-const checkConcert = async (tableName, id) => {
-  const condition = { sql: "", bindings: [id] };
-  try {
-    switch (tableName) {
-      case "concert_date":
-        condition.sql = "WHERE id = ?";
-        break;
-      case "concert_seat_info":
-        condition.sql = "WHERE concert_area_price_id = ?";
-        break;
-    }
-    const queryStr = `SELECT count(*) AS count FROM ${tableName} ${condition.sql}`;
-    const bindings = condition.bindings;
-    const [result] = await pool.query(queryStr, bindings);
-    return result;
-  } catch (error) {
-    console.log(error);
-    return { error };
-  }
-};
-
 const checkConcertByConcertDateId = async (concertDateId) => {
   try {
     const queryStr = `SELECT count(*) AS count FROM concert_date WHERE id = ?`;
@@ -52,10 +31,10 @@ const checkConcertByConcertAreaPriceId = async (concertAreaPriceId) => {
 const getTitleAndAreaImage = async (concertDateId) => {
   const queryStr = `
     SELECT
-      cd.concert_datetime,
-      ci.concert_title,
-      ci.concert_location,
-      ci.concert_area_image
+      cd.concert_datetime AS concertDatetime,
+      ci.concert_title AS concertTitle,
+      ci.concert_location AS concertLocation,
+      ci.concert_area_image AS concertAreaImage
     FROM
       concert_info AS ci
     INNER JOIN
@@ -64,24 +43,24 @@ const getTitleAndAreaImage = async (concertDateId) => {
     WHERE cd.id = ?
     `;
   const bindings = [concertDateId];
-  const [concert_title] = await pool.query(queryStr, bindings);
-  return concert_title;
+  const [result] = await pool.query(queryStr, bindings);
+  return result;
 };
 
 const getAreasAndTicketPrices = async (concertDateId) => {
   const queryStr = `
   SELECT
-    cap.id AS concert_area_price_id, 
-    cap.concert_area, 
-    cap.ticket_price, 
-    count(csi.status = 'not-selected' or null) AS total_seats
+    cap.id AS concertAreaPriceId, 
+    cap.concert_area AS concertArea, 
+    cap.ticket_price AS ticketPrice, 
+    count(csi.status = 'not-selected' or null) AS totalSeats
   FROM
     concert_area_price cap
   INNER JOIN
     concert_seat_info csi
   ON cap.id = csi.concert_area_price_id
   WHERE cap.concert_date_id = ?
-  GROUP BY cap.concert_area, cap.ticket_price;
+  GROUP BY concertArea, ticketPrice;
     `;
   const bindings = [concertDateId];
   const [result] = await pool.query(queryStr, bindings);
@@ -887,7 +866,6 @@ const releaseTickets = async (tickets) => {
 
 module.exports = {
   getTitleAndAreaImage,
-  checkConcert,
   checkConcertByConcertDateId,
   checkConcertByConcertAreaPriceId,
   getAreasAndTicketPrices,
