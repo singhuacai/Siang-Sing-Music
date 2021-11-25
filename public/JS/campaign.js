@@ -1,4 +1,4 @@
-const concert_id = window.location.search.split("?id=")[1];
+const concertId = window.location.search.split("?id=")[1];
 let Authorization = localStorage.getItem("Authorization");
 const currency = "NT$";
 
@@ -11,7 +11,7 @@ const rewiteTicketPrices = (ticketPricesArray) => {
 };
 
 $.ajax({
-  url: `/api/1.0/concerts/details?id=${concert_id}`,
+  url: `/api/1.0/concerts/details?id=${concertId}`,
   method: "GET",
   dataType: "json",
 })
@@ -19,27 +19,27 @@ $.ajax({
     $(function () {
       $(".main-image").css(
         "background-image",
-        "url(" + res.data.concert_main_image + ")"
+        "url(" + res.data.concertMainImage + ")"
       );
 
-      $("#concert_title").text(`${res.data.concert_title}`);
-      $("#concert_story").html(`<p>${res.data.concert_story}</p>`);
-      $("#concert_sold_time").text(
-        `${res.data.sold_start} ~ ${res.data.sold_end}`
+      $("#concert-title").text(`${res.data.concertTitle}`);
+      $("#concert-story").html(`<p>${res.data.concertStory}</p>`);
+      $("#concert-sold-time").text(
+        `${res.data.soldStart} ~ ${res.data.soldEnd}`
       );
       $("#notice").html(`<p>${res.data.notice}</p>`);
-      for (let i = 0; i < res.data.concert_info.length; i++) {
-        const ticket_prices = rewiteTicketPrices(
-          res.data.concert_info[i].ticket_prices
+      for (let i = 0; i < res.data.concertInfo.length; i++) {
+        const ticketPrices = rewiteTicketPrices(
+          res.data.concertInfo[i].ticketPrices
         );
 
         $("#date_location_price").append(
           `
         <tr>
-          <td>${res.data.concert_info[i].concert_datetime}</td>
-          <td style="word-wrap:break-word;">${res.data.concert_location}</td>
-          <td>${ticket_prices}</td>
-          <td><button class = "booking-button" onclick = "javascript:location.href='/order.html?concertId=${concert_id}&concertDateId=${res.data.concert_info[i].concert_date_id}'">立即訂購</button></td>
+          <td>${res.data.concertInfo[i].concertDatetime}</td>
+          <td style="word-wrap:break-word;">${res.data.concertLocation}</td>
+          <td>${ticketPrices}</td>
+          <td><button class = "booking-button" onclick = "javascript:location.href='/order.html?concertId=${concertId}&concertDateId=${res.data.concertInfo[i].concertDateId}'">立即訂購</button></td>
         </tr>
         `
         );

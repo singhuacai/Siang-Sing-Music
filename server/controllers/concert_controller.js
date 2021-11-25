@@ -101,45 +101,43 @@ const getKeyvisuals = async (req, res) => {
 };
 
 const getConcertDetails = async (req, res) => {
-  const concert_id = parseInt(req.query.id);
-  if (!concert_id || req.query.id.trim() === "") {
+  const concertId = parseInt(req.query.id);
+  if (!concertId || req.query.id.trim() === "") {
     res.status(400).send({ error: "Bad request!" });
     return;
   }
-  const concertCount = await Concert.getCampaignCount(concert_id);
+  const concertCount = await Concert.getCampaignCount(concertId);
 
   if (concertCount[0].count === 0) {
     res.status(400).send({ error: "查無此場演唱會" });
     return;
   }
 
-  let result = await Concert.getConcertDetails(concert_id);
+  const result = await Concert.getConcertDetails(concertId);
   if (result.error || !result) {
     res.status(500);
     return;
   }
 
-  // console.log(result);
-
-  // const [data] = result.map((e) =>{
-  //   return {
-  //     soldStart: adjustTimeZone(e.sold_start, offsetHours),
-  //     notice = e.notice
-
-  //   }
-  // })
-
-  const [data] = result.map((v) => {
-    v.sold_start = adjustTimeZone(v.sold_start, offsetHours);
-    v.sold_end = adjustTimeZone(v.sold_end, offsetHours);
-    v.concert_main_image = `/${concert_id}/${v.concert_main_image}`;
-    v.concert_area_image = `/${concert_id}/${v.concert_area_image}`;
-    v.concert_info.map((s) => {
-      s.concert_datetime = adjustTimeZone(s.concert_datetime, offsetHours);
-      return s;
-    });
-
-    return v;
+  const [data] = result.map((e) => {
+    return {
+      concertId: e.concert_id,
+      concertTitle: e.concert_title,
+      concertStory: e.concert_story,
+      soldStart: adjustTimeZone(e.sold_start, offsetHours),
+      soldEnd: adjustTimeZone(e.sold_end, offsetHours),
+      concertLocation: e.concert_location,
+      concertMainImage: `/${e.concert_id}/${e.concert_main_image}`,
+      concertAreaImage: `/${e.concert_id}/${e.concert_area_image}`,
+      notice: e.notice,
+      concertInfo: e.concert_info.map((s) => {
+        return {
+          ticketPrices: s.ticket_prices,
+          concertDateId: s.concert_date_id,
+          concertDatetime: adjustTimeZone(s.concert_datetime, offsetHours),
+        };
+      }),
+    };
   });
   res.status(200).send({ data });
 };
