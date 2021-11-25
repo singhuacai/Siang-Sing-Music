@@ -158,9 +158,13 @@ const getCampaignsByKeyword = async (req, res) => {
     res.status(403).send({ error: "查無此關鍵字的相關演出!" });
     return;
   }
-  const data = result.map((v) => {
-    v.concert_main_image = `/${v.id}/${v.concert_main_image}`;
-    return v;
+
+  const data = result.map((e) => {
+    return {
+      concertTitle: e.concert_title,
+      concertMainImage: `/${e.id}/${e.concert_main_image}`,
+      concertDatetime: e.concert_datetime,
+    };
   });
 
   res.status(200).send({ data });
