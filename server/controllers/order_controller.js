@@ -103,7 +103,7 @@ const getChosenConcertInfo = async (req, res) => {
     return;
   }
   data.map((v) => {
-    v.concert_datetime = adjustTimeZone(v.concert_datetime, offsetHours);
+    v.concertDatetime = adjustTimeZone(v.concertDatetime, offsetHours);
     return v;
   });
 

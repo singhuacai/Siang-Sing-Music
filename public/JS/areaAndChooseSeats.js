@@ -525,13 +525,20 @@ $.ajax({
 })
   .done(function (res) {
     $(function () {
-      console.log(res);
-      $("#concert-title").text(`${res.data[0].concert_title}`);
+      const {
+        concertTitle,
+        concertDatetime,
+        concertLocation,
+        concertArea,
+        ticketPrice,
+      } = res.data[0];
+
+      $("#concert-title").text(concertTitle);
       $("#time-location-block").html(
-        `<p>時間：${res.data[0].concert_datetime}&nbsp; &nbsp; 地點：${res.data[0].concert_location}</p>`
+        `<p>時間：${concertDatetime}&nbsp; &nbsp; 地點：${concertLocation}</p>`
       );
       $("#area-ticketPrice").html(
-        `<p> 票區：${res.data[0].concert_area}&nbsp; &nbsp; 票價：NT$${res.data[0].ticket_price}</p>`
+        `<p> 票區：${concertArea}&nbsp; &nbsp; 票價：NT$${ticketPrice}</p>`
       );
     });
   })

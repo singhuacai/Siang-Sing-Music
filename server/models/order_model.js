@@ -137,11 +137,11 @@ const getSeatStatus = async (concertAreaPriceId) => {
 const getChosenConcertInfo = async (concertAreaPriceId) => {
   const queryStr = `
     SELECT 
-      ci.concert_title,
-      cd.concert_datetime,
-      ci.concert_location,
-      cap.concert_area,
-      cap.ticket_price
+      ci.concert_title AS concertTitle,
+      cd.concert_datetime AS concertDatetime,
+      ci.concert_location AS concertLocation,
+      cap.concert_area AS concertArea,
+      cap.ticket_price AS ticketPrice
     FROM concert_info ci
     INNER JOIN concert_date cd
       ON ci.id = cd.concert_id
