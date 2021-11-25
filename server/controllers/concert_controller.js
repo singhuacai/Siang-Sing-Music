@@ -91,9 +91,11 @@ const getKeyvisuals = async (req, res) => {
     return;
   }
 
-  const data = result.map((v) => {
-    v.concert_main_image = `/${v.concert_id}/${v.concert_main_image}`;
-    return v;
+  const data = result.map((e) => {
+    return {
+      concertId: e.concert_id,
+      concertMainImage: `/${e.concert_id}/${e.concert_main_image}`,
+    };
   });
   res.send({ data });
 };

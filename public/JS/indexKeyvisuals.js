@@ -5,11 +5,10 @@ $.ajax({
 })
   .done(function (res) {
     $(function () {
-      console.log(res);
       $(".carousel-inner").append(
         `
         <div class="carousel-item active">
-        <a href='/campaign.html?id=${res.data[0].concert_id}'><img src="${res.data[0].concert_main_image}" class="d-block "/></a>
+        <a href='/campaign.html?id=${res.data[0].concertId}'><img src="${res.data[0].concertMainImage}" class="d-block "/></a>
         </div>
         `
       );
@@ -17,7 +16,7 @@ $.ajax({
         $(".carousel-inner").append(
           `
           <div class="carousel-item">
-          <a href='/campaign.html?id=${res.data[i].concert_id}'><img src="${res.data[i].concert_main_image}" class="d-block"/></a>
+          <a href='/campaign.html?id=${res.data[i].concertId}'><img src="${res.data[i].concertMainImage}" class="d-block"/></a>
           </div>
           `
         );

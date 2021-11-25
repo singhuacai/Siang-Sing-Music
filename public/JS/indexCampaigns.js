@@ -5,7 +5,6 @@ $.ajax({
 })
   .done(function (res) {
     $(function () {
-      console.log(res);
       for (let i = 0; i < res.data.length; i++) {
         const data = res.data[i];
         const startDate = data.concertDatetime[0].split(" ")[0];
