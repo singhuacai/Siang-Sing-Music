@@ -21,7 +21,7 @@ const createConcert = async (req, res) => {
     return res.status(500);
   }
 
-  data.dateAndSeatInfo.forEach((element) => {
+  data.dateAndSeatInfo.forEach(async (element) => {
     const dateAndSeatInfo = element;
 
     const concertDate = {
@@ -35,7 +35,7 @@ const createConcert = async (req, res) => {
     if (concertDateId === -1) {
       return res.status(500);
     }
-    dateAndSeatInfo.skuInfo.forEach((element) => {
+    dateAndSeatInfo.skuInfo.forEach(async (element) => {
       const skuInfo = element;
       const concertAreaPrice = {
         concert_date_id: concertDateId,
@@ -71,10 +71,16 @@ const getCampaigns = async (req, res) => {
     res.status(500);
     return;
   }
-  const data = result.map((v) => {
-    v.concert_main_image = `/${v.id}/${v.concert_main_image}`;
-    return v;
+
+  const data = result.map((e) => {
+    return {
+      id: e.id,
+      concertTitle: e.concert_title,
+      concertMainImage: `/${e.id}/${e.concert_main_image}`,
+      concertDatetime: e.concert_datetime,
+    };
   });
+
   res.status(200).send({ data });
 };
 
@@ -111,7 +117,7 @@ const getConcertDetails = async (req, res) => {
     return;
   }
 
-  console.log(result);
+  // console.log(result);
 
   // const [data] = result.map((e) =>{
   //   return {

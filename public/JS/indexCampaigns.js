@@ -7,20 +7,20 @@ $.ajax({
     $(function () {
       console.log(res);
       for (let i = 0; i < res.data.length; i++) {
-        const start_date = res.data[i].concert_datetime[0].split(" ")[0];
-        const end_date =
-          res.data[i].concert_datetime[
-            res.data[i].concert_datetime.length - 1
-          ].split(" ")[0];
+        const data = res.data[i];
+        const startDate = data.concertDatetime[0].split(" ")[0];
+        const endDate =
+          data.concertDatetime[data.concertDatetime.length - 1].split(" ")[0];
 
         let campaignHTML = `
-        <a class="campaign" href="/campaign.html?id=${res.data[i].id}">
+        <a class="campaign" href="/campaign.html?id=${data.id}">
             <div class="campaign-image">
-                <img src="${res.data[i].concert_main_image}" alt="campaign-main-image">
+                <img src="${data.concertMainImage}" alt="campaign-main-image">
             </div>
-            <div class="campaign_interval" >${start_date} ~ ${end_date}</div>
+            
+            <div class="campaign_interval" >${startDate} ~ ${endDate}</div>
             <hr class="line-style" />
-            <div class="campaign_title" >${res.data[i].concert_title}</div>
+            <div class="campaign_title" >${data.concertTitle}</div>
         </a>
         `;
 
