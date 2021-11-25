@@ -61,8 +61,7 @@ const getTitleAndAreaImage = async (concertDateId) => {
     INNER JOIN
       concert_date AS cd
     on ci.id = cd.concert_id
-    WHERE
-      cd.id = ?
+    WHERE cd.id = ?
     `;
   const bindings = [concertDateId];
   const [concert_title] = await pool.query(queryStr, bindings);
@@ -90,18 +89,12 @@ const getAreasAndTicketPrices = async (concertDateId) => {
 };
 
 const getSoldandCartCount = async (concertAreaPriceId, userId) => {
-  // 利用 concertAreaPriceId => 找到 concertDateId
-  // 利用找到的 concertDateId => 找出該使用者購買及加入購物車的總數
+  /* Given concertAreaPriceId
+     => get concertDateId
+     => Get the number of seats belonging to this user */
 
-  let [connectionNum] = await pool.query(
-    "show status where variable_name = 'Threads_connected';"
-  );
   const conn = await pool.getConnection();
   try {
-    [connectionNum] = await pool.query(
-      "show status where variable_name = 'Threads_connected';"
-    );
-
     await conn.query("START TRANSACTION");
     const queryStr = `
     WITH ConcertDateId AS (
@@ -147,10 +140,8 @@ const getSeatStatus = async (concertAreaPriceId) => {
         seat_column,
         status,
         user_id
-      FROM
-        concert_seat_info
-      where
-        concert_area_price_id = ? FOR UPDATE;
+      FROM concert_seat_info
+      where concert_area_price_id = ? FOR UPDATE;
     `;
     const bindings = [concertAreaPriceId];
     const [result] = await conn.query(queryStr, bindings);
@@ -178,8 +169,7 @@ const getChosenConcertInfo = async (concertAreaPriceId) => {
       ON ci.id = cd.concert_id
     INNER JOIN concert_area_price cap
       ON cd.id = cap.concert_date_id
-    WHERE
-      cap.id = ?;
+    WHERE cap.id = ?;
     `;
   const bindings = [concertAreaPriceId];
   const [result] = await pool.query(queryStr, bindings);
@@ -217,8 +207,7 @@ const chooseSeat = async (concertSeatId, userId) => {
         ON cdi.concert_date_id = cap.concert_date_id
       INNER JOIN concert_seat_info csi
         ON cap.id = csi.concert_area_price_id
-      WHERE csi.user_id = ? AND csi.status !='not-selected'
-      ;
+      WHERE csi.user_id = ? AND csi.status !='not-selected';
       `,
       [concertSeatId, userId]
     );
@@ -255,19 +244,16 @@ const deleteSeat = async (concertSeatId, userId) => {
       [concertSeatId]
     );
 
-    // 此座位的狀態早就是 Not-selected 的了
     if (result[0].status === "not-selected") {
       await conn.query("ROLLBACK");
       return { error: "此座位早已被您取消選擇囉!" };
     }
 
-    // 此座位的狀態若是 "Sold" 或 "cart" 的 => 無法取消
     if (result[0].status === "sold" || result[0].status === "cart") {
       await conn.query("ROLLBACK");
       return { error: "您無法於此頁刪除此座位的預訂喔!" };
     }
 
-    // 確認"想取消此座位者"與"預訂者"為同一人
     if (result[0].user_id !== userId) {
       await conn.query("ROLLBACK");
       return { error: "您無權限取消選擇此座位!" };
@@ -297,17 +283,15 @@ const rollBackChoose = async (chosenSeats, userId) => {
   try {
     await conn.query("START TRANSACTION");
     const queryStr =
-      "SELECT id, status, user_id, concert_area_price_id FROM concert_seat_info WHERE id IN(?) ORDER BY id FOR UPDATE";
+      "SELECT id, status, user_id FROM concert_seat_info WHERE id IN(?) ORDER BY id FOR UPDATE";
     const bindings = [chosenSeats];
     const [check] = await pool.query(queryStr, bindings);
 
-    // 確認你撈出來的 userId 與前台傳過來的 userId 是同一個 => 再去 rollback 該使用者剛剛選起來的位置
+    // check userId and seatStatus => release the seats that the user selected
     let rollBackSeat = [];
-    let concert_area_price_id;
     for (let i = 0; i < check.length; i++) {
       if (check[i].user_id === userId && check[i].status === "selected") {
         rollBackSeat.push(check[i].id);
-        concert_area_price_id = check[i].concert_area_price_id;
       }
     }
 
@@ -321,10 +305,7 @@ const rollBackChoose = async (chosenSeats, userId) => {
       [rollBackSeat]
     );
     await conn.query("COMMIT");
-    return {
-      concert_area_price_id,
-      rollBackSeat,
-    };
+    return { rollBackSeat };
   } catch (error) {
     console.log(error);
     await conn.query("ROLLBACK");

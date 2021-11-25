@@ -74,7 +74,6 @@ const socketConnect = (server) => {
 
     socket.on("disconnect", () => {
       console.log(`user ${socket.id} disconnected`);
-      // em.off(eventName, listener);
     });
   });
 };
@@ -109,7 +108,6 @@ const notifyRemoveToOrder = (msg) => {
   msg = JSON.parse(msg);
   for (let i = 0; i < msg.concertAreaPriceIds.length; i++) {
     const room = getRoomName(msg.concertAreaPriceIds[i]);
-    console.log(io);
     const new_msg = JSON.stringify({
       owner: msg.owner,
       removeToOrderSeat: msg.removeToOrderSeat[i],
@@ -120,11 +118,8 @@ const notifyRemoveToOrder = (msg) => {
 
 const notifyReleaseTickets = (msg) => {
   for (let i = 0; i < msg.length; i++) {
-    console.log(msg[i].concertAreaPriceId);
-    console.log(msg[i].concertSeatIds);
     const room = getRoomName(msg[i].concertAreaPriceId);
     const new_msg = msg[i].concertSeatIds;
-    console.log(`room:${room}`);
     io.to(room).emit(SOCKET_EVENTS.RELEASE_TICKETS, new_msg);
   }
 };
@@ -135,6 +130,7 @@ const socket_send = (socket, event, msg, target) => {
       io.sockets.emit(event, msg);
       break;
     case BOARDCAST.ALL_USERS_IN_ROOM:
+      console.log(msg);
       const room = getRoomName(socket.decoded.concertAreaPriceId);
       io.to(room).emit(event, msg);
       break;

@@ -1,8 +1,8 @@
-const Order = require("../models/order_model");
-const { adjustTimeZone } = require("../../util/util");
-const Mail = require("../controllers/mail_controller");
 const offsetHours = process.env.TIMEZONE_OFFSET || 8;
+const Order = require("../models/order_model");
+const Mail = require("../controllers/mail_controller");
 const { notifyReleaseTickets } = require("../../socket");
+const { adjustTimeZone } = require("../../util/util");
 const {
   BOARDCAST,
   notifySeatSelected,
@@ -22,9 +22,7 @@ const getPerformanceAndAreas = async (req, res) => {
     return;
   }
 
-  // Given concertDateId to search for concert information
   result = await Order.getTitleAndAreaImage(concertDateId);
-
   if (!result[0]) {
     res.status(400).send({ error: "Bad request!" });
     return;
@@ -36,10 +34,10 @@ const getPerformanceAndAreas = async (req, res) => {
     return v;
   });
 
-  // Given concertDateId, query Area and ticket prices
   const areaAndTicketPrices = await Order.getAreasAndTicketPrices(
     concertDateId
   );
+
   res.status(200).send({
     concert_title: result[0].concert_title,
     concert_location: result[0].concert_location,
@@ -53,20 +51,18 @@ const getSeatStatus = async (req, res) => {
   const { concertAreaPriceId } = req.query;
   const userId = req.user.id;
 
-  // Given concertAreaPriceId to confirm this concert
   let result = await Order.checkConcertByConcertAreaPriceId(concertAreaPriceId);
   if (result[0].count === 0) {
     res.status(400).send({ error: "Bad request!" });
     return;
   }
-  // 給定 concertAreaPriceId => 查詢此區域的座位狀態
+
   let data = await Order.getSeatStatus(concertAreaPriceId);
   if (data.error || !data) {
     res.status(500);
     return;
   }
 
-  // 若是你選擇的，則修改狀態為 "you-selected"
   data.map((v) => {
     if (v.status === "selected" && v.user_id === userId) {
       v.status = "you-selected";
@@ -79,7 +75,7 @@ const getSeatStatus = async (req, res) => {
     }
     return v;
   });
-  // 利用 concertAreaPriceId => 找到 concertDateId  => 找出該使用者購買及加入購物車的總數
+
   result = await Order.getSoldandCartCount(concertAreaPriceId, userId);
   if (result.error || !result) {
     res.status(500);
@@ -93,17 +89,12 @@ const getSeatStatus = async (req, res) => {
 
 const getChosenConcertInfo = async (req, res) => {
   const { concertAreaPriceId } = req.query;
-
-  // 給定 concertAreaPriceId => 確認確實有此場演唱會
-  let result = await await Order.checkConcertByConcertAreaPriceId(
-    concertAreaPriceId
-  );
+  let result = await Order.checkConcertByConcertAreaPriceId(concertAreaPriceId);
   if (result[0].count === 0) {
     res.status(400).send({ error: "Bad request!" });
     return;
   }
 
-  // 給定 concertAreaPriceId => 查詢此區域的座位狀態
   let data = await Order.getChosenConcertInfo(concertAreaPriceId);
   if (data.error || !data) {
     res.status(500);
@@ -123,7 +114,6 @@ const chooseOrDeleteSeat = async (req, res) => {
   const userId = req.user.id;
   const userCode = req.user.user_code;
 
-  console.log(concertSeatId);
   if (!concertSeatId) {
     res.status(400).send({ error: "請提供concertSeatId！" });
     return;
@@ -137,27 +127,22 @@ const chooseOrDeleteSeat = async (req, res) => {
   let result;
   if (seatStatus === 1) {
     result = await Order.chooseSeat(concertSeatId, userId);
-    console.log(result.seat_id);
   } else if (seatStatus === 0) {
     result = await Order.deleteSeat(concertSeatId, userId);
   }
+
   if (result.error) {
     res.status(403).send({ error: result.error });
     return;
   } else {
+    const msg = JSON.stringify({
+      owner: userCode,
+      concert_area_price_id: result.concert_area_price_id,
+      seat_id: result.seat_id,
+    });
     if (result.status === "selected") {
-      const msg = JSON.stringify({
-        owner: userCode,
-        concert_area_price_id: result.concert_area_price_id,
-        seat_id: result.seat_id,
-      });
       notifySeatSelected(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
     } else if (result.status === "not-selected") {
-      const msg = JSON.stringify({
-        owner: userCode,
-        concert_area_price_id: result.concert_area_price_id,
-        seat_id: result.seat_id,
-      });
       notifySeatDeleted(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
     }
     res.status(200).send(result);
@@ -184,14 +169,12 @@ const rollBackChoose = async (req, res) => {
   // 1. 查詢該座位目前的狀態是否為 selected 以及是否為同一個使用者
   // 2. 若是同一個使用者，再把座位狀態還原為not-selected狀態!
   result = await Order.rollBackChoose(chosenSeats, userId);
-
   if (result.error) {
     res.status(403).send({ error: result.error });
     return;
   } else {
     const msg = JSON.stringify({
       owner: userCode,
-      concert_area_price_id: result.concert_area_price_id,
       rollBackSeat: result.rollBackSeat,
     });
     notifyRollbackSeat(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);

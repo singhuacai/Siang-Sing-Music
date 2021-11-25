@@ -52,7 +52,6 @@ var socket = io({
 });
 
 socket.on("ClientSocketId", (msg) => {
-  console.log(`ClientSocketId : ${msg}`);
   socketId = msg;
 });
 
@@ -100,11 +99,10 @@ socket.on("NotifySeatDelete", (msg) => {
 });
 
 socket.on("NotifyRollbackSeat", (msg) => {
+  console.log(msg);
   msg = JSON.parse(msg);
-  console.log(msg, msg.rollBackSeat, msg.owner);
   if (msg.owner === localStorage.getItem("UserCode")) {
     for (let i = 0; i < msg.rollBackSeat.length; i++) {
-      console.log(`yes!!`);
       $(`#${msg.rollBackSeat[i]}`)
         .removeClass("you-selected")
         .addClass("not-selected");
@@ -114,10 +112,8 @@ socket.on("NotifyRollbackSeat", (msg) => {
       );
     }
     chosenSeats = [];
-    console.log(` (after rollback)chosenSeats:${chosenSeats}`);
   } else {
     for (let i = 0; i < msg.rollBackSeat.length; i++) {
-      console.log(`OPPS`);
       $(`#${msg.rollBackSeat[i]}`)
         .removeClass("selected")
         .addClass("not-selected");
@@ -131,7 +127,6 @@ socket.on("NotifyRollbackSeat", (msg) => {
 
 socket.on("NotifyAddToCart", (msg) => {
   msg = JSON.parse(msg);
-  console.log(msg, msg.addToCartSeat, msg.owner);
   if (msg.owner === localStorage.getItem("UserCode")) {
     for (let i = 0; i < msg.addToCartSeat.length; i++) {
       $(`#${msg.addToCartSeat[i]}`)
@@ -181,7 +176,6 @@ socket.on("NotifyRemoveFromCart", (msg) => {
 
 socket.on("NotifyRemoveToOrder", (msg) => {
   msg = JSON.parse(msg);
-  console.log(msg, msg.removeToOrderSeat, msg.owner);
   if (msg.owner === localStorage.getItem("UserCode")) {
     $(`#${msg.removeToOrderSeat}`).removeClass("you-cart").addClass("you-sold");
     $(`#${msg.removeToOrderSeat}`).attr(
@@ -341,8 +335,6 @@ function handleClick() {
   if (!isZero) {
     const cls = this.className;
     const id = $(this).attr("id");
-    console.log(`className:${cls}`);
-    console.log(`buttonId:${id}`);
 
     switch (cls) {
       case "not-selected":

@@ -53,10 +53,10 @@ const sendEmail = async (sendInfo, mailType) => {
       title = "購買完成通知信";
       template = "finishOrder";
       break;
-    case mailType.SignUpValify:
-      title = "註冊驗證通知信";
-      template = "finishOrder"; // TODO: 待修改
-      break;
+    // case mailType.SignUpValify:
+    //   title = "註冊驗證通知信";
+    //   template = "finishOrder"; // TODO: 待修改
+    //   break;
   }
 
   // Replace the parameter required by the corresponding type of letter

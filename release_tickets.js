@@ -44,7 +44,7 @@ const releaseTickets = async () => {
 
 const init = async () => {
   const msg = await releaseTickets();
-  await got.post("http://127.0.0.1:3000/api/1.0/order/ReleaseTickets", {
+  await got.post("http://127.0.0.1:3000/api/1.0/order/releaseTickets", {
     headers: {
       "Content-Type": "application/json",
     },

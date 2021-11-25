@@ -55,6 +55,6 @@ router
   .route("/order/orderResult")
   .get(authentication(role.ALL), wrapAsync(getOrderResult));
 
-router.route("/order/ReleaseTickets").post(wrapAsync(postReleaseTicketsResult));
+router.route("/order/releaseTickets").post(wrapAsync(postReleaseTicketsResult));
 
 module.exports = router;
