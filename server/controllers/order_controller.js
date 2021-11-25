@@ -34,7 +34,7 @@ const getPerformanceAndAreas = async (req, res) => {
     return v;
   });
 
-  const areaAndTicketPrices = await Order.getAreasAndTicketPrices(
+  const areasAndTicketPrices = await Order.getAreasAndTicketPrices(
     concertDateId
   );
 
@@ -43,7 +43,7 @@ const getPerformanceAndAreas = async (req, res) => {
     concert_location: result[0].concert_location,
     concert_area_image: result[0].concert_area_image,
     concert_datetime: result[0].concert_datetime,
-    area_and_ticket_prices: areaAndTicketPrices,
+    area_and_ticket_prices: areasAndTicketPrices,
   });
 };
 

@@ -57,7 +57,6 @@ socket.on("ClientSocketId", (msg) => {
 
 socket.on("NotifySeatSelect", (msg) => {
   msg = JSON.parse(msg);
-  console.log(msg, msg.seat_id, msg.owner);
   if (msg.owner === localStorage.getItem("UserCode")) {
     $(`#${msg.seat_id}`).removeClass("not-selected").addClass("you-selected");
     $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_select.gif");
@@ -81,7 +80,6 @@ socket.on("NotifySeatSelect", (msg) => {
 
 socket.on("NotifySeatDelete", (msg) => {
   msg = JSON.parse(msg);
-  console.log(msg, msg.seat_id, msg.owner);
   if (msg.owner === localStorage.getItem("UserCode")) {
     $(`#${msg.seat_id}`).removeClass("you-selected").addClass("not-selected");
     $(`#${msg.seat_id}`).attr(
@@ -99,7 +97,6 @@ socket.on("NotifySeatDelete", (msg) => {
 });
 
 socket.on("NotifyRollbackSeat", (msg) => {
-  console.log(msg);
   msg = JSON.parse(msg);
   if (msg.owner === localStorage.getItem("UserCode")) {
     for (let i = 0; i < msg.rollBackSeat.length; i++) {

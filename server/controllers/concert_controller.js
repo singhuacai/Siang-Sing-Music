@@ -1,17 +1,18 @@
 const Concert = require("../models/concert_model");
 const offsetHours = process.env.TIMEZONE_OFFSET || 8;
 const { adjustTimeZone } = require("../../util/util");
+
 const createConcert = async (req, res) => {
   const data = req.body.data[0];
 
   const concertInfo = {
-    concert_title: data.concert_title,
-    concert_story: data.concert_story,
-    sold_start: adjustTimeZone(data.sold_start, -1 * offsetHours),
-    sold_end: adjustTimeZone(data.sold_end, -1 * offsetHours),
-    concert_location: data.concert_location,
-    concert_main_image: data.concert_main_image,
-    concert_area_image: data.concert_area_image,
+    concert_title: data.concertTitle,
+    concert_story: data.concertStory,
+    sold_start: adjustTimeZone(data.soldStart, -1 * offsetHours),
+    sold_end: adjustTimeZone(data.soldEnd, -1 * offsetHours),
+    concert_location: data.concertLocation,
+    concert_main_image: data.concertMainImage,
+    concert_area_image: data.concertAreaImage,
     notice: data.notice,
   };
 
@@ -20,27 +21,26 @@ const createConcert = async (req, res) => {
     return res.status(500);
   }
 
-  for (let i = 0; i < data.concert_info.length; i++) {
-    const concertInfo = data.concert_info[i];
+  data.dateAndSeatInfo.forEach((element) => {
+    const dateAndSeatInfo = element;
+
     const concertDate = {
       concert_id: concertId,
       concert_datetime: adjustTimeZone(
-        concertInfo.concert_datetime,
+        dateAndSeatInfo.concert_datetime,
         -1 * offsetHours
       ),
     };
-
     const concertDateId = await Concert.insertConcertDate(concertDate);
     if (concertDateId === -1) {
       return res.status(500);
     }
-
-    for (let area = 0; area < concertInfo.sku_info.length; area++) {
-      const skuInfo = concertInfo.sku_info[area];
+    dateAndSeatInfo.skuInfo.forEach((element) => {
+      const skuInfo = element;
       const concertAreaPrice = {
         concert_date_id: concertDateId,
-        concert_area: skuInfo.area_code,
-        ticket_price: skuInfo.ticket_price,
+        concert_area: skuInfo.areaCode,
+        ticket_price: skuInfo.ticketPrice,
       };
       const concertAreaPriceId = await Concert.insertConcertAreaPrice(
         concertAreaPrice
@@ -50,9 +50,9 @@ const createConcert = async (req, res) => {
       }
 
       let concertSeatInfo = [];
-      for (let row = 0; row < skuInfo.seat_allocation.length; row++) {
-        for (let col = 0; col < skuInfo.seat_allocation[row]; col++) {
-          const seat = [concertAreaPriceId, row + 1, col + 1, "not-selected"];
+      for (let row = 1; row < skuInfo.seatAllocation.length + 1; row++) {
+        for (let col = 1; col < skuInfo.seatAllocation[row - 1] + 1; col++) {
+          const seat = [concertAreaPriceId, row, col, "not-selected"];
           concertSeatInfo.push(seat);
         }
       }
@@ -60,8 +60,8 @@ const createConcert = async (req, res) => {
       if (result === -1) {
         return res.status(500);
       }
-    }
-  }
+    });
+  });
   res.status(200).send({ concertId });
 };
 
@@ -110,6 +110,16 @@ const getConcertDetails = async (req, res) => {
     res.status(500);
     return;
   }
+
+  console.log(result);
+
+  // const [data] = result.map((e) =>{
+  //   return {
+  //     soldStart: adjustTimeZone(e.sold_start, offsetHours),
+  //     notice = e.notice
+
+  //   }
+  // })
 
   const [data] = result.map((v) => {
     v.sold_start = adjustTimeZone(v.sold_start, offsetHours);
