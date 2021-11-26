@@ -133,25 +133,20 @@ socket.on("NotifyAddToCart", (msg) => {
 });
 
 socket.on("NotifyRemoveFromCart", (msg) => {
-  console.log(msg, msg.removeFromCartSeat, msg.owner);
   if (msg.owner === localStorage.getItem("UserCode")) {
     $(`#${msg.removeFromCartSeat}`)
       .removeClass("you-cart")
       .addClass("not-selected");
-    $(`#${msg.removeFromCartSeat}`).attr(
-      "src",
-      "../images/logo/icon_chair_not_selected.gif"
-    );
     countOfCartAndSold -= 1;
   } else {
     $(`#${msg.removeFromCartSeat}`)
       .removeClass("cart")
       .addClass("not-selected");
-    $(`#${msg.removeFromCartSeat}`).attr(
-      "src",
-      "../images/logo/icon_chair_not_selected.gif"
-    );
   }
+  $(`#${msg.removeFromCartSeat}`).attr(
+    "src",
+    "../images/logo/icon_chair_not_selected.gif"
+  );
 });
 
 socket.on("NotifyRemoveToOrder", (msg) => {

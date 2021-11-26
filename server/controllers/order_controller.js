@@ -236,20 +236,16 @@ const getCartStatus = async (req, res) => {
 };
 
 const removeItemFromCart = async (req, res) => {
-  const { deleteSeatId } = req.body;
+  const { removeSeatId } = req.body;
   const userId = req.user.id;
   const userCode = req.user.userCode;
 
-  if (!deleteSeatId) {
+  if (!removeSeatId) {
     res.status(400).send({ error: "請提供欲刪除的座位" });
     return;
   }
 
-  // 利用 deleteSeatId 先到 concert_seat_info table 確認: 1. status 是否為 cart, 2.userId 是否與欲取消者相同
-  // 兩個條件均符合後，再到 shopping cart table, 針對 deleteSeatId 去找到對應的 concert_seat_id 將其 status 更改為 remove-from-cart
-  // res.status(200).send(result);
-
-  result = await Order.removeItemFromCart(deleteSeatId, userId);
+  result = await Order.removeItemFromCart(removeSeatId, userId);
 
   if (result.error) {
     res.status(403).send({ error: result.error });
@@ -257,11 +253,11 @@ const removeItemFromCart = async (req, res) => {
   } else {
     const msg = JSON.stringify({
       owner: userCode,
-      concert_area_price_id: result.concert_area_price_id,
-      removeFromCartSeat: result.remove_from_cart_seat_id,
+      concertAreaPriceId: result.concertAreaPriceId,
+      removeFromCartSeat: result.removeFromCartSeatId,
     });
     notifyRemoveFromCart(msg);
-    res.status(200).send({ result: `已將座位 ${deleteSeatId} 從購物車移除!` });
+    res.status(200).send({ result: `已將座位 ${removeSeatId} 從購物車移除!` });
     return;
   }
 };

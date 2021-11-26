@@ -370,26 +370,25 @@ const getCartStatus = async (userId) => {
   }
 };
 
-const removeItemFromCart = async (deleteSeatId, userId) => {
+const removeItemFromCart = async (removeSeatId, userId) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
     const [result] = await conn.query(
       `
       SELECT 
-        csi.concert_area_price_id,
-        csi.status AS seat_status, 
+        csi.concert_area_price_id AS concertAreaPriceId,
+        csi.status AS seatStatus, 
         csi.user_id , 
-        sc.id AS shopping_cart_id, 
-        sc.status AS status_in_cart
+        sc.id AS shoppingCartId, 
+        sc.status AS statusInCart
       FROM concert_seat_info csi
       INNER JOIN shopping_cart sc
         ON csi.id = sc.concert_seat_id 
       WHERE csi.id = ? FOR UPDATE;
       `,
-      [deleteSeatId]
+      [removeSeatId]
     );
-
     if (result.length === 0) {
       await conn.query("ROLLBACK");
       return { error: "此座位未曾出現在購物車中!" };
@@ -397,10 +396,8 @@ const removeItemFromCart = async (deleteSeatId, userId) => {
 
     let removeFromCartInfo = [];
     for (let i = 0; i < result.length; i++) {
-      if (
-        result[i].seat_status === "cart" &&
-        result[i].status_in_cart === "add-to-cart"
-      ) {
+      const { seatStatus, statusInCart } = result[i];
+      if (seatStatus === "cart" && statusInCart === "add-to-cart") {
         removeFromCartInfo.push(result[i]);
       }
     }
@@ -410,29 +407,29 @@ const removeItemFromCart = async (deleteSeatId, userId) => {
       return { error: "此座位無法從購物車被移除!" };
     }
 
-    // 確認"想移除此座位者"與"預訂者"為同一人
+    // make sure userId
     if (removeFromCartInfo[0].user_id !== userId) {
       await conn.query("ROLLBACK");
       return { error: "您無權將此座位從購物車移除!" };
     }
 
-    // 將 concert_seat_info table 中, 該座位的 status 更改為 'not-selected'
+    // change the status of the seat in the concert_seat_info table to "not-selected"
     await conn.query(
       "UPDATE concert_seat_info SET status ='not-selected', user_id = NULL , user_updated_status_datetime = NULL where id = ?",
-      [deleteSeatId]
+      [removeSeatId]
     );
 
-    // 將 shopping_cart table 中, 根據 shopping cart id 找到所對應到的座位，並將 shopping cart table 的 status 更改為 'remove-from-cart'
+    // change the status in the shopping_cart table to 'remove-from-cart'
     await conn.query(
       "UPDATE shopping_cart SET status ='remove-from-cart' where  id = ? ",
-      [removeFromCartInfo[0].shopping_cart_id]
+      [removeFromCartInfo[0].shoppingCartId]
     );
 
     await conn.query("COMMIT");
 
     return {
-      concert_area_price_id: removeFromCartInfo[0].concert_area_price_id,
-      remove_from_cart_seat_id: deleteSeatId,
+      concertAreaPriceId: removeFromCartInfo[0].concertAreaPriceId,
+      removeFromCartSeatId: removeSeatId,
     };
   } catch (error) {
     console.log(error);

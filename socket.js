@@ -100,7 +100,7 @@ const notifyAddToCart = (socketId, msg, target) => {
 
 const notifyRemoveFromCart = (msg) => {
   msg = JSON.parse(msg);
-  const room = getRoomName(msg.concert_area_price_id);
+  const room = getRoomName(msg.concertAreaPriceId);
   io.to(room).emit(SOCKET_EVENTS.REMOVE_FROM_CART, msg);
 };
 

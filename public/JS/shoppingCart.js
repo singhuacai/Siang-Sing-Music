@@ -110,11 +110,11 @@ $.ajax({
 
 // 將加入購物車中的票移除
 function deleteSeat(event) {
-  const concertSeatId = event.data.param1;
+  const removeFromCartSeatId = event.data.param1;
   const shoppingCartId = event.data.param2;
   $.ajax({
     url: "/api/1.0/order/removeItemFromCart",
-    data: JSON.stringify({ deleteSeatId: concertSeatId }),
+    data: JSON.stringify({ removeSeatId: removeFromCartSeatId }),
     method: "POST",
     dataType: "json",
     contentType: "application/json;charset=utf-8",
