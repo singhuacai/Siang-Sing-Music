@@ -57,42 +57,32 @@ socket.on("ClientSocketId", (msg) => {
 
 socket.on("NotifySeatSelect", (msg) => {
   msg = JSON.parse(msg);
-  if (msg.owner === localStorage.getItem("UserCode")) {
-    $(`#${msg.seat_id}`).removeClass("not-selected").addClass("you-selected");
-    $(`#${msg.seat_id}`).attr("src", "../images/logo/icon_chair_select.gif");
-    addSeatIntoChosenSeatsArray(msg.seat_id);
+  const { owner, seatId } = msg;
+  if (owner === localStorage.getItem("UserCode")) {
+    $(`#${seatId}`).removeClass("not-selected").addClass("you-selected");
+    $(`#${seatId}`).attr("src", "../images/logo/icon_chair_select.gif");
+    addSeatIntoChosenSeatsArray(msg.seatId);
   } else {
-    if ($(`#${msg.seat_id}`).hasClass("not-selected")) {
-      $(`#${msg.seat_id}`).removeClass("not-selected").addClass("selected");
-      $(`#${msg.seat_id}`).attr(
-        "src",
-        "../images/logo/icon_chair_selected.gif"
-      );
-    } else if ($(`#${msg.seat_id}`).hasClass("you-selected")) {
-      $(`#${msg.seat_id}`).removeClass("you-selected").addClass("selected");
-      $(`#${msg.seat_id}`).attr(
-        "src",
-        "../images/logo/icon_chair_selected.gif"
-      );
+    if ($(`#${seatId}`).hasClass("not-selected")) {
+      $(`#${seatId}`).removeClass("not-selected").addClass("selected");
+      $(`#${seatId}`).attr("src", "../images/logo/icon_chair_selected.gif");
+    } else if ($(`#${seatId}`).hasClass("you-selected")) {
+      $(`#${seatId}`).removeClass("you-selected").addClass("selected");
+      $(`#${seatId}`).attr("src", "../images/logo/icon_chair_selected.gif");
     }
   }
 });
 
 socket.on("NotifySeatDelete", (msg) => {
   msg = JSON.parse(msg);
-  if (msg.owner === localStorage.getItem("UserCode")) {
-    $(`#${msg.seat_id}`).removeClass("you-selected").addClass("not-selected");
-    $(`#${msg.seat_id}`).attr(
-      "src",
-      "../images/logo/icon_chair_not_selected.gif"
-    );
-    removeSeatFromChosenSeatsArray(msg.seat_id);
+  const { owner, seatId } = msg;
+  if (owner === localStorage.getItem("UserCode")) {
+    $(`#${seatId}`).removeClass("you-selected").addClass("not-selected");
+    $(`#${seatId}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
+    removeSeatFromChosenSeatsArray(seatId);
   } else {
-    $(`#${msg.seat_id}`).removeClass("selected").addClass("not-selected");
-    $(`#${msg.seat_id}`).attr(
-      "src",
-      "../images/logo/icon_chair_not_selected.gif"
-    );
+    $(`#${seatId}`).removeClass("selected").addClass("not-selected");
+    $(`#${seatId}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
   }
 });
 

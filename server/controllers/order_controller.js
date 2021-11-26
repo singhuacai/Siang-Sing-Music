@@ -139,8 +139,7 @@ const chooseOrDeleteSeat = async (req, res) => {
   } else {
     const msg = JSON.stringify({
       owner: userCode,
-      concert_area_price_id: result.concert_area_price_id,
-      seat_id: result.seat_id,
+      seatId: result.seatId,
     });
     if (result.status === "selected") {
       notifySeatSelected(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);

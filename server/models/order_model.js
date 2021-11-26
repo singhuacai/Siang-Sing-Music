@@ -159,7 +159,7 @@ const chooseSeat = async (concertSeatId, userId) => {
   try {
     await conn.query("START TRANSACTION");
     const [status] = await conn.query(
-      "SELECT concert_area_price_id, status FROM concert_seat_info WHERE id = ? FOR UPDATE",
+      "SELECT status FROM concert_seat_info WHERE id = ? FOR UPDATE",
       [concertSeatId]
     );
 
@@ -200,8 +200,7 @@ const chooseSeat = async (concertSeatId, userId) => {
     );
     await conn.query("COMMIT");
     return {
-      concert_area_price_id: status[0].concert_area_price_id,
-      seat_id: concertSeatId,
+      seatId: concertSeatId,
       status: "selected",
     };
   } catch (error) {
@@ -218,7 +217,7 @@ const deleteSeat = async (concertSeatId, userId) => {
   try {
     await conn.query("START TRANSACTION");
     const [result] = await conn.query(
-      "SELECT concert_area_price_id, status, user_id FROM concert_seat_info WHERE id = ? FOR UPDATE",
+      "SELECT status, user_id FROM concert_seat_info WHERE id = ? FOR UPDATE",
       [concertSeatId]
     );
 
@@ -243,8 +242,7 @@ const deleteSeat = async (concertSeatId, userId) => {
     );
     await conn.query("COMMIT");
     return {
-      concert_area_price_id: result[0].concert_area_price_id,
-      seat_id: concertSeatId,
+      seatId: concertSeatId,
       status: "not-selected",
     };
   } catch (error) {
