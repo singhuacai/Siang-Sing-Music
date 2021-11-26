@@ -222,12 +222,12 @@ const getCartStatus = async (req, res) => {
   // TODO: 利用 userId 到 DB 查詢：該使用者已加入購物車的演唱會座位資訊
   let cartStatus = await Order.getCartStatus(userId);
   if (cartStatus.error) {
-    res.status(403).send({ error: cartStatus.error });
+    res.status(500).send({ error: "Server Error" });
     return;
   }
 
   cartStatus.map((v) => {
-    v.concert_datetime = adjustTimeZone(v.concert_datetime, offsetHours);
+    v.concertDatetime = adjustTimeZone(v.concertDatetime, offsetHours);
     return v;
   });
 

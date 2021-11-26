@@ -42,22 +42,28 @@ $.ajax({
         $("#cart-empty-text").text("購物車空空的~~~快點去搶票吧!GO!GO!");
       } else {
         // 購物車內有東西
-        let concertSeatId;
-        let shoppingCartId;
         for (let i = 0; i < res.cartStatus.length; i++) {
-          const cartStatus = res.cartStatus[i];
-          concertSeatId = cartStatus.concertSeatId;
-          shoppingCartId = cartStatus.shoppingCartId;
+          const {
+            concertSeatId,
+            shoppingCartId,
+            concertTitle,
+            concertDatetime,
+            concertLocation,
+            concertArea,
+            seatRow,
+            seatColumn,
+            ticketPrice,
+          } = res.cartStatus[i];
 
           $("#cart-table").show();
           $("#cart-content").append(
             `
                 <tr class = "cart-item" id = "item-of-cart-${shoppingCartId}" >
-                <td class = "concert-title" style="word-wrap:break-word;">${cartStatus.concert_title} </td>
-                <td class = "concert-date-time" style="word-wrap:break-word;">${cartStatus.concert_datetime}</td>
-                <td class = "concert-location" style="word-wrap:break-word;">${cartStatus.concert_location}</td>
-                <td class = "concert-seat">${cartStatus.concert_area} 區 <br> ${cartStatus.seat_row}排 ${cartStatus.seat_column}號</td>
-                <td class = "price">NT$ ${cartStatus.ticket_price}</td>
+                <td class = "concert-title" style="word-wrap:break-word;">${concertTitle} </td>
+                <td class = "concert-date-time" style="word-wrap:break-word;">${concertDatetime}</td>
+                <td class = "concert-location" style="word-wrap:break-word;">${concertLocation}</td>
+                <td class = "concert-seat">${concertArea} 區 <br> ${seatRow}排 ${seatColumn}號</td>
+                <td class = "price">NT$ ${ticketPrice}</td>
                 <td class="cart-remove-block"><img src="../images/logo/cart-remove.png" id = "seat-${concertSeatId}-delete" class = "remove-button" width="35%" title="刪除"></td>
                 </tr>
             `
@@ -71,11 +77,11 @@ $.ajax({
         }
         // 合計總費用區塊
         $("#cart-content").append(`
-                    <tr id="sum">
-                    <td colspan="4"> 合計 </td>
-                    <td colspan="2" class = "price-sum"></td>
-                    </tr>
-                `);
+            <tr id="sum">
+            <td colspan="4"> 合計 </td>
+            <td colspan="2" class = "price-sum"></td>
+            </tr>
+        `);
         flushSumPrice();
       }
     });

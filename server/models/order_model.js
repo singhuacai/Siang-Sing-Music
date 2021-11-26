@@ -310,7 +310,6 @@ const addToCart = async (chosenSeats, userId) => {
         insertData.push(post);
       }
     }
-
     if (addToCartSeats.length === 0) {
       return { error: "您欲加入購物車的座位選擇是空的" };
     }
@@ -342,13 +341,13 @@ const getCartStatus = async (userId) => {
         SELECT
         sc.id AS shoppingCartId,
         csi.id AS concertSeatId,
-        ci.concert_title,
-        ci.concert_location,
-        cd.concert_datetime,
-        cap.concert_area,
-        csi.seat_row,
-        csi.seat_column,
-        cap.ticket_price
+        ci.concert_title AS concertTitle,
+        ci.concert_location AS concertLocation,
+        cd.concert_datetime AS concertDatetime,
+        cap.concert_area AS concertArea,
+        csi.seat_row AS seatRow,
+        csi.seat_column AS seatColumn,
+        cap.ticket_price AS ticketPrice
         FROM  
         concert_info ci
         INNER JOIN concert_date cd
