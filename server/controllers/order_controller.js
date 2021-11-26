@@ -7,7 +7,7 @@ const {
   BOARDCAST,
   notifySeatSelected,
   notifySeatDeleted,
-  notifyRollbackSeat,
+  notifyRollbackSeats,
   notifyAddToCart,
   notifyRemoveFromCart,
   notifyRemoveToOrder,
@@ -166,9 +166,6 @@ const rollBackChoose = async (req, res) => {
     return;
   }
 
-  // 利用 rollBackChoose function
-  // 1. 查詢該座位目前的狀態是否為 selected 以及是否為同一個使用者
-  // 2. 若是同一個使用者，再把座位狀態還原為not-selected狀態!
   result = await Order.rollBackChoose(chosenSeats, userId);
   if (result.error) {
     res.status(403).send({ error: result.error });
@@ -176,9 +173,9 @@ const rollBackChoose = async (req, res) => {
   } else {
     const msg = JSON.stringify({
       owner: userCode,
-      rollBackSeat: result.rollBackSeat,
+      rollBackSeats: result.rollBackSeats,
     });
-    notifyRollbackSeat(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
+    notifyRollbackSeats(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
     res.status(200).send(result);
     return;
   }

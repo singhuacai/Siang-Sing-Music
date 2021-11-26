@@ -8,7 +8,7 @@ const em = new events.EventEmitter();
 const SOCKET_EVENTS = {
   SEAT_SELECT: "NotifySeatSelect",
   SEAT_DELETE: "NotifySeatDelete",
-  ROLLBACK_SEAT: "NotifyRollbackSeat",
+  ROLLBACK_SEATS: "NotifyRollbackSeats",
   ADD_TO_CART: "NotifyAddToCart",
   REMOVE_FROM_CART: "NotifyRemoveFromCart",
   REMOVE_TO_ORDER: "NotifyRemoveToOrder",
@@ -88,9 +88,9 @@ const notifySeatDeleted = (socketId, msg, target) => {
   em.emit(eventName, SOCKET_EVENTS.SEAT_DELETE, msg, target);
 };
 
-const notifyRollbackSeat = (socketId, msg, target) => {
+const notifyRollbackSeats = (socketId, msg, target) => {
   const eventName = getEventName(socketId);
-  em.emit(eventName, SOCKET_EVENTS.ROLLBACK_SEAT, msg, target);
+  em.emit(eventName, SOCKET_EVENTS.ROLLBACK_SEATS, msg, target);
 };
 
 const notifyAddToCart = (socketId, msg, target) => {
@@ -149,7 +149,7 @@ module.exports = {
   socketConnect,
   notifySeatSelected,
   notifySeatDeleted,
-  notifyRollbackSeat,
+  notifyRollbackSeats,
   notifyAddToCart,
   notifyRemoveFromCart,
   notifyRemoveToOrder,

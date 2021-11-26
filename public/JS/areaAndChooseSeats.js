@@ -86,25 +86,25 @@ socket.on("NotifySeatDelete", (msg) => {
   }
 });
 
-socket.on("NotifyRollbackSeat", (msg) => {
+socket.on("NotifyRollbackSeats", (msg) => {
   msg = JSON.parse(msg);
   if (msg.owner === localStorage.getItem("UserCode")) {
-    for (let i = 0; i < msg.rollBackSeat.length; i++) {
-      $(`#${msg.rollBackSeat[i]}`)
+    for (let i = 0; i < msg.rollBackSeats.length; i++) {
+      $(`#${msg.rollBackSeats[i]}`)
         .removeClass("you-selected")
         .addClass("not-selected");
-      $(`#${msg.rollBackSeat[i]}`).attr(
+      $(`#${msg.rollBackSeats[i]}`).attr(
         "src",
         "../images/logo/icon_chair_not_selected.gif"
       );
     }
     chosenSeats = [];
   } else {
-    for (let i = 0; i < msg.rollBackSeat.length; i++) {
-      $(`#${msg.rollBackSeat[i]}`)
+    for (let i = 0; i < msg.rollBackSeats.length; i++) {
+      $(`#${msg.rollBackSeats[i]}`)
         .removeClass("selected")
         .addClass("not-selected");
-      $(`#${msg.rollBackSeat[i]}`).attr(
+      $(`#${msg.rollBackSeats[i]}`).attr(
         "src",
         "../images/logo/icon_chair_not_selected.gif"
       );
@@ -475,7 +475,6 @@ function rollBackChoose() {
     );
     console.log("The filtered array", filterChosenSeats);
     if (filterChosenSeats.length === 0) {
-      console.log("沒有座位需要被rollback");
       return;
     }
     $.ajax({
@@ -490,7 +489,6 @@ function rollBackChoose() {
         SocketId: socketId,
       },
       success: function (res) {
-        console.log(res);
         resolve(true);
       },
       error: function (res) {

@@ -264,24 +264,24 @@ const rollBackChoose = async (chosenSeats, userId) => {
     const [check] = await pool.query(queryStr, bindings);
 
     // check userId and seatStatus => release the seats that the user selected
-    let rollBackSeat = [];
+    let rollBackSeats = [];
     for (let i = 0; i < check.length; i++) {
       if (check[i].user_id === userId && check[i].status === "selected") {
-        rollBackSeat.push(check[i].id);
+        rollBackSeats.push(check[i].id);
       }
     }
 
-    if (rollBackSeat.length === 0) {
+    if (rollBackSeats.length === 0) {
       await conn.query("ROLLBACK");
       return { result: "需清空的座位是空的" };
     }
 
     await conn.query(
       "UPDATE concert_seat_info SET status ='not-selected', user_id = NULL , user_updated_status_datetime = NULL where id IN (?)",
-      [rollBackSeat]
+      [rollBackSeats]
     );
     await conn.query("COMMIT");
-    return { rollBackSeat };
+    return { rollBackSeats };
   } catch (error) {
     console.log(error);
     await conn.query("ROLLBACK");
