@@ -5,14 +5,13 @@ const getfilterReleasedTickets = async () => {
   let result = await Order.filterReleasedTickets();
   let filterReleasedTickets = [];
   for (let i = 0; i < result.length; i++) {
-    filterReleasedTickets.push(result[i].concert_seat_id);
+    filterReleasedTickets.push(result[i].concertSeatId);
   }
   return filterReleasedTickets;
 };
 
 const releaseTickets = async () => {
   const tickets = await getfilterReleasedTickets();
-  console.log(tickets);
   if (tickets.length === 0) {
     return "沒有需清除的票";
   }
@@ -21,8 +20,6 @@ const releaseTickets = async () => {
     console.log(result.error);
     return;
   }
-  // console.log(result);
-  // console.log(result.concertSeatIds);
 
   let socketReleasedTickets = {};
 

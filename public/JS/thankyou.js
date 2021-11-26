@@ -21,17 +21,9 @@ $("#order-flow-step").html(
 if (keys.length !== 1 || !mainOrderCode) {
   alert("Error: 您提供的資訊錯誤 !");
   window.location.assign("/");
-  // Swal.fire({
-  //   title: "您提供的資訊錯誤 !",
-  //   icon: "error",
-  //   showConfirmButton: true,
-  //   timer: 1200,
-  // }).then(function () {
-  //   window.location = "/";
-  // });
 }
 
-// 取得訂票結果
+// Get the order result
 $.ajax({
   url: `/api/1.0/order/orderResult?mainOrderCode=${mainOrderCode}`,
   method: "get",
@@ -54,7 +46,6 @@ $.ajax({
     $(function () {
       Swal.close();
       if (res.orderResult.length === 0) {
-        // 查詢不到此訂單的內容
         $("#order-complete-title").hide();
         $("#thanks-text").hide();
         $("#empty-order-text").show();
@@ -67,14 +58,23 @@ $.ajax({
         $("#order-result-table").show();
         for (let i = 0; i < res.orderResult.length; i++) {
           const orderResult = res.orderResult[i];
+          const {
+            concertTitle,
+            concertDatetime,
+            concertLocation,
+            concertArea,
+            seatRow,
+            seatColumn,
+            ticketPrice,
+          } = orderResult;
           $("#order-result").append(
             `
           <tr class = "order-item">
-          <td class = "concert-title">${orderResult.concert_title}</td>
-          <td class = "concert-date-time">${orderResult.concert_datetime}</td>
-          <td class = "concert-location">${orderResult.concert_location}</td>
-          <td class = "concert-seat">${orderResult.concert_area} 區  ${orderResult.seat_row}排 ${orderResult.seat_column}號</td>
-          <td class = "price">NT$ ${orderResult.ticket_price}</td>
+          <td class = "concert-title">${concertTitle}</td>
+          <td class = "concert-date-time">${concertDatetime}</td>
+          <td class = "concert-location">${concertLocation}</td>
+          <td class = "concert-seat">${concertArea} 區  ${seatRow}排 ${seatColumn}號</td>
+          <td class = "price">NT$ ${ticketPrice}</td>
           <td class= "ticket-status">已付款<br>待出貨</td>
           </tr>
           `
@@ -118,7 +118,7 @@ $.ajax({
     }
   });
 
-//重新整理總費用
+//// reorganize the total cost
 function flushSumPrice() {
   let sum = 0;
   let total = 0;

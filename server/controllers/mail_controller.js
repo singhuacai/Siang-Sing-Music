@@ -66,7 +66,7 @@ const sendEmail = async (sendInfo, mailType) => {
     subject: title,
     template: template,
     context: {
-      userName: ordererName,
+      ordererName: ordererName,
       orderTime: orderTime,
       orderCode: mainOrderCode,
       orderStatus: orderStatus,

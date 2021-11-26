@@ -1,6 +1,6 @@
 const Authorization = localStorage.getItem("Authorization");
 
-// 取得訂票結果
+// Get the order result
 $.ajax({
   url: `/api/1.0/order/orderResult`,
   method: "get",
@@ -24,14 +24,24 @@ $.ajax({
       Swal.close();
       console.log(res);
       if (res.orderResult.length === 0) {
-        // 尚無訂單紀錄
+        // No order record yet
         $("#empty-order-text").show();
         $("#empty-order-text").text("尚無訂單紀錄");
       } else {
         $(".order-main-info-table").show();
         for (let i = 0; i < res.orderResult.length; i++) {
           const orderResult = res.orderResult[i];
-          const NumberOfTickets = orderResult.ticket_info.length;
+          const { mainOrderCode, createdAt, orderStatus } = orderResult;
+          const {
+            concertTitle,
+            concertDatetime,
+            concertLocation,
+            concertArea,
+            row,
+            column,
+            ticketPrice,
+          } = orderResult.ticketInfo[0];
+          const NumberOfTickets = orderResult.ticketInfo.length;
           $(".order-main-info-table").append(
             `
             <div class = "content">
@@ -50,18 +60,18 @@ $.ajax({
                     </thead>
                     <tbody id="order-main-info-${i}">
                         <tr class="order-item-0">
-                            <td rowspan="${NumberOfTickets}" class="order-code">${orderResult.main_order_code}</td>
-                            <td rowspan="${NumberOfTickets}" class="order-time">${orderResult.created_at}</td>
-                            <td rowspan="${NumberOfTickets}" class="order-status">${orderResult.order_status}</td>
-                            <td class="concert-title">${orderResult.ticket_info[0].concert_title}</td>
-                            <td class="concert-datetime">${orderResult.ticket_info[0].concert_datetime}</td>
-                            <td class="concert-location">${orderResult.ticket_info[0].concert_location}</td>
+                            <td rowspan="${NumberOfTickets}" class="order-code">${mainOrderCode}</td>
+                            <td rowspan="${NumberOfTickets}" class="order-time">${createdAt}</td>
+                            <td rowspan="${NumberOfTickets}" class="order-status">${orderStatus}</td>
+                            <td class="concert-title">${concertTitle}</td>
+                            <td class="concert-datetime">${concertDatetime}</td>
+                            <td class="concert-location">${concertLocation}</td>
                             <td class="concert-seat">
-                                ${orderResult.ticket_info[0].concert_area} 區 <br>
-                                ${orderResult.ticket_info[0].row}排
-                                ${orderResult.ticket_info[0].column}號
+                                ${concertArea} 區 <br>
+                                ${row}排
+                                ${column}號
                             </td>
-                            <td class="price-${i} price">NT$ ${orderResult.ticket_info[0].ticket_price}</td>
+                            <td class="price-${i} price">NT$ ${ticketPrice}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -71,25 +81,34 @@ $.ajax({
 
           if (NumberOfTickets > 1) {
             for (let j = 1; j < NumberOfTickets; j++) {
+              const {
+                concertTitle,
+                concertDatetime,
+                concertLocation,
+                concertArea,
+                row,
+                column,
+                ticketPrice,
+              } = orderResult.ticketInfo[j];
               $(`#order-main-info-${i}`).append(
                 `
                   <tr class="order-item-${j}">
-                      <td class="concert-title">${orderResult.ticket_info[j].concert_title}</td>
-                      <td class="concert-datetime">${orderResult.ticket_info[j].concert_datetime}</td>
-                      <td class="concert-location">${orderResult.ticket_info[j].concert_location}</td>
+                      <td class="concert-title">${concertTitle}</td>
+                      <td class="concert-datetime">${concertDatetime}</td>
+                      <td class="concert-location">${concertLocation}</td>
                       <td class="concert-seat">
-                          ${orderResult.ticket_info[j].concert_area} 區 <br>
-                          ${orderResult.ticket_info[j].row}排
-                          ${orderResult.ticket_info[j].column}號
+                          ${concertArea} 區 <br>
+                          ${row}排
+                          ${column}號
                       </td>
-                      <td class="price-${i}">NT$ ${orderResult.ticket_info[j].ticket_price}</td>
+                      <td class="price-${i}">NT$ ${ticketPrice}</td>
                   </tr>
                 `
               );
             }
           }
 
-          // 總票價 + 運費 + 合計
+          // subtotal + fright + total
           $(`#order-main-info-${i}`).append(`
               <tr class = "total-row">
               <td colspan="1" id="sum-${i}"> 總票價 </td>
@@ -128,7 +147,7 @@ $.ajax({
     }
   });
 
-//重新整理總費用
+// reorganize the total cost
 function flushSumPrice(i) {
   let sum = 0;
   let total = 0;

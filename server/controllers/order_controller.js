@@ -318,7 +318,7 @@ const getOrderResult = async (req, res) => {
       return;
     }
     result.map((v) => {
-      v.concert_datetime = adjustTimeZone(v.concert_datetime, offsetHours);
+      v.concertDatetime = adjustTimeZone(v.concertDatetime, offsetHours);
       return v;
     });
   } else {
@@ -328,10 +328,10 @@ const getOrderResult = async (req, res) => {
       return;
     }
     result.map((v) => {
-      v.ticket_info.map((v) => {
-        v.concert_datetime = adjustTimeZone(v.concert_datetime, offsetHours);
+      v.ticketInfo.map((v) => {
+        v.concertDatetime = adjustTimeZone(v.concertDatetime, offsetHours);
       });
-      v.created_at = adjustTimeZone(v.created_at, offsetHours);
+      v.createdAt = adjustTimeZone(v.createdAt, offsetHours);
       return v;
     });
   }

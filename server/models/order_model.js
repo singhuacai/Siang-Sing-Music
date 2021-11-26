@@ -657,13 +657,13 @@ const getOrderResultByOrderNum = async (mainOrderCode, userId) => {
       SELECT
         sc.id AS shoppingCartId,
         csi.id AS concertSeatId,
-        ci.concert_title,
-        ci.concert_location,
-        cd.concert_datetime,
-        cap.concert_area,
-        csi.seat_row,
-        csi.seat_column,
-        cap.ticket_price
+        ci.concert_title AS concertTitle,
+        ci.concert_location AS concertLocation,
+        cd.concert_datetime AS concertDatetime,
+        cap.concert_area AS concertArea,
+        csi.seat_row AS seatRow,
+        csi.seat_column AS seatColumn,
+        cap.ticket_price AS ticketPrice
       FROM  
       concert_info ci
       INNER JOIN concert_date cd
@@ -696,21 +696,21 @@ const getOrderResultByUserId = async (userId) => {
   try {
     const queryStr = `
         SELECT
-        mo.main_order_code,
-        mo.order_status,
-        mo.created_at,
+        mo.main_order_code AS mainOrderCode,
+        mo.order_status AS orderStatus,
+        mo.created_at AS createdAt, 
         JSON_ARRAYAGG(
         JSON_OBJECT(
-          "concert_title", ci.concert_title,
-          "concert_location", ci.concert_location,
-          "concert_datetime", cd.concert_datetime,
+          "concertTitle", ci.concert_title,
+          "concertLocation", ci.concert_location,
+          "concertDatetime", cd.concert_datetime,
           "shoppingCartId", sc.id,
           "concertSeatId", csi.id,
-          "concert_area", cap.concert_area,
+          "concertArea", cap.concert_area,
           "row", csi.seat_row,
           "column", csi.seat_column,
-          "ticket_price",cap.ticket_price
-        )) AS ticket_info
+          "ticketPrice",cap.ticket_price
+        )) AS ticketInfo
         FROM  
         concert_info ci
         INNER JOIN concert_date cd
@@ -769,7 +769,7 @@ const filterReleasedTickets = async () => {
   try {
     const queryStr = `
       select 
-        csi.id AS concert_seat_id
+        csi.id AS concertSeatId
       from concert_seat_info csi
       INNER JOIN shopping_cart sc
         on csi.id = sc.concert_seat_id
@@ -796,11 +796,11 @@ const releaseTickets = async (tickets) => {
     const [result] = await conn.query(
       `
       SELECT
-        csi.concert_area_price_id,
-        csi.id AS concert_seat_id,
-        csi.status AS seat_status,
-        sc.id AS shopping_cart_id,
-        sc.status AS status_in_cart
+        csi.concert_area_price_id AS concertAreaPriceId,
+        csi.id AS concertSeatId,
+        csi.status AS seatStatus,
+        sc.id AS shoppingCartId,
+        sc.status AS statusInCart
       FROM concert_seat_info csi
       INNER JOIN shopping_cart sc
         ON csi.id = sc.concert_seat_id
@@ -814,12 +814,12 @@ const releaseTickets = async (tickets) => {
     let concertAreaPriceIds = [];
     for (let i = 0; i < result.length; i++) {
       if (
-        result[i].seat_status === "cart" &&
-        result[i].status_in_cart === "add-to-cart"
+        result[i].seatStatus === "cart" &&
+        result[i].statusInCart === "add-to-cart"
       ) {
-        concertAreaPriceIds.push(result[i].concert_area_price_id);
-        concertSeatIds.push(result[i].concert_seat_id);
-        shoppingCartIds.push(result[i].shopping_cart_id);
+        concertAreaPriceIds.push(result[i].concertAreaPriceId);
+        concertSeatIds.push(result[i].concertSeatId);
+        shoppingCartIds.push(result[i].shoppingCartId);
       }
     }
 
