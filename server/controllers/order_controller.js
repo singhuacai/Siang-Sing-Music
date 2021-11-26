@@ -290,11 +290,11 @@ const checkout = async (req, res) => {
 
     // send email
     const sendInfo = {
-      userName: result.ordererName,
-      userEmail: result.ordererEmail,
-      buyTime: result.orderTime,
-      orderCode: result.mainOrderCode,
-      orderStatus: result.order_status,
+      ordererName: result.ordererName,
+      ordererEmail: result.ordererEmail,
+      orderTime: result.orderTime,
+      mainOrderCode: result.mainOrderCode,
+      orderStatus: result.orderStatus,
       shipping: result.shipping,
       subtotal: result.subtotal,
       freight: result.freight,
@@ -303,7 +303,7 @@ const checkout = async (req, res) => {
       recipientPhone: result.recipientPhone,
       recipientAddress: result.recipientAddress,
     };
-    await Mail.sendEmail(sendInfo, Mail.mailType.FinishOrder);
+    await Mail.sendEmail(sendInfo, Mail.MAIL_TYPE.FinishOrder);
     return;
   }
 };
@@ -312,7 +312,6 @@ const getOrderResult = async (req, res) => {
   const { mainOrderCode } = req.query;
   const userId = req.user.id;
   if (mainOrderCode) {
-    //TODO: 利用 mainOrderCode => 訂票結果
     result = await Order.getOrderResultByOrderNum(mainOrderCode, userId);
     if (result.error) {
       res.status(403).send({ error: result.error });
@@ -323,7 +322,6 @@ const getOrderResult = async (req, res) => {
       return v;
     });
   } else {
-    //TODO: 利用 userId => 所有訂票結果
     result = await Order.getOrderResultByUserId(userId);
     if (result.error) {
       res.status(403).send({ error: result.error });

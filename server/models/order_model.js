@@ -440,180 +440,189 @@ const removeItemFromCart = async (removeSeatId, userId) => {
   }
 };
 
+const getSeatInfo = async (conn, shoppingCartSeat) => {
+  let queryStr = `
+  SELECT 
+    csi.concert_area_price_id AS concertAreaPriceId,
+    csi.id AS concertSeatId,
+    csi.user_id AS userId,
+    csi.status AS concertSeatStatus,
+    sc.status AS shoppingCartStatus
+  FROM concert_seat_info csi
+  INNER JOIN shopping_cart sc
+    ON csi.id = sc.concert_seat_id
+  WHERE sc.id IN (?) 
+  ORDER BY sc.id FOR UPDATE
+`;
+  let bindings = [shoppingCartSeat];
+  const [check] = await conn.query(queryStr, bindings);
+  return check;
+};
+
+const getSubtotal = async (conn, orderSeatId) => {
+  queryStr = `
+    SELECT sum(ticket_price) AS subtotal
+    FROM concert_area_price cap
+    INNER JOIN concert_seat_info csi
+      ON cap.id = csi.concert_area_price_id
+    WHERE csi.id IN (?);
+  `;
+  bindings = [orderSeatId];
+  const [subtotal] = await conn.query(queryStr, bindings);
+  return subtotal;
+};
+
+const addMainOrderRecord = async (conn, user, order) => {
+  const now = new Date();
+  const mainOrderCode =
+    "" +
+    now.getMonth() +
+    now.getDate() +
+    (now.getTime() % (24 * 60 * 60 * 1000)) +
+    Math.floor(Math.random() * 10);
+  const mainOrderRecord = {
+    user_id: user.id,
+    main_order_code: mainOrderCode,
+    order_status: "待出貨",
+    payment_status: "paid",
+    payment: order.payment,
+    shipping: order.shipping,
+    subtotal: order.subtotal,
+    freight: order.freight,
+    total: order.total,
+    details: validator.blacklist(JSON.stringify(order.recipient), "<>"),
+  };
+  const [result] = await conn.query(
+    "INSERT INTO main_order SET ?",
+    mainOrderRecord
+  );
+  return { mainOrderCode, result };
+};
+
+const addSubOrderRecord = async (conn, mainOrderId, shoppingCartSeat) => {
+  let subOrderRecord = [];
+  shoppingCartSeat.forEach((element) => {
+    subOrderRecord.push([mainOrderId, element]);
+  });
+  await conn.query(
+    "INSERT INTO sub_order (main_order_id, shopping_cart_id) VALUES ?",
+    [subOrderRecord]
+  );
+};
+
+const addPaymentRecord = async (
+  conn,
+  paymentResult,
+  mainOrderId,
+  user,
+  order
+) => {
+  const otherData = {
+    acquirer: paymentResult.acquirer,
+    currency: paymentResult.currency,
+    card_info: paymentResult.card_info,
+    bank_transaction_time: paymentResult.bank_transaction_time,
+    bank_result_code: paymentResult.bank_result_code,
+    bank_result_msg: paymentResult.bank_result_msg,
+    card_identifier: paymentResult.card_identifier,
+    transaction_method_details: paymentResult.transaction_method_details,
+  };
+
+  bindings = {
+    main_order_id: mainOrderId,
+    payment: order.payment,
+    amount: paymentResult.amount,
+    name: user.name,
+    email: user.email,
+    address: null,
+    phone: user.phone,
+    transaction_time_millis: paymentResult.transaction_time_millis,
+    rec_trade_id: paymentResult.rec_trade_id,
+    bank_transaction_id: paymentResult.bank_transaction_id,
+    other_data: JSON.stringify(otherData),
+  };
+  await conn.query("INSERT INTO payment SET ?", bindings);
+};
+
 const checkout = async (data, user) => {
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
-    let queryStr = `
-      SELECT 
-        csi.concert_area_price_id,
-        csi.id AS concert_seat_id,
-        csi.user_id,
-        csi.status AS concert_seat_status,
-        sc.status AS shopping_cart_status
-      FROM concert_seat_info csi
-      INNER JOIN shopping_cart sc
-        ON csi.id = sc.concert_seat_id
-      WHERE sc.id IN (?) 
-      ORDER BY sc.id FOR UPDATE
-    `;
-    let bindings = [data.order.shoppingCartSeat];
-    const [check] = await pool.query(queryStr, bindings);
+
+    // 1. Check the user's permissions
+    const check = await getSeatInfo(conn, data.order.shoppingCartSeat);
     if (check.length === 0) {
       await conn.query("ROLLBACK");
       return { error: "無法在購物車中找到您預訂的此座位!" };
     }
 
-    // 1. 確認你撈出來的 userId 與前台傳過來的 user.id 是同一個
-    // 2. 再加上 concert_seat_status = "cart" 與 shopping_cart_status = "add_to_cart"
     let orderSeatId = [];
     let concertAreaPriceIds = [];
-    for (let i = 0; i < check.length; i++) {
+    check.forEach((element) => {
+      const {
+        userId,
+        concertSeatStatus,
+        shoppingCartStatus,
+        concertSeatId,
+        concertAreaPriceId,
+      } = element;
       if (
-        check[i].user_id === user.id &&
-        check[i].concert_seat_status === "cart" &&
-        check[i].shopping_cart_status === "add-to-cart"
+        userId === user.id &&
+        concertSeatStatus === "cart" &&
+        shoppingCartStatus === "add-to-cart"
       ) {
-        orderSeatId.push(check[i].concert_seat_id);
-        concertAreaPriceIds.push(check[i].concert_area_price_id);
+        orderSeatId.push(concertSeatId);
+        concertAreaPriceIds.push(concertAreaPriceId);
       }
-    }
+    });
 
     if (orderSeatId.length !== check.length) {
       await conn.query("ROLLBACK");
       return { error: "您無法權限預訂這些座位!" };
     }
 
-    // 3.確認總金額是對的 (利用 concert_seat_id => concert_area_price_id => ticket_price)
-    queryStr = `
-          SELECT
-            sum(ticket_price) AS subtotal
-          FROM concert_area_price cap
-          INNER JOIN concert_seat_info csi
-            ON cap.id = csi.concert_area_price_id
-          WHERE csi.id IN (?);
-        `;
-
-    bindings = [orderSeatId];
-
-    const [subtotal] = await pool.query(queryStr, bindings);
+    // 2. check the subtotal
+    const subtotal = await getSubtotal(conn, orderSeatId);
     if (parseInt(subtotal[0].subtotal) !== data.order.subtotal) {
       await conn.query("ROLLBACK");
       return { error: "總票價有誤!" };
     }
 
-    // 4.信用卡付款
+    // 3.checkout by TayPay
     let paymentResult;
-    try {
-      paymentResult = await payOrderByPrime(
-        TAPPAY_PARTNER_KEY,
-        data.prime,
-        data.order,
-        user
-      );
-
-      if (paymentResult.status != 0) {
-        await conn.query("ROLLBACK");
-        return { error: "Invalid prime" };
-      }
-    } catch (error) {
+    paymentResult = await payOrderByPrime(
+      TAPPAY_PARTNER_KEY,
+      data.prime,
+      data.order,
+      user
+    );
+    if (paymentResult.status != 0) {
       await conn.query("ROLLBACK");
-      return { error };
+      return { error: "Invalid prime" };
     }
 
-    // 5. 更改座位狀態 & 購物車座位的狀態
-    // 將 concert_seat_info table 中, 該座位的 status 更改為 'sold'
+    // 4. change the seat status in the concert_seat_info table
     await conn.query(
       "UPDATE concert_seat_info SET status ='sold' where id IN (?)",
       [orderSeatId]
     );
 
-    // 將 shopping_cart table 中, 根據 shopping cart id 找到所對應到的座位，並將 shopping cart table 的 status 更改為 'remove-to-order'
+    // 5. change the status in the shopping_cart table
     await conn.query(
       "UPDATE shopping_cart SET status ='remove-to-order' where  id IN (?) ",
       [data.order.shoppingCartSeat]
     );
 
-    // 6.成立訂單
-    // (1) Insert into main_order
-    const now = new Date();
-    const mainOrderCode =
-      "" +
-      now.getMonth() +
-      now.getDate() +
-      (now.getTime() % (24 * 60 * 60 * 1000)) +
-      Math.floor(Math.random() * 10); // 取得訂單編號
-    const mainOrderRecord = {
-      user_id: user.id,
-      main_order_code: mainOrderCode,
-      order_status: "待出貨",
-      payment_status: "paid",
-      payment: data.order.payment,
-      shipping: data.order.shipping,
-      subtotal: data.order.subtotal,
-      freight: data.order.freight,
-      total: data.order.total,
-      details: validator.blacklist(JSON.stringify(data.order.recipient), "<>"),
-    };
-
-    const [result] = await pool.query(
-      "INSERT INTO main_order SET ?",
-      mainOrderRecord
-    );
+    // 6. add record of main order
+    const mainOrder = await addMainOrderRecord(conn, user, data.order);
+    const { mainOrderCode, result } = mainOrder;
     const mainOrderId = result.insertId;
 
-    // (2) Insert into sub_order
-    let subOrderRecord = [];
-    for (let i = 0; i < data.order.shoppingCartSeat.length; i++) {
-      subOrderRecord.push([mainOrderId, data.order.shoppingCartSeat[i]]);
-    }
-    await conn.query(
-      "INSERT INTO sub_order (main_order_id, shopping_cart_id) VALUES ?",
-      [subOrderRecord]
-    );
+    // 7. add record of sub order
+    await addSubOrderRecord(conn, mainOrderId, data.order.shoppingCartSeat);
 
-    // (3) Insert into payment
-    const {
-      amount,
-      transaction_time_millis,
-      rec_trade_id,
-      bank_transaction_id,
-      acquirer,
-      currency,
-      card_info,
-      bank_transaction_time,
-      bank_result_code,
-      bank_result_msg,
-      card_identifier,
-      transaction_method_details,
-    } = paymentResult;
-
-    const other_data = {
-      acquirer,
-      currency,
-      card_info,
-      bank_transaction_time,
-      bank_result_code,
-      bank_result_msg,
-      card_identifier,
-      transaction_method_details,
-    };
-
-    bindings = {
-      main_order_id: mainOrderId,
-      payment: data.order.payment,
-      amount,
-      name: user.name,
-      email: user.email,
-      address: null,
-      phone: user.phone,
-      transaction_time_millis,
-      rec_trade_id,
-      bank_transaction_id,
-      other_data: JSON.stringify(other_data),
-    };
-
-    await conn.query("INSERT INTO payment SET ?", bindings);
+    // 8. add record of payment
+    await addPaymentRecord(conn, paymentResult, mainOrderId, user, data.order);
 
     await conn.query("COMMIT");
     return {
@@ -623,8 +632,8 @@ const checkout = async (data, user) => {
       ordererName: user.name,
       ordererEmail: user.email,
       orderTime: moment().format("YYYY-MM-DD HH:mm:ss"),
-      order_status: "待出貨",
-      payment_status: "paid",
+      orderStatus: "待出貨",
+      paymentStatus: "paid",
       shipping: data.order.shipping,
       subtotal: data.order.subtotal,
       freight: data.order.freight,
@@ -645,32 +654,32 @@ const checkout = async (data, user) => {
 const getOrderResultByOrderNum = async (mainOrderCode, userId) => {
   try {
     const queryStr = `
-          SELECT
-            sc.id AS shoppingCartId,
-            csi.id AS concertSeatId,
-            ci.concert_title,
-            ci.concert_location,
-            cd.concert_datetime,
-            cap.concert_area,
-            csi.seat_row,
-            csi.seat_column,
-            cap.ticket_price
-          FROM  
-          concert_info ci
-          INNER JOIN concert_date cd
-            ON ci.id = cd.concert_id
-          INNER JOIN concert_area_price cap
-            ON cd.id = cap.concert_date_id
-          INNER JOIN concert_seat_info csi
-            ON cap.id = csi.concert_area_price_id
-          INNER JOIN shopping_cart sc
-            ON csi.id = sc.concert_seat_id
-          INNER JOIN sub_order so
-            ON sc.id = so.shopping_cart_id
-          INNER JOIN main_order mo
-            ON so.main_order_id = mo.id
-          WHERE mo.main_order_code = ? AND csi.status = 'sold' AND sc.status = "remove-to-order" AND csi.user_id = ?;
-        `;
+      SELECT
+        sc.id AS shoppingCartId,
+        csi.id AS concertSeatId,
+        ci.concert_title,
+        ci.concert_location,
+        cd.concert_datetime,
+        cap.concert_area,
+        csi.seat_row,
+        csi.seat_column,
+        cap.ticket_price
+      FROM  
+      concert_info ci
+      INNER JOIN concert_date cd
+        ON ci.id = cd.concert_id
+      INNER JOIN concert_area_price cap
+        ON cd.id = cap.concert_date_id
+      INNER JOIN concert_seat_info csi
+        ON cap.id = csi.concert_area_price_id
+      INNER JOIN shopping_cart sc
+        ON csi.id = sc.concert_seat_id
+      INNER JOIN sub_order so
+        ON sc.id = so.shopping_cart_id
+      INNER JOIN main_order mo
+        ON so.main_order_id = mo.id
+      WHERE mo.main_order_code = ? AND csi.status = 'sold' AND sc.status = "remove-to-order" AND csi.user_id = ?;
+    `;
     const bindings = [mainOrderCode, userId];
     const [result] = await pool.query(queryStr, bindings);
     if (result.length === 0) {
@@ -722,7 +731,6 @@ const getOrderResultByUserId = async (userId) => {
         `;
     const bindings = [userId];
     const [result] = await pool.query(queryStr, bindings);
-
     return result;
   } catch (error) {
     console.log(error);
@@ -759,13 +767,13 @@ const payOrderByPrime = async function (tappayKey, prime, order, user) {
 
 const filterReleasedTickets = async () => {
   try {
-    const queryStr = `select 
+    const queryStr = `
+      select 
         csi.id AS concert_seat_id
       from concert_seat_info csi
       INNER JOIN shopping_cart sc
         on csi.id = sc.concert_seat_id
-      WHERE 
-      csi.status = 'cart' 
+      WHERE csi.status = 'cart' 
       AND sc.status = 'add-to-cart' 
       AND csi.user_updated_status_datetime < CURRENT_TIMESTAMP - INTERVAL 1 HOUR
       ORDER BY csi.id;
@@ -801,48 +809,41 @@ const releaseTickets = async (tickets) => {
       [tickets]
     );
 
-    let shopping_cart_ids = [];
-    let concert_seat_ids = [];
-    let concert_area_price_ids = [];
+    let shoppingCartIds = [];
+    let concertSeatIds = [];
+    let concertAreaPriceIds = [];
     for (let i = 0; i < result.length; i++) {
       if (
         result[i].seat_status === "cart" &&
         result[i].status_in_cart === "add-to-cart"
       ) {
-        concert_area_price_ids.push(result[i].concert_area_price_id);
-        concert_seat_ids.push(result[i].concert_seat_id);
-        shopping_cart_ids.push(result[i].shopping_cart_id);
+        concertAreaPriceIds.push(result[i].concert_area_price_id);
+        concertSeatIds.push(result[i].concert_seat_id);
+        shoppingCartIds.push(result[i].shopping_cart_id);
       }
     }
 
-    if (concert_seat_ids.length !== shopping_cart_ids.length) {
+    if (concertSeatIds.length !== shoppingCartIds.length) {
       await conn.query("ROLLBACK");
       return { error: "座位資訊有錯!" };
     }
 
-    if (concert_seat_ids.length === 0) {
+    if (concertSeatIds.length === 0) {
       await conn.query("ROLLBACK");
       return { error: "沒有需清除的票" };
     }
 
-    // 將 concert_seat_info table 中, 該座位的 status 更改為 'not-selected'
     await conn.query(
       "UPDATE concert_seat_info SET status ='not-selected', user_id = NULL , user_updated_status_datetime = NULL where id IN (?)",
-      [concert_seat_ids]
+      [concertSeatIds]
     );
 
-    // 將 shopping_cart table 中, 根據 shopping cart id 找到所對應到的座位，並將 shopping cart table 的 status 更改為 'remove-from-cart'
     await conn.query(
       "UPDATE shopping_cart SET status ='remove-from-cart' where  id IN (?) ",
-      [shopping_cart_ids]
+      [shoppingCartIds]
     );
-
     await conn.query("COMMIT");
-
-    return {
-      concertAreaPriceIds: concert_area_price_ids,
-      concertSeatIds: concert_seat_ids,
-    };
+    return { concertAreaPriceIds, concertSeatIds };
   } catch (error) {
     console.log(error);
     await conn.query("ROLLBACK");

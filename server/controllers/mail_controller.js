@@ -8,17 +8,17 @@ const auth = {
   pass: process.env.EMAIL_AUTH_PASS,
 };
 
-const mailType = {
+const MAIL_TYPE = {
   FinishOrder: 1,
   SignUpValify: 2,
 };
 
 const sendEmail = async (sendInfo, mailType) => {
   const {
-    userName,
-    userEmail,
-    buyTime,
-    orderCode,
+    ordererName,
+    ordererEmail,
+    orderTime,
+    mainOrderCode,
     orderStatus,
     shipping,
     subtotal,
@@ -49,26 +49,26 @@ const sendEmail = async (sendInfo, mailType) => {
 
   // According to the letter type, get the letter title and content template
   switch (mailType) {
-    case mailType.FinishOrder:
+    case MAIL_TYPE.FinishOrder:
       title = "購買完成通知信";
       template = "finishOrder";
       break;
-    // case mailType.SignUpValify:
-    //   title = "註冊驗證通知信";
-    //   template = "finishOrder"; // TODO: 待修改
-    //   break;
+    case MAIL_TYPE.SignUpValify:
+      title = "註冊驗證通知信";
+      template = "finishOrder"; // TODO: 待修改
+      break;
   }
 
   // Replace the parameter required by the corresponding type of letter
   let mailOptions = {
     from: "no-reply@gmail.com",
-    to: userEmail,
+    to: ordererEmail,
     subject: title,
     template: template,
     context: {
-      userName: userName,
-      buyTime: buyTime,
-      orderCode: orderCode,
+      userName: ordererName,
+      orderTime: orderTime,
+      orderCode: mainOrderCode,
       orderStatus: orderStatus,
       shipping: shipping,
       subtotal: subtotal,
@@ -93,5 +93,5 @@ const sendEmail = async (sendInfo, mailType) => {
 
 module.exports = {
   sendEmail,
-  mailType,
+  MAIL_TYPE,
 };

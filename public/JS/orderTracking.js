@@ -34,72 +34,72 @@ $.ajax({
           const NumberOfTickets = orderResult.ticket_info.length;
           $(".order-main-info-table").append(
             `
-                        <div class = "content">
-                            <table class="content">
-                                <thead>
-                                    <tr id="column-name">
-                                        <th width="15%">訂單編號</th>
-                                        <th width="12%">訂購時間</th>
-                                        <th width="10%">訂單狀態</th>
-                                        <th width="18%">活動名稱</th>
-                                        <th width="10%">日期時間</th>
-                                        <th width="15%">地點</th>
-                                        <th width="10%">座位</th>
-                                        <th width="10%">價格</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="order-main-info-${i}">
-                                    <tr class="order-item-0">
-                                        <td rowspan="${NumberOfTickets}" class="order-code">${orderResult.main_order_code}</td>
-                                        <td rowspan="${NumberOfTickets}" class="order-time">${orderResult.created_at}</td>
-                                        <td rowspan="${NumberOfTickets}" class="order-status">${orderResult.order_status}</td>
-                                        <td class="concert-title">${orderResult.ticket_info[0].concert_title}</td>
-                                        <td class="concert-datetime">${orderResult.ticket_info[0].concert_datetime}</td>
-                                        <td class="concert-location">${orderResult.ticket_info[0].concert_location}</td>
-                                        <td class="concert-seat">
-                                            ${orderResult.ticket_info[0].concert_area} 區 <br>
-                                            ${orderResult.ticket_info[0].row}排
-                                            ${orderResult.ticket_info[0].column}號
-                                        </td>
-                                        <td class="price-${i} price">NT$ ${orderResult.ticket_info[0].ticket_price}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        `
+            <div class = "content">
+                <table class="content">
+                    <thead>
+                        <tr id="column-name">
+                            <th width="15%">訂單編號</th>
+                            <th width="12%">訂購時間</th>
+                            <th width="10%">訂單狀態</th>
+                            <th width="18%">活動名稱</th>
+                            <th width="10%">日期時間</th>
+                            <th width="15%">地點</th>
+                            <th width="10%">座位</th>
+                            <th width="10%">價格</th>
+                        </tr>
+                    </thead>
+                    <tbody id="order-main-info-${i}">
+                        <tr class="order-item-0">
+                            <td rowspan="${NumberOfTickets}" class="order-code">${orderResult.main_order_code}</td>
+                            <td rowspan="${NumberOfTickets}" class="order-time">${orderResult.created_at}</td>
+                            <td rowspan="${NumberOfTickets}" class="order-status">${orderResult.order_status}</td>
+                            <td class="concert-title">${orderResult.ticket_info[0].concert_title}</td>
+                            <td class="concert-datetime">${orderResult.ticket_info[0].concert_datetime}</td>
+                            <td class="concert-location">${orderResult.ticket_info[0].concert_location}</td>
+                            <td class="concert-seat">
+                                ${orderResult.ticket_info[0].concert_area} 區 <br>
+                                ${orderResult.ticket_info[0].row}排
+                                ${orderResult.ticket_info[0].column}號
+                            </td>
+                            <td class="price-${i} price">NT$ ${orderResult.ticket_info[0].ticket_price}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            `
           );
 
           if (NumberOfTickets > 1) {
             for (let j = 1; j < NumberOfTickets; j++) {
               $(`#order-main-info-${i}`).append(
                 `
-                                <tr class="order-item-${j}">
-                                    <td class="concert-title">${orderResult.ticket_info[j].concert_title}</td>
-                                    <td class="concert-datetime">${orderResult.ticket_info[j].concert_datetime}</td>
-                                    <td class="concert-location">${orderResult.ticket_info[j].concert_location}</td>
-                                    <td class="concert-seat">
-                                        ${orderResult.ticket_info[j].concert_area} 區 <br>
-                                        ${orderResult.ticket_info[j].row}排
-                                        ${orderResult.ticket_info[j].column}號
-                                    </td>
-                                    <td class="price-${i}">NT$ ${orderResult.ticket_info[j].ticket_price}</td>
-                                </tr>
-                                `
+                  <tr class="order-item-${j}">
+                      <td class="concert-title">${orderResult.ticket_info[j].concert_title}</td>
+                      <td class="concert-datetime">${orderResult.ticket_info[j].concert_datetime}</td>
+                      <td class="concert-location">${orderResult.ticket_info[j].concert_location}</td>
+                      <td class="concert-seat">
+                          ${orderResult.ticket_info[j].concert_area} 區 <br>
+                          ${orderResult.ticket_info[j].row}排
+                          ${orderResult.ticket_info[j].column}號
+                      </td>
+                      <td class="price-${i}">NT$ ${orderResult.ticket_info[j].ticket_price}</td>
+                  </tr>
+                `
               );
             }
           }
 
           // 總票價 + 運費 + 合計
           $(`#order-main-info-${i}`).append(`
-                        <tr class = "total-row">
-                        <td colspan="1" id="sum-${i}"> 總票價 </td>
-                        <td colspan="1" class = "price-sum-${i}"></td>
-                        <td colspan="1" id="freight-${i}"> 運費 </td>
-                        <td colspan="1" class = "freight">NT$ 50 </td>
-                        <td colspan="1" id="total-${i}"> 合計 </td>
-                        <td colspan="3" class = " total total-${i}"></td>
-                        </tr>
-                    `);
+              <tr class = "total-row">
+              <td colspan="1" id="sum-${i}"> 總票價 </td>
+              <td colspan="1" class = "price-sum-${i}"></td>
+              <td colspan="1" id="freight-${i}"> 運費 </td>
+              <td colspan="1" class = "freight">NT$ 50 </td>
+              <td colspan="1" id="total-${i}"> 合計 </td>
+              <td colspan="3" class = " total total-${i}"></td>
+              </tr>
+            `);
 
           flushSumPrice(i);
         }
