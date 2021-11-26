@@ -114,28 +114,21 @@ socket.on("NotifyRollbackSeats", (msg) => {
 
 socket.on("NotifyAddToCart", (msg) => {
   msg = JSON.parse(msg);
-  if (msg.owner === localStorage.getItem("UserCode")) {
-    for (let i = 0; i < msg.addToCartSeat.length; i++) {
-      $(`#${msg.addToCartSeat[i]}`)
+  for (let i = 0; i < msg.addToCartSeats.length; i++) {
+    if (msg.owner === localStorage.getItem("UserCode")) {
+      $(`#${msg.addToCartSeats[i]}`)
         .removeClass("you-selected")
         .addClass("you-cart");
-
-      $(`#${msg.addToCartSeat[i]}`).attr(
-        "src",
-        "../images/logo/icon_chair_cart.gif"
-      );
+      chosenSeats = [];
+      countOfCartAndSold += msg.addToCartSeats.length;
+      window.location.assign(`/index.html`);
+    } else {
+      $(`#${msg.addToCartSeats[i]}`).removeClass("selected").addClass("cart");
     }
-    chosenSeats = [];
-    countOfCartAndSold += msg.addToCartSeat.length;
-    window.location.assign(`/index.html`);
-  } else {
-    for (let i = 0; i < msg.addToCartSeat.length; i++) {
-      $(`#${msg.addToCartSeat[i]}`).removeClass("selected").addClass("cart");
-      $(`#${msg.addToCartSeat[i]}`).attr(
-        "src",
-        "../images/logo/icon_chair_cart.gif"
-      );
-    }
+    $(`#${msg.addToCartSeats[i]}`).attr(
+      "src",
+      "../images/logo/icon_chair_cart.gif"
+    );
   }
 });
 
@@ -665,15 +658,6 @@ function addToCart() {
         Swal.close();
         // 將所選位子加入購物車後，將 chosenSeats array 清空
         chosenSeats = [];
-        for (let i = 0; i < res.addToCartSeat.length; i++) {
-          $(`#${res.addToCartSeat[i]}`)
-            .removeClass("you-selected")
-            .addClass("you-cart");
-          $(`#${res.addToCartSeat[i]}`).attr(
-            "src",
-            "../images/logo/icon_chair_cart.gif"
-          );
-        }
         window.location.assign("/shoppingCart.html");
       });
     })

@@ -42,7 +42,7 @@ const authentication = (roleId) => {
           return res.status(403).send({ error: "Forbidden" });
         } else {
           req.user.id = userDetail.id;
-          req.user.user_code = userDetail.user_code;
+          req.user.userCode = userDetail.user_code;
           req.user.role_id = userDetail.role_id;
           return next();
         }

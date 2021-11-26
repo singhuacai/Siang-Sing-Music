@@ -296,30 +296,28 @@ const addToCart = async (chosenSeats, userId) => {
   try {
     await conn.query("START TRANSACTION");
     const queryStr =
-      "SELECT id, status, user_id, concert_area_price_id FROM concert_seat_info WHERE id IN(?) ORDER BY id FOR UPDATE";
+      "SELECT id, status, user_id FROM concert_seat_info WHERE id IN(?) ORDER BY id FOR UPDATE";
     const bindings = [chosenSeats];
     const [check] = await pool.query(queryStr, bindings);
 
-    // 確認你撈出來的 userId 與前台傳過來的 userId 是同一個 => 再去將該使用者剛剛選起來的位置加入購物車
-    let addToCartSeat = [];
+    // make sure the userId => add the chosenSeats into cart
+    let addToCartSeats = [];
     let insertData = [];
-    let concert_area_price_id;
     for (let i = 0; i < check.length; i++) {
       if (check[i].user_id === userId && check[i].status === "selected") {
-        addToCartSeat.push(check[i].id);
-        concert_area_price_id = check[i].concert_area_price_id;
+        addToCartSeats.push(check[i].id);
         const post = [chosenSeats[i], "add-to-cart"];
         insertData.push(post);
       }
     }
 
-    if (addToCartSeat.length === 0) {
+    if (addToCartSeats.length === 0) {
       return { error: "您欲加入購物車的座位選擇是空的" };
     }
 
     await conn.query(
       "UPDATE concert_seat_info SET status ='cart' where id IN (?)",
-      [addToCartSeat]
+      [addToCartSeats]
     );
 
     await conn.query(
@@ -328,10 +326,7 @@ const addToCart = async (chosenSeats, userId) => {
     );
 
     await conn.query("COMMIT");
-    return {
-      concert_area_price_id,
-      addToCartSeat,
-    };
+    return { addToCartSeats };
   } catch (error) {
     console.log(error);
     await conn.query("ROLLBACK");

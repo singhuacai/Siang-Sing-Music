@@ -114,7 +114,7 @@ const getChosenConcertInfo = async (req, res) => {
 const chooseOrDeleteSeat = async (req, res) => {
   const { seatStatus, concertSeatId } = req.body;
   const userId = req.user.id;
-  const userCode = req.user.user_code;
+  const userCode = req.user.userCode;
 
   if (!concertSeatId) {
     res.status(400).send({ error: "請提供concertSeatId！" });
@@ -154,7 +154,7 @@ const chooseOrDeleteSeat = async (req, res) => {
 const rollBackChoose = async (req, res) => {
   const { chosenSeats } = req.body;
   const userId = req.user.id;
-  const userCode = req.user.user_code;
+  const userCode = req.user.userCode;
 
   if (!chosenSeats) {
     res.status(400).send({ error: "請提供所選的座位" });
@@ -184,7 +184,7 @@ const rollBackChoose = async (req, res) => {
 const addToCart = async (req, res) => {
   const { chosenSeats } = req.body;
   const userId = req.user.id;
-  const userCode = req.user.user_code;
+  const userCode = req.user.userCode;
 
   if (!chosenSeats) {
     res.status(400).send({ error: "請提供所選的座位" });
@@ -201,9 +201,6 @@ const addToCart = async (req, res) => {
     return;
   }
 
-  // 利用 addToCart function
-  // 1. 查詢該座位目前的狀態是否為 selected 以及是否為同一個使用者
-  // 2. 若是同一個使用者，再把座位狀態更改為cart狀態!
   result = await Order.addToCart(chosenSeats, userId);
 
   if (result.error) {
@@ -212,8 +209,7 @@ const addToCart = async (req, res) => {
   } else {
     const msg = JSON.stringify({
       owner: userCode,
-      concert_area_price_id: result.concert_area_price_id,
-      addToCartSeat: result.addToCartSeat,
+      addToCartSeats: result.addToCartSeats,
     });
     notifyAddToCart(req.socketId, msg, BOARDCAST.ALL_USERS_IN_ROOM);
     res.status(200).send(result);
@@ -242,7 +238,7 @@ const getCartStatus = async (req, res) => {
 const removeItemFromCart = async (req, res) => {
   const { deleteSeatId } = req.body;
   const userId = req.user.id;
-  const userCode = req.user.user_code;
+  const userCode = req.user.userCode;
 
   if (!deleteSeatId) {
     res.status(400).send({ error: "請提供欲刪除的座位" });
@@ -273,7 +269,7 @@ const removeItemFromCart = async (req, res) => {
 const checkout = async (req, res) => {
   const { data } = req.body;
   const user = req.user;
-  const userCode = req.user.user_code;
+  const userCode = req.user.userCode;
 
   if (!data) {
     res.status(400).send({ error: "請提供訂單資訊" });
