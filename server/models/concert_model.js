@@ -46,17 +46,15 @@ const getCampaigns = async () => {
     const queryStr = `
     SELECT 
       ci.id, 
-      ci.concert_title, 
-      ci.concert_main_image, 
-      JSON_ARRAYAGG(DATE_FORMAT(cd.concert_datetime, '%Y-%m-%d %T')) AS concert_datetime
-    FROM 
-      concert_info AS ci
-    JOIN
-      concert_date AS cd
-    on ci.id = cd.concert_id
+      ci.concert_title AS concertTitle, 
+      ci.concert_main_image AS concertMainImage, 
+      JSON_ARRAYAGG(DATE_FORMAT(cd.concert_datetime, '%Y-%m-%d %T')) AS concertDatetime
+    FROM concert_info AS ci
+    INNER JOIN concert_date AS cd
+    ON ci.id = cd.concert_id
     WHERE CURRENT_TIMESTAMP() between DATE_SUB(ci.sold_start, INTERVAL 7 DAY) and ci.sold_end
-    group by 1,2,3
-    order by cd.concert_datetime
+    GROUP BY 1,2,3
+    ORDER BY cd.concert_datetime
   `;
 
     const [result] = await pool.query(queryStr);
@@ -70,7 +68,7 @@ const getCampaigns = async () => {
 const getKeyvisuals = async () => {
   try {
     const queryStr = `
-    Select id AS concert_id, concert_main_image From concert_info;
+    Select id AS concertId, concert_main_image AS concertMainImage From concert_info;
     `;
     const [result] = await pool.query(queryStr);
     return result;
@@ -114,25 +112,25 @@ const getConcertDetails = async (concert_id) => {
     GROUP BY concert_id, concert_date_id, concert_datetime
     )
     SELECT
-      ci.id AS concert_id,
-      ci.concert_title,
-      ci.concert_story,
-      ci.sold_start,
-      ci.sold_end,
-      ci.concert_location,
-      ci.concert_main_image,
-      ci.concert_area_image,
+      ci.id AS concertId,
+      ci.concert_title AS concertTitle,
+      ci.concert_story AS concertStory,
+      ci.sold_start AS soldStart,
+      ci.sold_end AS soldEnd,
+      ci.concert_location AS concertLocation,
+      ci.concert_main_image AS concertMainImage,
+      ci.concert_area_image AS concertAreaImage,
       ci.notice,
       json_arrayagg(
         json_object(
-        'concert_datetime', ddp.concert_datetime,
-        'concert_date_id', ddp.concert_date_id,
-        'ticket_prices', ddp.ticket_prices
+        'concertDatetime', ddp.concert_datetime,
+        'concertDateId', ddp.concert_date_id,
+        'ticketPrices', ddp.ticket_prices
         )
-      ) AS concert_info
-    from concert_info ci
-    inner join  DistinctDatePrice ddp
-    on ddp.concert_id = ci.id
+      ) AS concertInfo
+    FROM concert_info ci
+    INNER JOIN DistinctDatePrice ddp
+    ON ddp.concert_id = ci.id
     GROUP BY 1,2,3,4,5,6,7,8,9;
       `;
     const bindings = [concert_id];
@@ -149,17 +147,15 @@ const getCampaignsByKeyword = async (keyword) => {
     const queryStr = `
     SELECT 
       ci.id, 
-      ci.concert_title, 
-      ci.concert_main_image, 
-      JSON_ARRAYAGG(DATE_FORMAT(cd.concert_datetime, '%Y-%m-%d %T')) AS concert_datetime
-    FROM 
-      concert_info AS ci
-    JOIN
-      concert_date AS cd
+      ci.concert_title AS concertTitle, 
+      ci.concert_main_image AS concertMainImage, 
+      JSON_ARRAYAGG(DATE_FORMAT(cd.concert_datetime, '%Y-%m-%d %T')) AS concertDatetime
+    FROM concert_info AS ci
+    INNER JOIN concert_date AS cd
     on ci.id = cd.concert_id
     WHERE CURRENT_TIMESTAMP() between DATE_SUB(ci.sold_start, INTERVAL 7 DAY) and ci.sold_end and ci.concert_title LIKE ?
-    group by 1,2,3
-    order by cd.concert_datetime
+    GROUP BY 1,2,3
+    ORDER BY cd.concert_datetime
   `;
 
     const bindings = [`%${keyword}%`];

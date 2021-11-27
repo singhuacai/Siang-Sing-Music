@@ -23,7 +23,6 @@ const createConcert = async (req, res) => {
 
   data.dateAndSeatInfo.forEach(async (element) => {
     const dateAndSeatInfo = element;
-
     const concertDate = {
       concert_id: concertId,
       concert_datetime: adjustTimeZone(
@@ -71,14 +70,9 @@ const getCampaigns = async (req, res) => {
     res.status(500);
     return;
   }
-
   const data = result.map((e) => {
-    return {
-      id: e.id,
-      concertTitle: e.concert_title,
-      concertMainImage: `/${e.id}/${e.concert_main_image}`,
-      concertDatetime: e.concert_datetime,
-    };
+    e.concertMainImage = `/${e.id}/${e.concertMainImage}`;
+    return e;
   });
 
   res.status(200).send({ data });
@@ -92,12 +86,11 @@ const getKeyvisuals = async (req, res) => {
   }
 
   const data = result.map((e) => {
-    return {
-      concertId: e.concert_id,
-      concertMainImage: `/${e.concert_id}/${e.concert_main_image}`,
-    };
+    e.concertMainImage = `/${e.concertId}/${e.concertMainImage}`;
+    return e;
   });
-  res.send({ data });
+
+  res.status(200).send({ data });
 };
 
 const getConcertDetails = async (req, res) => {
@@ -120,24 +113,15 @@ const getConcertDetails = async (req, res) => {
   }
 
   const [data] = result.map((e) => {
-    return {
-      concertId: e.concert_id,
-      concertTitle: e.concert_title,
-      concertStory: e.concert_story,
-      soldStart: adjustTimeZone(e.sold_start, offsetHours),
-      soldEnd: adjustTimeZone(e.sold_end, offsetHours),
-      concertLocation: e.concert_location,
-      concertMainImage: `/${e.concert_id}/${e.concert_main_image}`,
-      concertAreaImage: `/${e.concert_id}/${e.concert_area_image}`,
-      notice: e.notice,
-      concertInfo: e.concert_info.map((s) => {
-        return {
-          ticketPrices: s.ticket_prices,
-          concertDateId: s.concert_date_id,
-          concertDatetime: adjustTimeZone(s.concert_datetime, offsetHours),
-        };
-      }),
-    };
+    e.soldStart = adjustTimeZone(e.soldStart, offsetHours);
+    e.soldEnd = adjustTimeZone(e.soldEnd, offsetHours);
+    e.concertMainImage = `/${e.concertId}/${e.concertMainImage}`;
+    e.concertAreaImage = `/${e.concertId}/${e.concertAreaImage}`;
+    e.concertInfo.map((s) => {
+      s.concertDatetime = adjustTimeZone(s.concertDatetime, offsetHours);
+      return s;
+    });
+    return e;
   });
   res.status(200).send({ data });
 };
@@ -160,11 +144,8 @@ const getCampaignsByKeyword = async (req, res) => {
   }
 
   const data = result.map((e) => {
-    return {
-      concertTitle: e.concert_title,
-      concertMainImage: `/${e.id}/${e.concert_main_image}`,
-      concertDatetime: e.concert_datetime,
-    };
+    e.concertMainImage = `/${e.id}/${e.concertMainImage}`;
+    return e;
   });
 
   res.status(200).send({ data });
