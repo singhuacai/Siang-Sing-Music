@@ -1,4 +1,4 @@
-const { TAPPAY_PARTNER_KEY } = process.env;
+const { TAPPAY_PARTNER_KEY, MERCHANT_ID } = process.env;
 const { pool } = require("./mysql");
 const got = require("got");
 const validator = require("validator");
@@ -35,10 +35,8 @@ const getTitleAndAreaImage = async (concertDateId) => {
       ci.concert_title AS concertTitle,
       ci.concert_location AS concertLocation,
       ci.concert_area_image AS concertAreaImage
-    FROM
-      concert_info AS ci
-    INNER JOIN
-      concert_date AS cd
+    FROM concert_info AS ci
+    INNER JOIN concert_date AS cd
     on ci.id = cd.concert_id
     WHERE cd.id = ?
     `;
@@ -68,10 +66,6 @@ const getAreasAndTicketPrices = async (concertDateId) => {
 };
 
 const getSoldandCartCount = async (concertAreaPriceId, userId) => {
-  /* Given concertAreaPriceId
-     => get concertDateId
-     => Get the number of seats belonging to this user */
-
   const conn = await pool.getConnection();
   try {
     await conn.query("START TRANSACTION");
@@ -82,7 +76,7 @@ const getSoldandCartCount = async (concertAreaPriceId, userId) => {
       FROM concert_area_price cap
       INNER JOIN concert_seat_info csi
         ON cap.id = csi.concert_area_price_id
-      where cap.id=?
+      WHERE cap.id=?
     )
     SELECT
       count(*) as count
@@ -119,7 +113,7 @@ const getSeatStatus = async (concertAreaPriceId) => {
         user_id AS userId,
         status
       FROM concert_seat_info
-      where concert_area_price_id = ? FOR UPDATE;
+      WHERE concert_area_price_id = ? FOR UPDATE;
     `;
     const bindings = [concertAreaPriceId];
     const [result] = await conn.query(queryStr, bindings);
@@ -171,8 +165,7 @@ const chooseSeat = async (concertSeatId, userId) => {
     const [count] = await conn.query(
       `
       WITH ConcertDateId AS(
-        SELECT 
-          cap.concert_date_id
+        SELECT cap.concert_date_id
         FROM concert_seat_info csi
         INNER JOIN concert_area_price cap
           ON cap.id = csi.concert_area_price_id
@@ -195,7 +188,7 @@ const chooseSeat = async (concertSeatId, userId) => {
     }
 
     await conn.query(
-      "UPDATE concert_seat_info SET status ='selected', user_id = ?, user_updated_status_datetime = CURRENT_TIMESTAMP() where id = ?",
+      "UPDATE concert_seat_info SET status ='selected', user_id = ?, user_updated_status_datetime = CURRENT_TIMESTAMP() WHERE id = ?",
       [userId, concertSeatId]
     );
     await conn.query("COMMIT");
@@ -237,7 +230,7 @@ const deleteSeat = async (concertSeatId, userId) => {
     }
 
     await conn.query(
-      "UPDATE concert_seat_info SET status ='not-selected', user_id =NULL , user_updated_status_datetime = NULL where id = ?",
+      "UPDATE concert_seat_info SET status ='not-selected', user_id =NULL , user_updated_status_datetime = NULL WHERE id = ?",
       [concertSeatId]
     );
     await conn.query("COMMIT");
@@ -277,7 +270,7 @@ const rollBackChoose = async (chosenSeats, userId) => {
     }
 
     await conn.query(
-      "UPDATE concert_seat_info SET status ='not-selected', user_id = NULL , user_updated_status_datetime = NULL where id IN (?)",
+      "UPDATE concert_seat_info SET status ='not-selected', user_id = NULL , user_updated_status_datetime = NULL WHERE id IN (?)",
       [rollBackSeats]
     );
     await conn.query("COMMIT");
@@ -415,13 +408,13 @@ const removeItemFromCart = async (removeSeatId, userId) => {
 
     // change the status of the seat in the concert_seat_info table to "not-selected"
     await conn.query(
-      "UPDATE concert_seat_info SET status ='not-selected', user_id = NULL , user_updated_status_datetime = NULL where id = ?",
+      "UPDATE concert_seat_info SET status ='not-selected', user_id = NULL , user_updated_status_datetime = NULL WHERE id = ?",
       [removeSeatId]
     );
 
     // change the status in the shopping_cart table to 'remove-from-cart'
     await conn.query(
-      "UPDATE shopping_cart SET status ='remove-from-cart' where  id = ? ",
+      "UPDATE shopping_cart SET status ='remove-from-cart' WHERE id = ? ",
       [removeFromCartInfo[0].shoppingCartId]
     );
 
@@ -603,13 +596,13 @@ const checkout = async (data, user) => {
 
     // 4. change the seat status in the concert_seat_info table
     await conn.query(
-      "UPDATE concert_seat_info SET status ='sold' where id IN (?)",
+      "UPDATE concert_seat_info SET status ='sold' WHERE id IN (?)",
       [orderSeatId]
     );
 
     // 5. change the status in the shopping_cart table
     await conn.query(
-      "UPDATE shopping_cart SET status ='remove-to-order' where  id IN (?) ",
+      "UPDATE shopping_cart SET status ='remove-to-order' WHERE id IN (?) ",
       [data.order.shoppingCartSeat]
     );
 
@@ -749,7 +742,7 @@ const payOrderByPrime = async function (tappayKey, prime, order, user) {
       json: {
         prime: prime,
         partner_key: tappayKey,
-        merchant_id: "AppWorksSchool_CTBC",
+        merchant_id: MERCHANT_ID,
         details: "Ticketing System Payment",
         amount: order.total,
         cardholder: {
@@ -834,12 +827,12 @@ const releaseTickets = async (tickets) => {
     }
 
     await conn.query(
-      "UPDATE concert_seat_info SET status ='not-selected', user_id = NULL , user_updated_status_datetime = NULL where id IN (?)",
+      "UPDATE concert_seat_info SET status ='not-selected', user_id = NULL , user_updated_status_datetime = NULL WHERE id IN (?)",
       [concertSeatIds]
     );
 
     await conn.query(
-      "UPDATE shopping_cart SET status ='remove-from-cart' where  id IN (?) ",
+      "UPDATE shopping_cart SET status ='remove-from-cart' WHERE id IN (?) ",
       [shoppingCartIds]
     );
     await conn.query("COMMIT");

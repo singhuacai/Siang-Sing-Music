@@ -11,6 +11,58 @@ const ROLE = {
   USER: 2,
 };
 
+const getUserCode = () => {
+  const random_array = [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "a",
+    "b",
+    "c",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "i",
+    "j",
+    "k",
+    "l",
+    "m",
+    "n",
+    "o",
+    "p",
+    "q",
+    "r",
+    "s",
+    "t",
+    "u",
+    "v",
+    "w",
+    "x",
+    "y",
+    "z",
+  ];
+  const i = Math.floor(Math.random() * 36);
+  const j = Math.floor(Math.random() * 36);
+  const now = new Date();
+  return (
+    random_array[i] +
+    random_array[j] +
+    +now.getMonth() +
+    now.getDate() +
+    (now.getTime() % (24 * 60 * 60 * 1000)) +
+    Math.floor(Math.random() * 10)
+  );
+};
+
 const signUp = async (name, roleId, email, phone, password) => {
   const conn = await pool.getConnection();
   try {
@@ -25,61 +77,9 @@ const signUp = async (name, roleId, email, phone, password) => {
       return { error: "此 Email 已被註冊過" };
     }
 
-    const userCode = () => {
-      const random_array = [
-        "0",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "a",
-        "b",
-        "c",
-        "d",
-        "e",
-        "f",
-        "g",
-        "h",
-        "i",
-        "j",
-        "k",
-        "l",
-        "m",
-        "n",
-        "o",
-        "p",
-        "q",
-        "r",
-        "s",
-        "t",
-        "u",
-        "v",
-        "w",
-        "x",
-        "y",
-        "z",
-      ];
-      const i = Math.floor(Math.random() * 36);
-      const j = Math.floor(Math.random() * 36);
-      const now = new Date();
-      return (
-        random_array[i] +
-        random_array[j] +
-        +now.getMonth() +
-        now.getDate() +
-        (now.getTime() % (24 * 60 * 60 * 1000)) +
-        Math.floor(Math.random() * 10)
-      ); // get user_code,
-    };
-
     const loginAt = new Date();
     const user = {
-      user_code: userCode(),
+      user_code: getUserCode(),
       provider: "native",
       role_id: roleId,
       email: email,
