@@ -1,5 +1,5 @@
 const User = require("../server/models/user_model");
-const { TOKEN_SECRET } = process.env; // 30 days by seconds
+const { TOKEN_SECRET } = process.env;
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
 
@@ -33,7 +33,7 @@ const authentication = (roleId) => {
         next();
       } else {
         let userDetail;
-        if (roleId === User.role.ALL) {
+        if (roleId === User.ROLE.ALL) {
           userDetail = await User.getUserDetail(user.email);
         } else {
           userDetail = await User.getUserDetail(user.email, roleId);

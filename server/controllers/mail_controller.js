@@ -47,19 +47,13 @@ const sendEmail = async (sendInfo, mailType) => {
   // use a template file with nodemailer
   transporter.use("compile", hbs(handlebarOptions));
 
-  // According to the letter type, get the letter title and content template
   switch (mailType) {
     case MAIL_TYPE.FinishOrder:
       title = "購買完成通知信";
       template = "finishOrder";
       break;
-    case MAIL_TYPE.SignUpValify:
-      title = "註冊驗證通知信";
-      template = "finishOrder"; // TODO: 待修改
-      break;
   }
 
-  // Replace the parameter required by the corresponding type of letter
   let mailOptions = {
     from: "no-reply@gmail.com",
     to: ordererEmail,

@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { wrapAsync, authentication, parseSocketId } = require("../../util/util");
-const { role } = require("../models/user_model");
+const { ROLE } = require("../models/user_model");
 const {
   getPerformanceAndAreas,
   getSeatStatus,
@@ -49,11 +49,11 @@ router
 
 router
   .route("/order/checkout")
-  .post(authentication(role.ALL), wrapAsync(checkout));
+  .post(authentication(ROLE.ALL), wrapAsync(checkout));
 
 router
   .route("/order/orderResult")
-  .get(authentication(role.ALL), wrapAsync(getOrderResult));
+  .get(authentication(ROLE.ALL), wrapAsync(getOrderResult));
 
 router.route("/order/releaseTickets").post(wrapAsync(postReleaseTicketsResult));
 

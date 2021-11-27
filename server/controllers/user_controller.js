@@ -1,4 +1,3 @@
-require("dotenv").config();
 const validator = require("validator");
 const User = require("../models/user_model");
 
@@ -6,7 +5,6 @@ const signUp = async (req, res) => {
   let { name } = req.body;
   const { email, password, phone } = req.body;
 
-  /* ----------------- 初步驗證 ----------------- */
   if (!name || !email || !phone || !password) {
     res.status(400).send({
       error: "您的資料填寫不完全，請再檢查一下",
@@ -38,7 +36,7 @@ const signUp = async (req, res) => {
 
   const result = await User.signUp(
     name,
-    User.role.USER,
+    User.ROLE.USER,
     email,
     phone,
     password
@@ -91,10 +89,6 @@ const signIn = async (req, res) => {
       const { email, password } = req.body;
       result = await nativeSignIn(email, password);
       break;
-    // case "facebook":
-    // const { access_token } = req.body;
-    //   result = await facebookSignIn(access_token);
-    //   break;
     default:
       result = { error: "Wrong Request" };
   }

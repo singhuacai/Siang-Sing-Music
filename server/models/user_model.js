@@ -2,10 +2,10 @@ require("dotenv").config();
 const { pool } = require("./mysql");
 const bcrypt = require("bcrypt");
 const salt = parseInt(process.env.BCRYPT_SALT);
-const { TOKEN_EXPIRE, TOKEN_SECRET } = process.env; // 30 days by seconds
+const { TOKEN_EXPIRE, TOKEN_SECRET } = process.env;
 const jwt = require("jsonwebtoken");
 
-const role = {
+const ROLE = {
   ALL: -1,
   ADMIN: 1,
   USER: 2,
@@ -74,7 +74,7 @@ const signUp = async (name, roleId, email, phone, password) => {
         now.getDate() +
         (now.getTime() % (24 * 60 * 60 * 1000)) +
         Math.floor(Math.random() * 10)
-      ); // 取得user_code,
+      ); // get user_code,
     };
 
     const loginAt = new Date();
@@ -192,13 +192,8 @@ const getUserDetail = async (email, roleId) => {
 };
 
 module.exports = {
-  role,
+  ROLE,
   signUp,
   nativeSignIn,
-  // facebookSignIn,
   getUserDetail,
-  // getFacebookProfile,
-  // getUserOrders,
-  // cancelOrder,
-  // postComment,
 };
