@@ -28,10 +28,10 @@ const getPerformanceAndAreas = async (req, res) => {
     return;
   }
 
-  result.map((v) => {
-    v.concertAreaImage = `/${concertId}/${v.concertAreaImage}`;
-    v.concertDatetime = adjustTimeZone(v.concertDatetime, offsetHours);
-    return v;
+  result.map((e) => {
+    e.concertAreaImage = `/${concertId}/${e.concertAreaImage}`;
+    e.concertDatetime = adjustTimeZone(e.concertDatetime, offsetHours);
+    return e;
   });
 
   const areasAndTicketPrices = await Order.getAreasAndTicketPrices(
@@ -65,17 +65,21 @@ const getSeatStatus = async (req, res) => {
     return;
   }
 
-  data.map((v) => {
-    if (v.status === "selected" && v.userId === userId) {
-      v.status = "you-selected";
+  data.map((e) => {
+    if (e.userId === userId) {
+      switch (e.status) {
+        case "selected":
+          e.status = "you-selected";
+          break;
+        case "cart":
+          e.status = "you-cart";
+          break;
+        case "sold":
+          e.status = "you-sold";
+          break;
+      }
+      return e;
     }
-    if (v.status === "cart" && v.userId === userId) {
-      v.status = "you-cart";
-    }
-    if (v.status === "sold" && v.userId === userId) {
-      v.status = "you-sold";
-    }
-    return v;
   });
 
   result = await Order.getSoldandCartCount(concertAreaPriceId, userId);
@@ -102,9 +106,9 @@ const getChosenConcertInfo = async (req, res) => {
     res.status(500);
     return;
   }
-  data.map((v) => {
-    v.concertDatetime = adjustTimeZone(v.concertDatetime, offsetHours);
-    return v;
+  data.map((e) => {
+    e.concertDatetime = adjustTimeZone(e.concertDatetime, offsetHours);
+    return e;
   });
 
   res.status(200).send({ data });
@@ -219,16 +223,15 @@ const addToCart = async (req, res) => {
 
 const getCartStatus = async (req, res) => {
   const userId = req.user.id;
-  // TODO: 利用 userId 到 DB 查詢：該使用者已加入購物車的演唱會座位資訊
   let cartStatus = await Order.getCartStatus(userId);
   if (cartStatus.error) {
     res.status(500).send({ error: "Server Error" });
     return;
   }
 
-  cartStatus.map((v) => {
-    v.concertDatetime = adjustTimeZone(v.concertDatetime, offsetHours);
-    return v;
+  cartStatus.map((e) => {
+    e.concertDatetime = adjustTimeZone(e.concertDatetime, offsetHours);
+    return e;
   });
 
   res.status(200).send({ cartStatus });
@@ -317,9 +320,9 @@ const getOrderResult = async (req, res) => {
       res.status(403).send({ error: result.error });
       return;
     }
-    result.map((v) => {
-      v.concertDatetime = adjustTimeZone(v.concertDatetime, offsetHours);
-      return v;
+    result.map((e) => {
+      e.concertDatetime = adjustTimeZone(e.concertDatetime, offsetHours);
+      return e;
     });
   } else {
     result = await Order.getOrderResultByUserId(userId);
@@ -327,12 +330,12 @@ const getOrderResult = async (req, res) => {
       res.status(403).send({ error: result.error });
       return;
     }
-    result.map((v) => {
-      v.ticketInfo.map((v) => {
-        v.concertDatetime = adjustTimeZone(v.concertDatetime, offsetHours);
+    result.map((e) => {
+      e.ticketInfo.map((s) => {
+        s.concertDatetime = adjustTimeZone(s.concertDatetime, offsetHours);
       });
-      v.createdAt = adjustTimeZone(v.createdAt, offsetHours);
-      return v;
+      e.createdAt = adjustTimeZone(e.createdAt, offsetHours);
+      return e;
     });
   }
   res.status(200).send({ orderResult: result });
