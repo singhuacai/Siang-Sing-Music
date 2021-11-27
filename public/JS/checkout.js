@@ -53,7 +53,7 @@ setupSdk();
 setupCard();
 
 $("#submit").click(async () => {
-  // 1. 確認有 token
+  // 1. check token
   Authorization = localStorage.getItem("Authorization");
   if (!Authorization) {
     Swal.fire({
@@ -67,7 +67,7 @@ $("#submit").click(async () => {
     return;
   }
 
-  // 2. 確認收件人資料均有填寫
+  // 2. confirm that the recipient information is filled in
   const recipientName = $("#recipient-name").val();
   const recipientPhone = $("#recipient-phone").val();
   const recipientAddrZip = $(".recipient-addr-zip").val();
@@ -79,7 +79,6 @@ $("#submit").click(async () => {
     $(".recipient-addr-area").val() +
     $("#recipient-detail-address").val();
 
-  // 未填寫收件人資訊 => alert!
   if (!recipientName) {
     Swal.fire({
       title: "您未填寫收件人姓名",
@@ -113,7 +112,7 @@ $("#submit").click(async () => {
     return;
   }
 
-  // 3. 確認信用卡資訊均有填寫 => alert 錯誤訊息
+  // 3. confirm that the credit card information is filled in
   if (!canGetPrime()) {
     Swal.fire({
       title: cannotGetPrimeReason(),
@@ -124,11 +123,11 @@ $("#submit").click(async () => {
     return;
   }
 
-  // 4. 確認信用卡是可用的(有prime)
+  // 4. confirm that the credit card is available
   const prime = await getPrime();
   console.log("prime:", prime);
 
-  // 5. 取得購物車中所有座位的 shoppingCartId => 將它存到 shoppingCartSeat Array 中
+  // 5. get the shoppingCartId of all seats in the shopping cart
   let shoppingCartSeat = [];
   $(".cart-item").each(function () {
     shoppingCartSeat.push(
@@ -140,7 +139,7 @@ $("#submit").click(async () => {
     );
   });
 
-  // 6. 整理即將送出的訂單資訊(data)
+  // 6. sort out the order information to be sent
   const freight = 50;
   const data = {
     prime,

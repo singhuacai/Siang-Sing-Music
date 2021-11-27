@@ -1,5 +1,5 @@
 const concertId = window.location.search.split("?id=")[1];
-let Authorization = localStorage.getItem("Authorization");
+const Authorization = localStorage.getItem("Authorization");
 const currency = "NT$";
 
 const rewiteTicketPrices = (ticketPricesArray) => {

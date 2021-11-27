@@ -1,4 +1,4 @@
-let Authorization = localStorage.getItem("Authorization");
+const Authorization = localStorage.getItem("Authorization");
 
 $.ajax({
   url: `/api/1.0/user/profile`,

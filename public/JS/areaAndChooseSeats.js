@@ -2,17 +2,17 @@ urlParams = new URLSearchParams(window.location.search);
 concertId = urlParams.get("concertId");
 concertDateId = urlParams.get("concertDateId");
 concertAreaPriceId = urlParams.get("concertAreaPriceId");
-let Authorization = localStorage.getItem("Authorization");
-let UserCode = localStorage.getItem("UserCode");
-var chosenSeats = [];
+const Authorization = localStorage.getItem("Authorization");
+const UserCode = localStorage.getItem("UserCode");
+let chosenSeats = [];
 let countOfCartAndSold = 0;
 
-var isZero = false;
+let isZero = false;
 
-// 限制使用者當已進入購物車頁面時，不能透過"上一頁"回到此頁
+// restrict users from being able to return to this page through "previous page"
 window.history.forward(1);
 
-// 偵測頁面是否重新刷新
+// detect whether the page is refreshed
 const pageAccessedByReload =
   (window.performance.navigation && window.performance.navigation.type === 1) ||
   window.performance
@@ -181,13 +181,13 @@ socket.on("NotifyReleaseTickets", (msg) => {
 socket.on("connect_error", (err) => {
   console.log(err instanceof Error); // true
   console.log(err.message); // not authorized
-  console.log(err.data); // { content: "Please retry later" }
+  console.log(err.data);
 });
 
 $(document).ready(function () {
   $(document).bind("keydown", function (e) {
     e = window.event || e;
-    // 阻擋使用者按 F5 刷新頁面
+    // block users from pressing F5 to refresh the page
     if (e.keyCode == 116) {
       e.keyCode = 0;
       return false;
@@ -205,18 +205,19 @@ window.onbeforeunload = function () {
   })();
   return undefined;
 };
-// 新增座位 => 給指定座位id, 將該座位加入 chooseSeats array
+
+// choose seat => given seat id, add the seat to the chooseSeats array
 function addSeatIntoChosenSeatsArray(id) {
-  const seat_id = parseInt(id);
-  if (chosenSeats.indexOf(seat_id) === -1) {
-    chosenSeats.push(seat_id);
-  } else if (chosenSeats.indexOf(seat_id) > -1) {
-    console.log(seat_id + " already exists in the chosenSeats array.");
+  const seatId = parseInt(id);
+  if (chosenSeats.indexOf(seatId) === -1) {
+    chosenSeats.push(seatId);
+  } else if (chosenSeats.indexOf(seatId) > -1) {
+    console.log(seatId + " already exists in the chosenSeats array.");
   }
   return;
 }
 
-// 刪除座位 => 給指定座位id, 將該座位移出 chooseSeats array
+// delete seat => given seat id, remove the seat from the chooseSeats array
 function removeSeatFromChosenSeatsArray(id) {
   const index = chosenSeats.indexOf(parseInt(id));
   if (index > -1) {
@@ -224,6 +225,11 @@ function removeSeatFromChosenSeatsArray(id) {
   }
   return;
 }
+
+const SEAT_STATUS = {
+  CHOOSE: 1,
+  DELETE: 0,
+};
 
 function renderSeats(res) {
   countOfCartAndSold = res.countOfCartAndSold;
@@ -250,12 +256,11 @@ function renderSeats(res) {
         `<td><img src="../images/logo/icon_chair_select.gif" class="you-selected" id = "${concertSeatId}" width="100%"></td>`
       );
 
-      // 進入時，若座位狀態已有"you-selected"，再打一次 API 讓他真的被選起來
       addSeatIntoChosenSeatsArray(concertSeatId);
       $.ajax({
         url: "/api/1.0/order/chooseOrDeleteSeat",
         data: JSON.stringify({
-          seatStatus: 1,
+          seatStatus: SEAT_STATUS.CHOOSE,
           concertSeatId,
         }),
         method: "POST",
@@ -313,7 +318,6 @@ function handleClick() {
     switch (cls) {
       case "not-selected":
         if ($(".you-selected").length + countOfCartAndSold < 4) {
-          console.log("run selected function");
           (async function () {
             await chooseSeat(id);
           })();
@@ -329,7 +333,6 @@ function handleClick() {
         }
         break;
       case "you-selected":
-        console.log("run un-selected function");
         (async function () {
           await cancelSeat(id);
         })();
@@ -339,7 +342,6 @@ function handleClick() {
       case "you-cart":
       case "sold":
       case "you-sold":
-        console.log(`you click ${cls}`);
         break;
     }
   }
@@ -354,12 +356,11 @@ function redirect(concertId) {
 
 function chooseSeat(seatId) {
   return new Promise((resolve, reject) => {
-    console.log("This seat is nobody selected");
     addSeatIntoChosenSeatsArray(seatId);
     $.ajax({
       url: "/api/1.0/order/chooseOrDeleteSeat",
       data: JSON.stringify({
-        seatStatus: 1,
+        seatStatus: SEAT_STATUS.CHOOSE,
         concertSeatId: seatId,
       }),
       method: "POST",
@@ -411,7 +412,7 @@ function cancelSeat(seatId) {
     $.ajax({
       url: "/api/1.0/order/chooseOrDeleteSeat",
       data: JSON.stringify({
-        seatStatus: 0,
+        seatStatus: SEAT_STATUS.DELETE,
         concertSeatId: seatId,
       }),
       method: "POST",
@@ -457,11 +458,9 @@ function cancelSeat(seatId) {
 
 function rollBackChoose() {
   return new Promise((resolve, reject) => {
-    // 將剛剛選擇的座位rollback掉
     const filterChosenSeats = chosenSeats.filter(
       (ele, pos) => chosenSeats.indexOf(ele) == pos
     );
-    console.log("The filtered array", filterChosenSeats);
     if (filterChosenSeats.length === 0) {
       return;
     }
@@ -550,9 +549,8 @@ $.ajax({
   .done(function (res) {
     $(document).ready(function () {
       renderSeats(res);
-      // ================================================
-      // 倒數計時器(60秒)
-      let count = 100;
+      // 60 seconds countdown
+      let count = 10;
       $("#notice").html(
         `<pre> ★ 購票提醒：
         1. 單場演唱會，每人限購4張(可跨區)
@@ -562,22 +560,19 @@ $.ajax({
       $("#count").html(`倒 數 ${count} 秒`);
       let timer = null;
       timer = setInterval(function () {
-        if (count > 1) {
-          count = count - 1;
-          $("#count").html(`倒 數 ${count} 秒`);
-        } else if (count > 0) {
-          isZero = true;
-          console.log(`change=====`);
+        if (count > 0) {
+          if (count === 1) {
+            isZero = true;
+          }
           count = count - 1;
           $("#count").html(`倒 數 ${count} 秒`);
         } else {
-          // 當count = 0 時，停止計時
+          // when count = 0, stop timing
           isZero = true;
           clearInterval(timer);
           window.location.assign(`/campaign.html?id=${concertId}`);
         }
       }, 1000);
-      // ================================================
 
       $(".chair-style").html(
         `
@@ -618,11 +613,9 @@ $.ajax({
   });
 
 function addToCart() {
-  // 將剛剛選擇的座位addToCart
   const filterChosenSeats = chosenSeats.filter(
     (ele, pos) => chosenSeats.indexOf(ele) == pos
   );
-  console.log("The filtered array", filterChosenSeats);
   $.ajax({
     url: "/api/1.0/order/addToCart",
     data: JSON.stringify({ chosenSeats: filterChosenSeats }),
@@ -651,7 +644,7 @@ function addToCart() {
     .done(function (res) {
       $(function () {
         Swal.close();
-        // 將所選位子加入購物車後，將 chosenSeats array 清空
+        // after adding the selected seat to the shopping cart, clear the chosenSeats array
         chosenSeats = [];
         window.location.assign("/shoppingCart.html");
       });

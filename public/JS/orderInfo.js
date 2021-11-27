@@ -4,7 +4,6 @@ $(function () {
   });
 });
 
-// 取得訂購之會員的基本資料
 $.ajax({
   url: `/api/1.0/user/profile`,
   method: "GET",

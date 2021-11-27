@@ -118,7 +118,7 @@ $.ajax({
     }
   });
 
-//// reorganize the total cost
+// reorganize the total cost
 function flushSumPrice() {
   let sum = 0;
   let total = 0;
