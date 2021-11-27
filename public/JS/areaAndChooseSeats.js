@@ -65,11 +65,10 @@ socket.on("NotifySeatSelect", (msg) => {
   } else {
     if ($(`#${seatId}`).hasClass("not-selected")) {
       $(`#${seatId}`).removeClass("not-selected").addClass("selected");
-      $(`#${seatId}`).attr("src", "../images/logo/icon_chair_selected.gif");
     } else if ($(`#${seatId}`).hasClass("you-selected")) {
       $(`#${seatId}`).removeClass("you-selected").addClass("selected");
-      $(`#${seatId}`).attr("src", "../images/logo/icon_chair_selected.gif");
     }
+    $(`#${seatId}`).attr("src", "../images/logo/icon_chair_selected.gif");
   }
 });
 
@@ -78,37 +77,29 @@ socket.on("NotifySeatDelete", (msg) => {
   const { owner, seatId } = msg;
   if (owner === localStorage.getItem("UserCode")) {
     $(`#${seatId}`).removeClass("you-selected").addClass("not-selected");
-    $(`#${seatId}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
     removeSeatFromChosenSeatsArray(seatId);
   } else {
     $(`#${seatId}`).removeClass("selected").addClass("not-selected");
-    $(`#${seatId}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
   }
+  $(`#${seatId}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
 });
 
 socket.on("NotifyRollbackSeats", (msg) => {
   msg = JSON.parse(msg);
-  if (msg.owner === localStorage.getItem("UserCode")) {
-    for (let i = 0; i < msg.rollBackSeats.length; i++) {
+  for (let i = 0; i < msg.rollBackSeats.length; i++) {
+    if (msg.owner === localStorage.getItem("UserCode")) {
       $(`#${msg.rollBackSeats[i]}`)
         .removeClass("you-selected")
         .addClass("not-selected");
-      $(`#${msg.rollBackSeats[i]}`).attr(
-        "src",
-        "../images/logo/icon_chair_not_selected.gif"
-      );
-    }
-    chosenSeats = [];
-  } else {
-    for (let i = 0; i < msg.rollBackSeats.length; i++) {
+    } else {
       $(`#${msg.rollBackSeats[i]}`)
         .removeClass("selected")
         .addClass("not-selected");
-      $(`#${msg.rollBackSeats[i]}`).attr(
-        "src",
-        "../images/logo/icon_chair_not_selected.gif"
-      );
     }
+    $(`#${msg.rollBackSeats[i]}`).attr(
+      "src",
+      "../images/logo/icon_chair_not_selected.gif"
+    );
   }
 });
 
@@ -153,28 +144,23 @@ socket.on("NotifyRemoveToOrder", (msg) => {
   msg = JSON.parse(msg);
   if (msg.owner === localStorage.getItem("UserCode")) {
     $(`#${msg.removeToOrderSeat}`).removeClass("you-cart").addClass("you-sold");
-    $(`#${msg.removeToOrderSeat}`).attr(
-      "src",
-      "../images/logo/icon_chair_sold.gif"
-    );
   } else {
     $(`#${msg.removeToOrderSeat}`).removeClass("cart").addClass("sold");
-    $(`#${msg.removeToOrderSeat}`).attr(
-      "src",
-      "../images/logo/icon_chair_sold.gif"
-    );
   }
+  $(`#${msg.removeToOrderSeat}`).attr(
+    "src",
+    "../images/logo/icon_chair_sold.gif"
+  );
 });
 
 socket.on("NotifyReleaseTickets", (msg) => {
   for (let i = 0; i < msg.length; i++) {
     if ($(`#${msg[i]}`).hasClass("you-cart")) {
       $(`#${msg[i]}`).removeClass("you-cart").addClass("not-selected");
-      $(`#${msg[i]}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
     } else if ($(`#${msg[i]}`).hasClass("cart")) {
       $(`#${msg[i]}`).removeClass("cart").addClass("not-selected");
-      $(`#${msg[i]}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
     }
+    $(`#${msg[i]}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
   }
 });
 
@@ -244,12 +230,12 @@ function renderSeats(res) {
     if (status === "not-selected") {
       $(`#row-${seatRow}`).append(
         `<td>
-        <img src="../images/logo/icon_chair_not_selected.gif" class="not-selected" id="${concertSeatId}" title ="" width="100%" >
+        <img src="../images/logo/icon_chair_not_selected.gif" class="not-selected" id="${concertSeatId}" title ="" width="100%">
         </td>`
       );
     } else if (status === "selected") {
       $(`#row-${seatRow}`).append(
-        `<td><img src="../images/logo/icon_chair_selected.gif" class = "selected" id = "${concertSeatId}" width="100%" ></td>`
+        `<td><img src="../images/logo/icon_chair_selected.gif" class = "selected" id = "${concertSeatId}" width="100%"></td>`
       );
     } else if (status === "you-selected" && pageAccessedByReload) {
       $(`#row-${seatRow}`).append(
@@ -550,7 +536,7 @@ $.ajax({
     $(document).ready(function () {
       renderSeats(res);
       // 60 seconds countdown
-      let count = 10;
+      let count = 60;
       $("#notice").html(
         `<pre> ★ 購票提醒：
         1. 單場演唱會，每人限購4張(可跨區)
