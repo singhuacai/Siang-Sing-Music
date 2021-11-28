@@ -34,13 +34,7 @@ const signUp = async (req, res) => {
 
   name = validator.escape(name);
 
-  const result = await User.signUp(
-    name,
-    User.ROLE.USER,
-    email,
-    phone,
-    password
-  );
+  const result = await User.signUp(name, User.ROLE.USER, email, phone, password);
   if (result.error) {
     res.status(403).send({ error: result.error });
     return;
@@ -71,7 +65,7 @@ const signUp = async (req, res) => {
 
 const nativeSignIn = async (email, password) => {
   if (!email || !password) {
-    return { error: "您的資料填寫不完全，請再檢查一下" };
+    return { status: 400, error: "您的資料填寫不完全，請再檢查一下" };
   }
   try {
     return await User.nativeSignIn(email, password);
