@@ -20,30 +20,25 @@ const createConcert = async (req, res) => {
   if (concertId === -1) {
     return res.status(500);
   }
-
-  data.dateAndSeatInfo.forEach(async (element) => {
-    const dateAndSeatInfo = element;
+  for (let i = 0; i < data.concertInfo.length; i++) {
+    const dateAndSeatInfo = data.concertInfo[i];
     const concertDate = {
       concert_id: concertId,
-      concert_datetime: adjustTimeZone(
-        dateAndSeatInfo.concert_datetime,
-        -1 * offsetHours
-      ),
+      concert_datetime: adjustTimeZone(dateAndSeatInfo.concertDatetime, -1 * offsetHours),
     };
     const concertDateId = await Concert.insertConcertDate(concertDate);
     if (concertDateId === -1) {
       return res.status(500);
     }
-    dateAndSeatInfo.skuInfo.forEach(async (element) => {
-      const skuInfo = element;
+
+    for (let area = 0; area < dateAndSeatInfo.skuInfo.length; area++) {
+      const skuInfo = dateAndSeatInfo.skuInfo[area];
       const concertAreaPrice = {
         concert_date_id: concertDateId,
         concert_area: skuInfo.areaCode,
         ticket_price: skuInfo.ticketPrice,
       };
-      const concertAreaPriceId = await Concert.insertConcertAreaPrice(
-        concertAreaPrice
-      );
+      const concertAreaPriceId = await Concert.insertConcertAreaPrice(concertAreaPrice);
       if (concertAreaPriceId === -1) {
         return res.status(500);
       }
@@ -59,8 +54,8 @@ const createConcert = async (req, res) => {
       if (result === -1) {
         return res.status(500);
       }
-    });
-  });
+    }
+  }
   res.status(200).send({ concertId });
 };
 

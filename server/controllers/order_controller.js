@@ -34,12 +34,9 @@ const getPerformanceAndAreas = async (req, res) => {
     return e;
   });
 
-  const areasAndTicketPrices = await Order.getAreasAndTicketPrices(
-    concertDateId
-  );
+  const areasAndTicketPrices = await Order.getAreasAndTicketPrices(concertDateId);
 
-  const { concertTitle, concertLocation, concertAreaImage, concertDatetime } =
-    result[0];
+  const { concertTitle, concertLocation, concertAreaImage, concertDatetime } = result[0];
   res.status(200).send({
     concertTitle,
     concertLocation,
