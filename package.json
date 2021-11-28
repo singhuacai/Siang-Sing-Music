@@ -4,7 +4,7 @@
   "description": "\"# ticketing_system\"",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha --exit",
+    "test": "NODE_ENV=test mocha --timeout 20000 --exit",
     "format": "prettier --write \"**/*.+(js|json)\""
   },
   "repository": {
@@ -22,6 +22,7 @@
     "bcrypt": "^5.0.1",
     "chai-http": "^4.3.0",
     "cors": "^2.8.5",
+    "deep-equal-in-any-order": "^1.1.15",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "got": "^11.8.2",
