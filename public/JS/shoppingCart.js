@@ -1,4 +1,4 @@
-const Authorization = localStorage.getItem("Authorization");
+let Authorization = localStorage.getItem("Authorization");
 
 $("#order-flow-step").html(
   `<img
@@ -41,17 +41,8 @@ $.ajax({
       } else {
         // shopping cart is not empty
         for (let i = 0; i < res.cartStatus.length; i++) {
-          const {
-            concertSeatId,
-            shoppingCartId,
-            concertTitle,
-            concertDatetime,
-            concertLocation,
-            concertArea,
-            seatRow,
-            seatColumn,
-            ticketPrice,
-          } = res.cartStatus[i];
+          const { concertSeatId, shoppingCartId, concertTitle, concertDatetime, concertLocation, concertArea, seatRow, seatColumn, ticketPrice } =
+            res.cartStatus[i];
 
           $("#cart-table").show();
           $("#cart-content").append(
@@ -67,10 +58,7 @@ $.ajax({
             `
           );
 
-          $(`#seat-${concertSeatId}-delete`).click(
-            { param1: concertSeatId, param2: shoppingCartId },
-            deleteSeat
-          );
+          $(`#seat-${concertSeatId}-delete`).click({ param1: concertSeatId, param2: shoppingCartId }, deleteSeat);
         }
 
         $("#cart-content").append(`

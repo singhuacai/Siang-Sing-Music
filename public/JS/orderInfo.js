@@ -11,7 +11,6 @@ $.ajax({
   headers: { Authorization: `Bearer ${Authorization}` },
 })
   .done(function (res) {
-    console.log(res);
     $(function () {
       $("#orderer-name").text(`姓名 : ${res.data.name}`);
       $("#orderer-phone").text(`手機 : ${res.data.phone}`);

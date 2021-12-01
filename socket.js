@@ -63,8 +63,7 @@ const socketConnect = (server) => {
     const room = getRoomName(socket.decoded.concertAreaPriceId);
     socket.join(room);
 
-    const listener = (event, msg, target) =>
-      socket_send(socket, event, msg, target);
+    const listener = (event, msg, target) => socket_send(socket, event, msg, target);
 
     const eventName = getEventName(socket.id);
 
@@ -130,7 +129,6 @@ const socket_send = (socket, event, msg, target) => {
       io.sockets.emit(event, msg);
       break;
     case BOARDCAST.ALL_USERS_IN_ROOM:
-      console.log(msg);
       const room = getRoomName(socket.decoded.concertAreaPriceId);
       io.to(room).emit(event, msg);
       break;
