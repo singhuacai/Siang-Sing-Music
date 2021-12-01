@@ -22,7 +22,6 @@ $.ajax({
   .done(function (res) {
     $(function () {
       Swal.close();
-      console.log(res);
       if (res.orderResult.length === 0) {
         // No order record yet
         $("#empty-order-text").show();
@@ -32,15 +31,7 @@ $.ajax({
         for (let i = 0; i < res.orderResult.length; i++) {
           const orderResult = res.orderResult[i];
           const { mainOrderCode, createdAt, orderStatus } = orderResult;
-          const {
-            concertTitle,
-            concertDatetime,
-            concertLocation,
-            concertArea,
-            row,
-            column,
-            ticketPrice,
-          } = orderResult.ticketInfo[0];
+          const { concertTitle, concertDatetime, concertLocation, concertArea, row, column, ticketPrice } = orderResult.ticketInfo[0];
           const NumberOfTickets = orderResult.ticketInfo.length;
           $(".order-main-info-table").append(
             `
@@ -48,14 +39,14 @@ $.ajax({
                 <table class="content">
                     <thead>
                         <tr id="column-name">
-                            <th width="15%">訂單編號</th>
-                            <th width="12%">訂購時間</th>
-                            <th width="10%">訂單狀態</th>
-                            <th width="18%">活動名稱</th>
-                            <th width="10%">日期時間</th>
-                            <th width="15%">地點</th>
-                            <th width="10%">座位</th>
-                            <th width="10%">價格</th>
+                            <th width="15%">訂單編號 <br> Order Number</th>
+                            <th width="12%">訂購時間 <br> Order Time</th>
+                            <th width="10%">訂單狀態 <br> Order Status</th>
+                            <th width="18%">活動名稱 <br> Title</th>
+                            <th width="10%">日期時間 <br> Date & Time</th>
+                            <th width="15%">地點 <br> Location</th>
+                            <th width="10%">座位 <br> Seat</th>
+                            <th width="10%">價格 <br> Price</th>
                         </tr>
                     </thead>
                     <tbody id="order-main-info-${i}">
@@ -81,15 +72,7 @@ $.ajax({
 
           if (NumberOfTickets > 1) {
             for (let j = 1; j < NumberOfTickets; j++) {
-              const {
-                concertTitle,
-                concertDatetime,
-                concertLocation,
-                concertArea,
-                row,
-                column,
-                ticketPrice,
-              } = orderResult.ticketInfo[j];
+              const { concertTitle, concertDatetime, concertLocation, concertArea, row, column, ticketPrice } = orderResult.ticketInfo[j];
               $(`#order-main-info-${i}`).append(
                 `
                   <tr class="order-item-${j}">

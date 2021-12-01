@@ -7,7 +7,6 @@ $.ajax({
   headers: { Authorization: `Bearer ${Authorization}` },
 })
   .done(function (res) {
-    console.log(res);
     $(function () {
       $("#add-signin-block").hide();
       $("#add-signup-block").hide();

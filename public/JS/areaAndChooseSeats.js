@@ -88,18 +88,11 @@ socket.on("NotifyRollbackSeats", (msg) => {
   msg = JSON.parse(msg);
   for (let i = 0; i < msg.rollBackSeats.length; i++) {
     if (msg.owner === localStorage.getItem("UserCode")) {
-      $(`#${msg.rollBackSeats[i]}`)
-        .removeClass("you-selected")
-        .addClass("not-selected");
+      $(`#${msg.rollBackSeats[i]}`).removeClass("you-selected").addClass("not-selected");
     } else {
-      $(`#${msg.rollBackSeats[i]}`)
-        .removeClass("selected")
-        .addClass("not-selected");
+      $(`#${msg.rollBackSeats[i]}`).removeClass("selected").addClass("not-selected");
     }
-    $(`#${msg.rollBackSeats[i]}`).attr(
-      "src",
-      "../images/logo/icon_chair_not_selected.gif"
-    );
+    $(`#${msg.rollBackSeats[i]}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
   }
 });
 
@@ -107,37 +100,25 @@ socket.on("NotifyAddToCart", (msg) => {
   msg = JSON.parse(msg);
   for (let i = 0; i < msg.addToCartSeats.length; i++) {
     if (msg.owner === localStorage.getItem("UserCode")) {
-      $(`#${msg.addToCartSeats[i]}`)
-        .removeClass("you-selected")
-        .addClass("you-cart");
+      $(`#${msg.addToCartSeats[i]}`).removeClass("you-selected").addClass("you-cart");
       chosenSeats = [];
       countOfCartAndSold += msg.addToCartSeats.length;
       window.location.assign(`/index.html`);
     } else {
       $(`#${msg.addToCartSeats[i]}`).removeClass("selected").addClass("cart");
     }
-    $(`#${msg.addToCartSeats[i]}`).attr(
-      "src",
-      "../images/logo/icon_chair_cart.gif"
-    );
+    $(`#${msg.addToCartSeats[i]}`).attr("src", "../images/logo/icon_chair_cart.gif");
   }
 });
 
 socket.on("NotifyRemoveFromCart", (msg) => {
   if (msg.owner === localStorage.getItem("UserCode")) {
-    $(`#${msg.removeFromCartSeat}`)
-      .removeClass("you-cart")
-      .addClass("not-selected");
+    $(`#${msg.removeFromCartSeat}`).removeClass("you-cart").addClass("not-selected");
     countOfCartAndSold -= 1;
   } else {
-    $(`#${msg.removeFromCartSeat}`)
-      .removeClass("cart")
-      .addClass("not-selected");
+    $(`#${msg.removeFromCartSeat}`).removeClass("cart").addClass("not-selected");
   }
-  $(`#${msg.removeFromCartSeat}`).attr(
-    "src",
-    "../images/logo/icon_chair_not_selected.gif"
-  );
+  $(`#${msg.removeFromCartSeat}`).attr("src", "../images/logo/icon_chair_not_selected.gif");
 });
 
 socket.on("NotifyRemoveToOrder", (msg) => {
@@ -147,10 +128,7 @@ socket.on("NotifyRemoveToOrder", (msg) => {
   } else {
     $(`#${msg.removeToOrderSeat}`).removeClass("cart").addClass("sold");
   }
-  $(`#${msg.removeToOrderSeat}`).attr(
-    "src",
-    "../images/logo/icon_chair_sold.gif"
-  );
+  $(`#${msg.removeToOrderSeat}`).attr("src", "../images/logo/icon_chair_sold.gif");
 });
 
 socket.on("NotifyReleaseTickets", (msg) => {
@@ -198,7 +176,7 @@ function addSeatIntoChosenSeatsArray(id) {
   if (chosenSeats.indexOf(seatId) === -1) {
     chosenSeats.push(seatId);
   } else if (chosenSeats.indexOf(seatId) > -1) {
-    console.log(seatId + " already exists in the chosenSeats array.");
+    return;
   }
   return;
 }
@@ -275,21 +253,13 @@ function renderSeats(res) {
         `<td><img src="../images/logo/icon_chair_select.gif" class="you-selected" id = "${concertSeatId}" width="100%"></td>`
       );
     } else if (status === "cart") {
-      $(`#row-${seatRow}`).append(
-        `<td><img src="../images/logo/icon_chair_cart.gif" class = "cart" id = "${concertSeatId}" width="100%"></td>`
-      );
+      $(`#row-${seatRow}`).append(`<td><img src="../images/logo/icon_chair_cart.gif" class = "cart" id = "${concertSeatId}" width="100%"></td>`);
     } else if (status === "you-cart") {
-      $(`#row-${seatRow}`).append(
-        `<td><img src="../images/logo/icon_chair_cart.gif" class = "you-cart" id = "${concertSeatId}" width="100%"></td>`
-      );
+      $(`#row-${seatRow}`).append(`<td><img src="../images/logo/icon_chair_cart.gif" class = "you-cart" id = "${concertSeatId}" width="100%"></td>`);
     } else if (status === "sold") {
-      $(`#row-${seatRow}`).append(
-        `<td><img src="../images/logo/icon_chair_sold.gif" class = "sold" id = "${concertSeatId}" width="100%"></td>`
-      );
+      $(`#row-${seatRow}`).append(`<td><img src="../images/logo/icon_chair_sold.gif" class = "sold" id = "${concertSeatId}" width="100%"></td>`);
     } else if (status === "you-sold") {
-      $(`#row-${seatRow}`).append(
-        `<td><img src="../images/logo/icon_chair_sold.gif" class = "you-sold" id = "${concertSeatId}" width="100%"></td>`
-      );
+      $(`#row-${seatRow}`).append(`<td><img src="../images/logo/icon_chair_sold.gif" class = "you-sold" id = "${concertSeatId}" width="100%"></td>`);
     }
 
     $(`#${concertSeatId}`).click(handleClick);
@@ -444,9 +414,7 @@ function cancelSeat(seatId) {
 
 function rollBackChoose() {
   return new Promise((resolve, reject) => {
-    const filterChosenSeats = chosenSeats.filter(
-      (ele, pos) => chosenSeats.indexOf(ele) == pos
-    );
+    const filterChosenSeats = chosenSeats.filter((ele, pos) => chosenSeats.indexOf(ele) == pos);
     if (filterChosenSeats.length === 0) {
       return;
     }
@@ -486,21 +454,11 @@ $.ajax({
 })
   .done(function (res) {
     $(function () {
-      const {
-        concertTitle,
-        concertDatetime,
-        concertLocation,
-        concertArea,
-        ticketPrice,
-      } = res.data[0];
+      const { concertTitle, concertDatetime, concertLocation, concertArea, ticketPrice } = res.data[0];
 
       $("#concert-title").text(concertTitle);
-      $("#time-location-block").html(
-        `<p>時間：${concertDatetime}&nbsp; &nbsp; 地點：${concertLocation}</p>`
-      );
-      $("#area-ticketPrice").html(
-        `<p> 票區：${concertArea}&nbsp; &nbsp; 票價：NT$${ticketPrice}</p>`
-      );
+      $("#time-location-block").html(`<p>時間：${concertDatetime}&nbsp; &nbsp; 地點：${concertLocation}</p>`);
+      $("#area-ticketPrice").html(`<p> 票區：${concertArea}&nbsp; &nbsp; 票價：NT$${ticketPrice}</p>`);
     });
   })
   .fail(function (res) {
@@ -571,9 +529,7 @@ $.ajax({
       </ul>
       `
       );
-      $("#add-to-cart").append(
-        `<button id = "add-to-cart-button" onclick = "addToCart()">加入購物車</button>`
-      );
+      $("#add-to-cart").append(`<button id = "add-to-cart-button" onclick = "addToCart()">加入購物車</button>`);
     });
   })
   .fail(function (res) {
@@ -599,9 +555,7 @@ $.ajax({
   });
 
 function addToCart() {
-  const filterChosenSeats = chosenSeats.filter(
-    (ele, pos) => chosenSeats.indexOf(ele) == pos
-  );
+  const filterChosenSeats = chosenSeats.filter((ele, pos) => chosenSeats.indexOf(ele) == pos);
   $.ajax({
     url: "/api/1.0/order/addToCart",
     data: JSON.stringify({ chosenSeats: filterChosenSeats }),

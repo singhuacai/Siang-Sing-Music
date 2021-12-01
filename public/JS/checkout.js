@@ -1,6 +1,5 @@
 const appId = 12348;
-const appKey =
-  "app_pa1pQcKoY22IlnSXq5m5WP5jFKzoRG58VEXpT7wU62ud7mMbDOGzCYIlzzLF";
+const appKey = "app_pa1pQcKoY22IlnSXq5m5WP5jFKzoRG58VEXpT7wU62ud7mMbDOGzCYIlzzLF";
 const serverType = "sandbox";
 
 function setupSdk() {
@@ -74,10 +73,7 @@ $("#submit").click(async () => {
   const recipientAddrCounty = $(".recipient-addr-county").val();
   const recipientAddrArea = $(".recipient-addr-area").val();
   const recipientAddress =
-    $(".recipient-addr-zip").val() +
-    $(".recipient-addr-county").val() +
-    $(".recipient-addr-area").val() +
-    $("#recipient-detail-address").val();
+    $(".recipient-addr-zip").val() + $(".recipient-addr-county").val() + $(".recipient-addr-area").val() + $("#recipient-detail-address").val();
 
   if (!recipientName) {
     Swal.fire({
@@ -97,12 +93,7 @@ $("#submit").click(async () => {
     });
     return;
   }
-  if (
-    !recipientAddress ||
-    !recipientAddrZip ||
-    !recipientAddrCounty ||
-    !recipientAddrArea
-  ) {
+  if (!recipientAddress || !recipientAddrZip || !recipientAddrCounty || !recipientAddrArea) {
     Swal.fire({
       title: "您的收件地址填寫不完全",
       icon: "error",
@@ -125,7 +116,6 @@ $("#submit").click(async () => {
 
   // 4. confirm that the credit card is available
   const prime = await getPrime();
-  console.log("prime:", prime);
 
   // 5. get the shoppingCartId of all seats in the shopping cart
   let shoppingCartSeat = [];

@@ -137,9 +137,7 @@ const encodeEmail = (email) => {
 };
 
 const encodePhone = (phone) => {
-  console.log(phone);
   const ph = phone.replace(/(\d{3})\d{4}(\d{3})/, "$1⁎⁎⁎⁎$2");
-  console.log(`ph:${ph}`);
   return ph;
 };
 
