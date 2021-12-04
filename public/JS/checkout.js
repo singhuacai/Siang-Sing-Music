@@ -183,6 +183,8 @@ $("#submit").click(async () => {
         icon: "error",
         showConfirmButton: false,
         timer: 1000,
+      }).then(function () {
+        window.location = "/";
       });
     });
 });
