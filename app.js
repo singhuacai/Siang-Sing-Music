@@ -1,5 +1,4 @@
 require("dotenv").config();
-// const path = require("path");
 
 // Express Initialization
 const express = require("express");
