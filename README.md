@@ -33,7 +33,7 @@ Website URL: https://siangsing-music.site
 ## **Features**
 * ### **Choose a concert from the homepage**
 
-    ![](https://drive.google.com/uc?export=view&id=1UjfLHVVTkW2usSoL065ESopEGZWfEibI)
+    ![](https://drive.google.com/uc?export=view&id=1Nq7lJMuYLle1zOtJkuHzzZbEuJxN_H7a)
 
 * ### **The seat status can be updated in real time**
     * Let users see the updated status of the seat in time when choosing a seat by **Socket&#46;IO**.
@@ -59,7 +59,7 @@ Website URL: https://siangsing-music.site
     * Connected to **third-party APIs (TayPay)**, which enables users to check out quickly.
     * Send an email notification to the user after the purchase is completed using **NodeMailer**.
 
-    ![](https://drive.google.com/uc?export=view&id=1WfLA13fhyoT8CiZVqNOY7PL91fJrZFdD)
+    ![](https://drive.google.com/uc?export=view&id=1ejTeknXxVnN5k48dqfY_LSWnT5EJ8XGY)
 <br/>
 
 ## **Technologies**
