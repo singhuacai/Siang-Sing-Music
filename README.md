@@ -19,6 +19,7 @@ Website URL: https://siangsing-music.site
 * [Features](#Features)
 * [Technologies](#Technologies)
 * [Loading Test](#Loading-Test)
+* [Race Condition Cases](#Race-Condition-Cases)
 * [Contact](#Contact)
 
 
