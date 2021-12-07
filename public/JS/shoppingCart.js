@@ -118,7 +118,6 @@ function deleteSeat(event) {
   })
     .done(function (res) {
       $(function () {
-        console.log(res);
         $(`#item-of-cart-${shoppingCartId}`).remove();
         flushSumPrice();
         Swal.fire({

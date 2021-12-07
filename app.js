@@ -2,7 +2,6 @@ require("dotenv").config();
 
 // Express Initialization
 const express = require("express");
-const cors = require("cors");
 const app = express();
 const { PORT, API_VERSION } = process.env;
 const port = PORT;
@@ -12,9 +11,6 @@ app.use(express.static("public/html"));
 app.use(express.static("public/images/concerts"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// CORS allow all
-app.use(cors());
 
 // socket.io
 const server = require("http").Server(app);
