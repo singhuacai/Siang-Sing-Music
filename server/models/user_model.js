@@ -1,4 +1,3 @@
-require("dotenv").config();
 const { pool } = require("./mysql");
 const bcrypt = require("bcrypt");
 const salt = parseInt(process.env.BCRYPT_SALT);
@@ -54,12 +53,7 @@ const getUserCode = () => {
   const j = Math.floor(Math.random() * 36);
   const now = new Date();
   return (
-    random_array[i] +
-    random_array[j] +
-    +now.getMonth() +
-    now.getDate() +
-    (now.getTime() % (24 * 60 * 60 * 1000)) +
-    Math.floor(Math.random() * 10)
+    random_array[i] + random_array[j] + +now.getMonth() + now.getDate() + (now.getTime() % (24 * 60 * 60 * 1000)) + Math.floor(Math.random() * 10)
   );
 };
 
@@ -68,10 +62,7 @@ const signUp = async (name, roleId, email, phone, password) => {
   try {
     await conn.query("START TRANSACTION");
 
-    const emails = await conn.query(
-      "SELECT email FROM user WHERE email = ? FOR UPDATE",
-      [email]
-    );
+    const emails = await conn.query("SELECT email FROM user WHERE email = ? FOR UPDATE", [email]);
     if (emails[0].length > 0) {
       await conn.query("COMMIT");
       return { error: "此 Email 已被註冊過" };
@@ -125,10 +116,7 @@ const nativeSignIn = async (email, password) => {
   }
   try {
     await conn.query("START TRANSACTION");
-    const users = await conn.query(
-      "SELECT *, count(*) AS count FROM user WHERE email = ?",
-      [email]
-    );
+    const users = await conn.query("SELECT *, count(*) AS count FROM user WHERE email = ?", [email]);
     const user = users[0][0];
     if (user.count === 0) {
       return { error: "您尚未註冊!" };
@@ -152,8 +140,7 @@ const nativeSignIn = async (email, password) => {
       TOKEN_SECRET
     );
 
-    const queryStr =
-      "UPDATE user SET access_token = ?, access_expired = ?, login_at = ? WHERE id = ?";
+    const queryStr = "UPDATE user SET access_token = ?, access_expired = ?, login_at = ? WHERE id = ?";
     await conn.query(queryStr, [accessToken, TOKEN_EXPIRE, loginAt, user.id]);
 
     await conn.query("COMMIT");
@@ -175,15 +162,10 @@ const nativeSignIn = async (email, password) => {
 const getUserDetail = async (email, roleId) => {
   try {
     if (roleId) {
-      const [users] = await pool.query(
-        "SELECT * FROM user WHERE email = ? AND role_id = ?",
-        [email, roleId]
-      );
+      const [users] = await pool.query("SELECT * FROM user WHERE email = ? AND role_id = ?", [email, roleId]);
       return users[0];
     } else {
-      const [users] = await pool.query("SELECT * FROM user WHERE email = ?", [
-        email,
-      ]);
+      const [users] = await pool.query("SELECT * FROM user WHERE email = ?", [email]);
       return users[0];
     }
   } catch (e) {
