@@ -12,7 +12,10 @@ Website URL: https://siangsing-music.site
     * Email: `user2@gmail.com`
     * Password: `12345`
 
-
+* **Test Card**
+    * Card Number: `4242 4242 4242 4242`
+    * Exp. Date: `01/23`
+    * CVV Code: `123`
 ## **Table of Contents**
 * [Architecture](#Architecture)
 * [Database Schema](#Database-Schema)
