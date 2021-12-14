@@ -27,43 +27,43 @@ Website URL: https://siangsing-music.site
 
 
 ## **Architecture**
-![](https://github.com/singhuacai/Siang-Sing-Music/blob/testing/single.png)
+![](https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/single.png)
 
 
 ## **Database Schema**
-![Database-Schema](https://drive.google.com/uc?export=view&id=1PEGyI52HsnPan8fYFFKU4o7t2El8D_sM)
+![Database-Schema](https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/ticketing_system_DB_schema.png)
 
 
 ## **Features**
 * ### **Choose a concert from the homepage**
 
-    ![](https://drive.google.com/uc?export=view&id=1Nq7lJMuYLle1zOtJkuHzzZbEuJxN_H7a)
+    ![](https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/homepage.gif)
 
 * ### **The seat status can be updated in real time**
     * Let users see the updated status of the seat in time when choosing a seat by **Socket&#46;IO**.
 
-    ![](https://drive.google.com/uc?export=view&id=1aIq7ld55hwn9VY4mzFId0lPL2cljygJl)
+    ![](https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/seat_status.gif)
 
 * ### **Release seats that have not been added to the shopping cart**
     * To prevent the seat from being occupied, the system will release the seats that the user has selected but not added to the shopping cart when the user leaves the page.
 
-    ![](https://drive.google.com/uc?export=view&id=1GMK175PPAmxXVJgeMyVdLsztLZnsly7D)
+    ![](https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/release_ticket.gif)
 
 * ### **Prevent two users choose the same seat at the same time**
     * Prevent overselling tickets for the same seat by **locking only affected rows** on table.
 
-    ![](https://drive.google.com/uc?export=view&id=1jMwmSKqfeUO28P6saNOSVH-kaV4NDLLP)
+    ![](https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/race_condition.gif)
 
 * ### **Add the selected seat to the shopping cart**
     * In addition to adding the seat to the shopping cart after selecting the seat, you can also remove the seat on the shopping cart page.
 
-    ![](https://drive.google.com/uc?export=view&id=1Y4aDaoCFs9cBKeYYbISRNJeu7yvK9Fmk)
+    ![](https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/add_to_cart.gif)
 
 * ### **Check out and sent Email notification**
     * Connected to **third-party APIs (TayPay)**, which enables users to check out quickly.
     * Send an email notification to the user after the purchase is completed using **NodeMailer**.
 
-    ![](https://drive.google.com/uc?export=view&id=1ejTeknXxVnN5k48dqfY_LSWnT5EJ8XGY)
+    ![](https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/checkout_email.gif)
 <br/>
 
 ## **Technologies**
@@ -113,7 +113,7 @@ Website URL: https://siangsing-music.site
   * Compared the efficiency and cost of Horizontal Scaling (t2.micro *2) and Vertical Scaling (t2.medium *1).
   * The basic configuration is as follows:
    
-<img src="https://drive.google.com/uc?export=view&id=10yCAh4UDJn8i1Gtyxez6nfDGFqUemKUg" width="800"/>
+<img src="https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/configuration.png" width="800"/>
 
 * ### **CPU usage**
   Compare the CPU usage of **one t2.micro**, **Horizontal Scaling (two t2.micro)**, and **Vertical Scaling (one t2.medium)**, under different requests, as follows:
@@ -121,12 +121,12 @@ Website URL: https://siangsing-music.site
     
     * The request limit of the two t2.micro and one t2.medium is almost the same (around 300 req/sec).
 
-    <img src="https://drive.google.com/uc?export=view&id=1y5lp5vNICogj4Mne-OGA2Bx01kL-HOWN" width="800"/>
+    <img src="https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/comparison_CPU_usage.png" width="800"/>
 
 * ### **Cost**
     Two t2.micro ($0.5484) costs less than one t2.medium ($0.5568), in the case of booting for 12 hours.
 
-    <img src="https://drive.google.com/uc?export=view&id=1PmDmq9V0UO5WrmCS_wXl4WctRBH7lWEM" width="800"/>
+    <img src="https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/comparison_cost.png" width="800"/>
 
 * ### **Conclution**
     Horizontal Scaling is scalable and more highly available than Vertical Scaling.
@@ -136,21 +136,21 @@ Website URL: https://siangsing-music.site
 
 * ### **Scenario: User A and User B choose the same seat.**
 
-    <img src="https://drive.google.com/uc?export=view&id=1JK8HolRTDvGCndX9E5Nk4KE7LWamj3xC"/>
+    <img src="https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/raceCondition_chooseSeat.png"/>
 
 
 * ### **Scenario: User A opens two pages to deselect the same seat at the same time.**
 
-    <img src="https://drive.google.com/uc?export=view&id=17VPVSKq9-0X2WEgoNG0QPmG_X9Se9QUQ"/>
+    <img src="https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/raceCondition_deleteSeat.png"/>
 
 
 * ### **Scenario: User A opens two pages to remove the same seat in the shopping cart at the same time.**
 
-    <img src="https://drive.google.com/uc?export=view&id=1guRTL7yzoVK0qZ40Z02cwOy-9w4DhWUg"/>
+    <img src="https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/raceCondition_removeFormCart.png"/>
 
 * ### **Scenario: User A open two pages checkout at the same time.**
 
-    <img src="https://drive.google.com/uc?export=view&id=1OcVfl0RnjjKS9WBbK7k5vgVg0DT-Vm3k"/>
+    <img src="https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/raceCondition_checkout.png"/>
 <br/>
 
 ## **Contact**
