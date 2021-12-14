@@ -27,7 +27,7 @@ Website URL: https://siangsing-music.site
 
 
 ## **Architecture**
-![](https://drive.google.com/uc?export=view&id=18QZEAYITzA-l_UOXWAg1aGT3df7mA_6-)
+![](https://github.com/singhuacai/Siang-Sing-Music/blob/testing/single.png)
 
 
 ## **Database Schema**
