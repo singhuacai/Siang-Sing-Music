@@ -117,7 +117,7 @@ Website URL: https://siangsing-music.site
     Two t2.micro ($0.5484) costs less than one t2.medium ($0.5568), in the case of booting for 12 hours.
 
     <img src="https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/comparison_cost.png" width="800"/>
-* ### **Conclution**
+* ### **Conclusion**
     Horizontal Scaling is scalable and more highly available than Vertical Scaling.
 <br/>
 
