@@ -128,7 +128,7 @@ Website URL: https://siangsing-music.site
 
     <img src="https://raw.githubusercontent.com/singhuacai/Siang-Sing-Music/testing/readme_img/comparison_cost.png" width="800"/>
 
-* ### **Conclution**
+* ### **Conclusion**
     Horizontal Scaling is scalable and more highly available than Vertical Scaling.
 <br/>
 
