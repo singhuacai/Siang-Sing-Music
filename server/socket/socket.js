@@ -1,7 +1,7 @@
 const sio = require("socket.io");
 const events = require("events");
 const jwt = require("jsonwebtoken");
-const User = require("./server/models/user_model");
+const User = require("../models/user_model");
 const { TOKEN_SECRET } = process.env;
 const em = new events.EventEmitter();
 

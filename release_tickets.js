@@ -1,4 +1,4 @@
-const Order = require("../Ticketing-System/server/models/order_model");
+const Order = require("./server/models/order_model");
 const got = require("got");
 
 const getfilterReleasedTickets = async () => {

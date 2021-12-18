@@ -4,7 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const { PORT, API_VERSION } = process.env;
-const port = PORT;
+const port = PORT || 3000;
 
 app.use(express.static("public"));
 app.use(express.static("public/html"));
@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // socket.io
 const server = require("http").Server(app);
-require("./socket").socketConnect(server);
+require("./server/socket/socket").socketConnect(server);
 
 // API routes
 app.use("/api/" + API_VERSION, [

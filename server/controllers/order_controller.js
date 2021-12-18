@@ -1,7 +1,7 @@
 const offsetHours = process.env.TIMEZONE_OFFSET || 8;
 const Order = require("../models/order_model");
 const Mail = require("../controllers/mail_controller");
-const { notifyReleaseTickets } = require("../../socket");
+const { notifyReleaseTickets } = require("../socket/socket");
 const { adjustTimeZone } = require("../../util/util");
 const {
   BOARDCAST,
@@ -11,7 +11,7 @@ const {
   notifyAddToCart,
   notifyRemoveFromCart,
   notifyRemoveToOrder,
-} = require("../../socket");
+} = require("../socket/socket");
 
 const getPerformanceAndAreas = async (req, res) => {
   const { concertId, concertDateId } = req.query;
